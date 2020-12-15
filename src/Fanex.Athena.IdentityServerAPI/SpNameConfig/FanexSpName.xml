@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Functions SiteId="31" SiteName="LRF">
+  <Function Name="Authorization">
+    <Setting Key="Licensee_UserSaltSel" SpName="Licensee_UserSaltSel" DbName="DBLIC.bodb_Licensee.bodbLicenseeNet" />
+    <Setting Key="Lrf_UserLogin" SpName="Lrf_UserLogin" DbName="DBCUST.bodb_Licensee.bodbLicenseeNet" />
+    <Setting Key="Lrf_CheckIn" SpName="Lrf_CheckIn" DbName="DBCUST.bodb_Licensee.bodbLicenseeNet" />
+    <Setting Key="Lrf_UserLogout" SpName="Lrf_UserLogout" DbName="DBCUST.bodb_Licensee.bodbLicenseeNet" />
+    <Setting Key="Lrf_ReCheckIn" SpName="Lrf_ReCheckIn" DbName="DBCUST.bodb_Licensee.bodbLicenseeNet" />
+    <Setting Key="Lrf_UserInfoSel" SpName="Lrf_UserInfoSel" DbName="DBLIC.bodb_Licensee.bodbLicenseeNet" />
+    <Setting Key="Lrf_UserUpdAccount" SpName="Lrf_UserUpdAccount" DbName="DBCUST.bodb_Licensee.bodbLicenseeNet" />
+    <Setting Key="Lrf_UserAccessSel" SpName="Lrf_UserAccessSel" DbName="DBLIC.bodb_Licensee.bodbLicenseeNet" />
+    <Setting Key="Lrf_UserPwdReset" SpName="Lrf_UserPwdReset" DbName="DBCUST.bodb_Licensee.bodbLicenseeNet" />
+    <Setting Key="Licensee_UserPasswordUpd" SpName="Licensee_UserPasswordUpd" DbName="DBCUST.bodb_Licensee.bodbLicenseeNet" />
+    <Setting Key="Lrf_CurrencyCustIns" SpName="Lrf_CurrencyCustIns" DbName="DBCUST.bodb_Licensee.bodbLicenseeNet" />
+    <Setting Key="Lrf_UserInfoSelByUserName" SpName="Lrf_UserInfoSelByUserName" DbName="DBLIC.bodb_Licensee.bodbLicenseeNet" />
+  </Function>
+</Functions>

@@ -1,0 +1,18 @@
+﻿{
+  "ApiResources": [
+    {
+      "Name": "resource2",
+      "DisplayName": "Resource #2",
+
+      "UserClaims": [
+        "name",
+        "email"
+      ],
+
+      "Scopes": [
+        "resource2.scope1",
+        "shared.scope"
+      ]
+    }
+  ]
+}
