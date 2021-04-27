@@ -1,5 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Functions SiteId="31" SiteName="LRF">
+<Functions SiteId="31" SiteName="Identity Server">
+  <Function Name="Licensee">
+    <Setting Key="Lrf_LicenseeSelBySiteName" SpName="Lrf_LicenseeSelBySiteName" DbName="DBLIC.bodb_Licensee.bodbLicenseeNet">
+      <Mapping DataField="LicenseeID" ObjectProperty="Id" />
+      <Mapping DataField="LicenseeName" ObjectProperty="Name" />
+      <Mapping DataField="IsAllowedMemberComm" ObjectProperty="IsAllowedCustomerComm" />
+      <Mapping DataField="EnableBA" ObjectProperty="IsEnableBA" />
+    </Setting>
+    <Setting Key="Lrf_GetUserLevelInfo" SpName="Lrf_GetUserLevelInfo" DbName="DBCUST.SiteConfig.bodbLicenseeNet" />
+  </Function>
   <Function Name="Authorization">
     <Setting Key="Licensee_UserSaltSel" SpName="Licensee_UserSaltSel" DbName="DBLIC.bodb_Licensee.bodbLicenseeNet" />
     <Setting Key="Lrf_UserLogin" SpName="Lrf_UserLogin" DbName="DBCUST.bodb_Licensee.bodbLicenseeNet" />

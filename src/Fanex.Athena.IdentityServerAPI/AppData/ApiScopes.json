@@ -1,8 +1,0 @@
-﻿{
-  "ApiScopes": [
-    {
-      "Name": "transaction",
-      "DisplayName": "Transaction",
-    }
-  ]
-}

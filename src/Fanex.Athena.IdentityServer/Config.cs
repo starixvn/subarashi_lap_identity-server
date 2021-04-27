@@ -1,4 +1,6 @@
-﻿using IdentityServer4;
+﻿using Fanex.Athena.IdentityServer.Infrastructure.Constants;
+using IdentityModel;
+using IdentityServer4;
 using IdentityServer4.Models;
 using System.Collections.Generic;
 
@@ -12,8 +14,26 @@ namespace Fanex.Athena.IdentityServerAPI
                 new IdentityResources.OpenId(),
                 new IdentityResource
                 {
-                    Name = "custom_info",
-                    UserClaims = new [] { "user_info", "licensee_info" }
+                    Name = "licensee_identity",
+                    UserClaims = new [] {
+                        JwtClaimTypes.Name,
+                        JwtClaimTypes.Role,
+                        CustomClaimTypes.VendorID,
+                        CustomClaimTypes.SiteName,
+                        CustomClaimTypes.UserSEQ,
+                        CustomClaimTypes.UserID,
+                        CustomClaimTypes.Username,
+                        CustomClaimTypes.Language,
+                        CustomClaimTypes.ActionLink,
+                        CustomClaimTypes.Administrator,
+                        CustomClaimTypes.CurrencyAgent,
+                        CustomClaimTypes.WhiteLabelID,
+                        CustomClaimTypes.IsMasterLicensee,
+                        CustomClaimTypes.UserLevel,
+                        CustomClaimTypes.LicenseeId,
+                        CustomClaimTypes.IsAllowedCustomerComm,
+                        CustomClaimTypes.IsEnableBA
+                    }
                 }
             };
 
@@ -23,32 +43,56 @@ namespace Fanex.Athena.IdentityServerAPI
                 new ApiResource("playeradmin_api", "Player Admin API")
                 {
                     ApiSecrets = new [] { new Secret("playeradmin_api.secret".Sha256()) },
-                    UserClaims = new [] { "user_info", "licensee_info" },
+                    UserClaims = new [] {
+                        JwtClaimTypes.Name,
+                        JwtClaimTypes.Role,
+                        CustomClaimTypes.VendorID,
+                        CustomClaimTypes.SiteName,
+                        CustomClaimTypes.UserSEQ,
+                        CustomClaimTypes.UserID,
+                        CustomClaimTypes.Username,
+                        CustomClaimTypes.UserLevel,
+                        CustomClaimTypes.Language,
+                        CustomClaimTypes.ActionLink,
+                        CustomClaimTypes.Administrator,
+                        CustomClaimTypes.CurrencyAgent,
+                        CustomClaimTypes.WhiteLabelID,
+                        CustomClaimTypes.IsMasterLicensee,
+                        CustomClaimTypes.LicenseeId,
+                        CustomClaimTypes.IsAllowedCustomerComm,
+                        CustomClaimTypes.IsEnableBA
+                    },
                     Scopes = new [] { "playeradmin_api" }
                 },
                 new ApiResource("report_api", "Report API")
                 {
                     ApiSecrets = new [] { new Secret("report_api.secret".Sha256()) },
-                    UserClaims = new [] { "user_info", "licensee_info" },
+                    UserClaims = new [] { JwtClaimTypes.Name, CustomClaimTypes.SiteName  },
                     Scopes = new [] { "report_api" }
                 },
                 new ApiResource("betlist_api", "Bet List API")
                 {
                     ApiSecrets = new [] { new Secret("betlist_api.secret".Sha256()) },
-                    UserClaims = new [] { "user_info", "licensee_info" },
+                    UserClaims = new [] { JwtClaimTypes.Name, CustomClaimTypes.SiteName  },
                     Scopes = new [] { "betlist_api" }
+                },
+                new ApiResource("betlist_result_api", "Bet List Result API")
+                {
+                    ApiSecrets = new [] { new Secret("betlist_result_api.secret".Sha256()) },
+                    UserClaims = new [] { JwtClaimTypes.Name, CustomClaimTypes.SiteName  },
+                    Scopes = new [] { "betlist_result_api" }
                 },
                 new ApiResource("lg_api", "LG API")
                 {
                     ApiSecrets = new [] { new Secret("lg_api.secret".Sha256()) },
-                    UserClaims = new [] { "user_info", "licensee_info" },
+                    UserClaims = new [] { JwtClaimTypes.Name, CustomClaimTypes.SiteName  },
                     Scopes = new [] { "lg_api" }
                 },
                 new ApiResource("analytics_api", "Analytics API")
                 {
                     ApiSecrets = new [] { new Secret("analytics_api.secret".Sha256()) },
                     UserClaims = new [] { "user_info", "licensee_info" },
-                    Scopes = new [] { "analytics_api", "lg_api" }
+                    Scopes = new [] { "analytics_api" }
                 }
             };
 
@@ -68,17 +112,17 @@ namespace Fanex.Athena.IdentityServerAPI
                     ClientSecrets = { new Secret("lrf.secret".Sha256()) },
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                     AccessTokenType = AccessTokenType.Reference,
-                    AllowedScopes = { IdentityServerConstants.StandardScopes.OpenId, "custom_info", "report_api", "betlist_api", "lg_api" }
+                    AllowedScopes = { IdentityServerConstants.StandardScopes.OpenId, "report_api", "betlist_api", "lg_api" }
                 },
                 new Client
                 {
                     ClientName = "Player Admin",
                     ClientId = "playeradmin.client",
                     ClientSecrets = { new Secret("playeradmin.secret".Sha256()) },
-                    AllowedGrantTypes = new List<string> { "lrf_password" },
+                    AllowedGrantTypes = new List<string> { "lap_token" },
                     AccessTokenType = AccessTokenType.Reference,
                     RequireClientSecret = true,
-                    AllowedScopes = { IdentityServerConstants.StandardScopes.OpenId, "custom_info", "playeradmin_api" }
+                    AllowedScopes = { IdentityServerConstants.StandardScopes.OpenId, "licensee_identity", "playeradmin_api", "lg_api", "betlist_api", "betlist_result_api" }
                 },
                 new Client
                 {
@@ -87,7 +131,7 @@ namespace Fanex.Athena.IdentityServerAPI
                     ClientSecrets = { new Secret("statement.secret".Sha256()) },
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                     AccessTokenType = AccessTokenType.Reference,
-                    AllowedScopes = { IdentityServerConstants.StandardScopes.OpenId, "custom_info" }   ,
+                    AllowedScopes = { IdentityServerConstants.StandardScopes.OpenId }
                 },
                 new Client
                 {
@@ -95,7 +139,7 @@ namespace Fanex.Athena.IdentityServerAPI
                     ClientId = "machine.client",
                     ClientSecrets = { new Secret("machine.secret".Sha256()) },
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
-                    AllowedScopes = { "custom_info", "playeradmin_api", "report_api", "betlist_api", "lg_api" }
+                    AllowedScopes = { "playeradmin_api", "report_api", "betlist_api", "lg_api" }
                 }
             };
     }
