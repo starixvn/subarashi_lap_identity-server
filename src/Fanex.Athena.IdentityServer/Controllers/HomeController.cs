@@ -1,12 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Fanex.Athena.IdentityServerAPI.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : ControllerBase
     {
-        public IActionResult Index()
+        [Route("/")]
+        public string Index([FromServices] IWebHostEnvironment env)
         {
-            return View();
+            return $"LAP Identity Server is running on {env.EnvironmentName}";
         }
     }
 }
