@@ -1,0 +1,4 @@
+include:
+    - project: "ci/repos-ci/legion_lap_identity_server"
+      ref: master
+      file: "gitlab-ci.yml"
