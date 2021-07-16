@@ -47,8 +47,6 @@ namespace Fanex.Athena.IdentityServer.Infrastructure.Validators
             }
             else
             {
-                await _persistedGrantService.RemoveAllGrantsAsync($"{authInfo.SiteName}_{authInfo.UserSEQ}_{authInfo.UserID}_{authInfo.UserName}", context.Request.ClientId);
-
                 var (licenseeInfo, userLevel) = await TaskExtension.WhenAll(
                     _extraInformationService.GetLicensee(authInfo.SiteName),
                     _extraInformationService.GetUserLevel(authInfo.UserSEQ, authInfo.VendorID));
