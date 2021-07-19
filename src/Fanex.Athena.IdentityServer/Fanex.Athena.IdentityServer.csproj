@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Sentry.AspNetCore" Version="3.8.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Fanex.Athena.IdentityServer.Infrastructure\Fanex.Athena.IdentityServer.Infrastructure.csproj" />
   </ItemGroup>
 

@@ -1,25 +1,19 @@
 using Fanex.Athena.IdentityServer.Infrastructure.Extensions;
+using Fanex.Athena.IdentityServer.Infrastructure.Middlewares;
 using Fanex.Athena.IdentityServer.Infrastructure.Validators;
 using Fanex.Data;
 using Fanex.Data.SqlServer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Security.Cryptography;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Fanex.Athena.IdentityServerAPI
 {
@@ -60,13 +54,24 @@ namespace Fanex.Athena.IdentityServerAPI
                .AddSigningCredential(credentials);
 
             services.AddHealthCheck(Configuration);
+
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+                options.KnownNetworks.Clear();
+                options.KnownProxies.Clear();
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseForwardedHeaders();
 
-            if (env.IsDevelopment())
+            if (string.Equals(Configuration["UseErrorHandler"], "1"))
+            {
+                app.UseMiddleware<ErrorHandler>();
+            }
+            else
             {
                 app.UseDeveloperExceptionPage();
             }

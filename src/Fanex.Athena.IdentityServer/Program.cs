@@ -2,10 +2,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Fanex.Athena.IdentityServerAPI
 {
@@ -13,15 +9,15 @@ namespace Fanex.Athena.IdentityServerAPI
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Run();
+            CreateHost(args).Run();
+            new WebHostBuilder().Build().Run();
         }
 
-        public static IHost CreateHostBuilder(string[] args) =>
+        public static IHost CreateHost(string[] args) =>
             Host.CreateDefaultBuilder(args)
             .ConfigureAppConfiguration((builderContext, config) =>
             {
                 var env = builderContext.HostingEnvironment;
-
                 config.SetBasePath(env.ContentRootPath);
                 config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
                 config.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
@@ -36,6 +32,7 @@ namespace Fanex.Athena.IdentityServerAPI
             {
                 logging.ClearProviders();
                 logging.AddConsole();
+                logging.AddSentry();
             }).Build();
     }
 }
