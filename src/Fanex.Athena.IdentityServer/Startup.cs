@@ -1,6 +1,6 @@
-using Fanex.Athena.IdentityServer.Infrastructure.Extensions;
-using Fanex.Athena.IdentityServer.Infrastructure.Middlewares;
-using Fanex.Athena.IdentityServer.Infrastructure.Validators;
+using Fanex.Athena.IdentityServer.Core.Extensions;
+using Fanex.Athena.IdentityServer.Core.Middlewares;
+using Fanex.Athena.IdentityServer.Core.Validators;
 using Fanex.Data;
 using Fanex.Data.SqlServer;
 using Microsoft.AspNetCore.Builder;

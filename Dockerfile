@@ -3,8 +3,8 @@ WORKDIR /src
 
 COPY NuGet.Config .
 
-COPY src/Fanex.Athena.IdentityServer.Infrastructure/Fanex.Athena.IdentityServer.Infrastructure.csproj ./
-RUN dotnet restore Fanex.Athena.IdentityServer.Infrastructure.csproj -v n
+COPY src/Fanex.Athena.IdentityServer.Core/Fanex.Athena.IdentityServer.Core.csproj ./
+RUN dotnet restore Fanex.Athena.IdentityServer.Core.csproj -v n
 
 COPY src/Fanex.Athena.IdentityServer/Fanex.Athena.IdentityServer.csproj ./
 RUN dotnet restore Fanex.Athena.IdentityServer.csproj -v n

@@ -1,4 +1,4 @@
-﻿using Fanex.Athena.IdentityServer.Infrastructure.Constants;
+﻿using Fanex.Athena.IdentityServer.Core.Constants;
 using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Models;

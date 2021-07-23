@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Fanex.Athena.IdentityServer.Infrastructure\Fanex.Athena.IdentityServer.Infrastructure.csproj" />
+    <ProjectReference Include="..\Fanex.Athena.IdentityServer.Core\Fanex.Athena.IdentityServer.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,9 +20,6 @@
     </None>
     <None Update="App_Data\SpConfig\FanexSpName.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Dockerfile">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="pair-key.secrect">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
