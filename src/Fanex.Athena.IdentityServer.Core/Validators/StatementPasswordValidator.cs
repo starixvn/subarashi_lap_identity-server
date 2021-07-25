@@ -1,4 +1,5 @@
-﻿using IdentityModel;
+﻿using Fanex.Athena.IdentityServer.Core.Constants;
+using IdentityModel;
 using IdentityServer4.Validation;
 using System;
 using System.Security.Claims;
@@ -8,7 +9,7 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
 {
     public class StatementPasswordValidator : IExtensionGrantValidator
     {
-        public string GrantType => "statement_password";
+        public string GrantType => CustomGrantType.StatementPassword;
 
         public Task ValidateAsync(ExtensionGrantValidationContext context)
         {

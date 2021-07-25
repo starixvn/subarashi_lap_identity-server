@@ -1,6 +1,6 @@
 ﻿namespace Fanex.Athena.IdentityServer.Core.Constants
 {
-    public static class CustomClaimTypes
+    public static class CustomClaimType
     {
         public const string VendorID = "VendorID";
         public const string SiteName = "SiteName";
@@ -17,5 +17,7 @@
         public const string LicenseeId = "LicenseeId";
         public const string IsAllowedCustomerComm = "IsAllowedCustomerComm";
         public const string IsEnableBA = "IsEnableBA";
+        public const string IsEnableSingleWallet = "IsEnableSingleWallet";
+        public const string IsShowIP = "IsShowIP";
     }
 }

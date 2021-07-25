@@ -1,5 +1,6 @@
 using Fanex.Athena.IdentityServer.Core.Extensions;
 using Fanex.Athena.IdentityServer.Core.Middlewares;
+using Fanex.Athena.IdentityServer.Core.Models;
 using Fanex.Athena.IdentityServer.Core.Validators;
 using Fanex.Data;
 using Fanex.Data.SqlServer;
@@ -61,6 +62,8 @@ namespace Fanex.Athena.IdentityServerAPI
                 options.KnownNetworks.Clear();
                 options.KnownProxies.Clear();
             });
+
+            services.Configure<AppSetting>(Configuration.GetSection("App"));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

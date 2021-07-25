@@ -5,7 +5,6 @@ using Fanex.Athena.IdentityServer.Core.Services;
 using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Models;
-using IdentityServer4.Services;
 using IdentityServer4.Validation;
 using LAP.ONEBook.Security;
 using Newtonsoft.Json;
@@ -21,20 +20,17 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
     {
         private const string TokenKey = "token";
 
-        public string GrantType => "lap_token";
+        public string GrantType => CustomGrantType.LapToken;
 
         private readonly IAuth<DefaultAuthInfo<LapPermission, LapCurrencyAgent>> _authService;
         private readonly IExtraInformationService _extraInformationService;
-        private readonly IPersistedGrantService _persistedGrantService;
 
         public LapTokenDelegationValidator(
             IAuth<DefaultAuthInfo<LapPermission, LapCurrencyAgent>> authService,
-            IExtraInformationService extraInformationService,
-            IPersistedGrantService persistedGrantService)
+            IExtraInformationService extraInformationService)
         {
             _authService = authService;
             _extraInformationService = extraInformationService;
-            _persistedGrantService = persistedGrantService;
         }
 
         public async Task ValidateAsync(ExtensionGrantValidationContext context)
@@ -47,28 +43,31 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
             }
             else
             {
-                var (licenseeInfo, userLevel) = await TaskExtension.WhenAll(
+                var (licenseeInfo, userLevel, isEnableSingleWallet) = await TaskExtension.WhenAll(
                     _extraInformationService.GetLicensee(authInfo.SiteName),
-                    _extraInformationService.GetUserLevel(authInfo.UserSEQ, authInfo.VendorID));
+                    _extraInformationService.GetUserLevel(authInfo.UserSEQ, authInfo.VendorID),
+                    _extraInformationService.IsEnableSingleWallet(authInfo.SiteName));
 
                 var claims = new List<Claim>(
                     new[] {
                         new Claim(JwtClaimTypes.Name, authInfo.UserID.ToString()),
-                        new Claim(CustomClaimTypes.VendorID, authInfo.VendorID),
-                        new Claim(CustomClaimTypes.SiteName, authInfo.SiteName),
-                        new Claim(CustomClaimTypes.UserSEQ, authInfo.UserSEQ.ToString(), ClaimValueTypes.Integer32),
-                        new Claim(CustomClaimTypes.UserID, authInfo.UserID),
-                        new Claim(CustomClaimTypes.Username, authInfo.UserName),
-                        new Claim(CustomClaimTypes.Language, authInfo.Language),
-                        new Claim(CustomClaimTypes.ActionLink, authInfo.ActionLink),
-                        new Claim(CustomClaimTypes.Administrator, authInfo.IsAdminstrator.ToString(), ClaimValueTypes.Boolean),
-                        new Claim(CustomClaimTypes.CurrencyAgent, JsonConvert.SerializeObject(authInfo.Currency), IdentityServerConstants.ClaimValueTypes.Json),
-                        new Claim(CustomClaimTypes.WhiteLabelID, authInfo.WhiteLabelID?.ToString() ?? "-1", ClaimValueTypes.Integer32),
-                        new Claim(CustomClaimTypes.IsMasterLicensee, authInfo.IsMasterLicensee.ToString(), ClaimValueTypes.Boolean),
-                        new Claim(CustomClaimTypes.LicenseeId, licenseeInfo.Id.ToString(), ClaimValueTypes.Integer32),
-                        new Claim(CustomClaimTypes.IsAllowedCustomerComm, licenseeInfo.IsAllowedCustomerComm.ToString(), ClaimValueTypes.Boolean),
-                        new Claim(CustomClaimTypes.IsEnableBA, licenseeInfo.IsEnableBA.ToString(), ClaimValueTypes.Boolean),
-                        new Claim(CustomClaimTypes.UserLevel, userLevel.ToString(), ClaimValueTypes.Integer32)
+                        new Claim(CustomClaimType.VendorID, authInfo.VendorID),
+                        new Claim(CustomClaimType.SiteName, authInfo.SiteName),
+                        new Claim(CustomClaimType.UserSEQ, authInfo.UserSEQ.ToString(), ClaimValueTypes.Integer32),
+                        new Claim(CustomClaimType.UserID, authInfo.UserID),
+                        new Claim(CustomClaimType.Username, authInfo.UserName),
+                        new Claim(CustomClaimType.Language, authInfo.Language),
+                        new Claim(CustomClaimType.ActionLink, authInfo.ActionLink),
+                        new Claim(CustomClaimType.Administrator, authInfo.IsAdminstrator.ToString(), ClaimValueTypes.Boolean),
+                        new Claim(CustomClaimType.CurrencyAgent, JsonConvert.SerializeObject(authInfo.Currency), IdentityServerConstants.ClaimValueTypes.Json),
+                        new Claim(CustomClaimType.WhiteLabelID, authInfo.WhiteLabelID?.ToString() ?? "-1", ClaimValueTypes.Integer32),
+                        new Claim(CustomClaimType.IsMasterLicensee, authInfo.IsMasterLicensee.ToString(), ClaimValueTypes.Boolean),
+                        new Claim(CustomClaimType.LicenseeId, licenseeInfo.Id.ToString(), ClaimValueTypes.Integer32),
+                        new Claim(CustomClaimType.IsAllowedCustomerComm, licenseeInfo.IsAllowedCustomerComm.ToString(), ClaimValueTypes.Boolean),
+                        new Claim(CustomClaimType.IsEnableBA, licenseeInfo.IsEnableBA.ToString(), ClaimValueTypes.Boolean),
+                        new Claim(CustomClaimType.UserLevel, userLevel.ToString(), ClaimValueTypes.Integer32),
+                        new Claim(CustomClaimType.IsEnableSingleWallet, isEnableSingleWallet.ToString(), ClaimValueTypes.Boolean),
+                        new Claim(CustomClaimType.IsShowIP, _extraInformationService.IsOfferShowIP(authInfo.SiteName).ToString(), ClaimValueTypes.Boolean)
                     });
 
                 if (authInfo.IsAdminstrator)
@@ -84,14 +83,14 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
                 }
 
                 context.Result = new GrantValidationResult(
-                         $"{authInfo.SiteName}_{authInfo.UserSEQ}_{authInfo.UserID}_{authInfo.UserName}",
-                        "lap_token", DateTime.UtcNow, claims, ClaimsIdentity.DefaultIssuer);
+                        $"{authInfo.SiteName}_{authInfo.UserSEQ}_{authInfo.UserID}_{authInfo.UserName}",
+                        CustomGrantType.LapToken,
+                        DateTime.UtcNow, claims,
+                        ClaimsIdentity.DefaultIssuer);
             }
         }
 
         private static bool IsInvalidToken(DefaultAuthInfo<LapPermission, LapCurrencyAgent> authInfo)
-        {
-            return string.IsNullOrEmpty(authInfo?.SiteName) || string.IsNullOrEmpty(authInfo?.UserName) || authInfo?.UserSEQ <= 0;
-        }
+            => string.IsNullOrEmpty(authInfo?.SiteName) || string.IsNullOrEmpty(authInfo.UserName) || authInfo.UserSEQ <= 0;
     }
 }

@@ -8,5 +8,9 @@ namespace Fanex.Athena.IdentityServer.Core.Services
         Task<LicenseeInformation> GetLicensee(string licenseeName);
 
         Task<int> GetUserLevel(int userSEQ, string vendorId);
+
+        Task<bool> IsEnableSingleWallet(string licenseeName);
+
+        bool IsOfferShowIP(string licenseeName);
     }
 }

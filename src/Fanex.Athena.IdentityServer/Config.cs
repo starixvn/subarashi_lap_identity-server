@@ -19,21 +19,23 @@ namespace Fanex.Athena.IdentityServerAPI
                 {
                         JwtClaimTypes.Name,
                         JwtClaimTypes.Role,
-                        CustomClaimTypes.VendorID,
-                        CustomClaimTypes.SiteName,
-                        CustomClaimTypes.UserSEQ,
-                        CustomClaimTypes.UserID,
-                        CustomClaimTypes.Username,
-                        CustomClaimTypes.Language,
-                        CustomClaimTypes.Administrator,
-                        CustomClaimTypes.CurrencyAgent,
-                        CustomClaimTypes.WhiteLabelID,
-                        CustomClaimTypes.IsMasterLicensee,
-                        CustomClaimTypes.UserLevel,
-                        CustomClaimTypes.LicenseeId,
-                        CustomClaimTypes.IsAllowedCustomerComm,
-                        CustomClaimTypes.IsEnableBA,
-                        CustomClaimTypes.ActionLink
+                        CustomClaimType.VendorID,
+                        CustomClaimType.SiteName,
+                        CustomClaimType.UserSEQ,
+                        CustomClaimType.UserID,
+                        CustomClaimType.Username,
+                        CustomClaimType.Language,
+                        CustomClaimType.Administrator,
+                        CustomClaimType.CurrencyAgent,
+                        CustomClaimType.WhiteLabelID,
+                        CustomClaimType.IsMasterLicensee,
+                        CustomClaimType.UserLevel,
+                        CustomClaimType.LicenseeId,
+                        CustomClaimType.IsAllowedCustomerComm,
+                        CustomClaimType.IsEnableBA,
+                        CustomClaimType.IsEnableSingleWallet,
+                        CustomClaimType.IsShowIP,
+                        CustomClaimType.ActionLink,
                 };
             }
         }
@@ -56,19 +58,19 @@ namespace Fanex.Athena.IdentityServerAPI
                     {
                         JwtClaimTypes.Name,
                         JwtClaimTypes.Role,
-                        CustomClaimTypes.SiteName,
-                        CustomClaimTypes.UserSEQ,
-                        CustomClaimTypes.UserID,
-                        CustomClaimTypes.Username,
-                        CustomClaimTypes.Language,
-                        CustomClaimTypes.Administrator,
-                        CustomClaimTypes.CurrencyAgent,
-                        CustomClaimTypes.WhiteLabelID,
-                        CustomClaimTypes.IsMasterLicensee,
-                        CustomClaimTypes.UserLevel,
-                        CustomClaimTypes.LicenseeId,
-                        CustomClaimTypes.IsAllowedCustomerComm,
-                        CustomClaimTypes.IsEnableBA
+                        CustomClaimType.SiteName,
+                        CustomClaimType.UserSEQ,
+                        CustomClaimType.UserID,
+                        CustomClaimType.Username,
+                        CustomClaimType.Language,
+                        CustomClaimType.Administrator,
+                        CustomClaimType.CurrencyAgent,
+                        CustomClaimType.WhiteLabelID,
+                        CustomClaimType.IsMasterLicensee,
+                        CustomClaimType.UserLevel,
+                        CustomClaimType.LicenseeId,
+                        CustomClaimType.IsAllowedCustomerComm,
+                        CustomClaimType.IsEnableBA
                     },
                 },
                 new ApiResource("betticket_api", "Bet Ticket API")
@@ -77,27 +79,28 @@ namespace Fanex.Athena.IdentityServerAPI
                     Scopes = { "betticket_api.result", "betticket_api.detail" },
                     UserClaims =
                     {
-                        CustomClaimTypes.SiteName,
-                        CustomClaimTypes.CurrencyAgent,
-                        CustomClaimTypes.Language
+                        CustomClaimType.SiteName,
+                        CustomClaimType.CurrencyAgent,
+                        CustomClaimType.IsShowIP,
+                        CustomClaimType.Language
                     }
                 },
                 new ApiResource("report_api", "Report API")
                 {
                     ApiSecrets = { new Secret("report_api.secret".Sha256()) },
-                    UserClaims = { CustomClaimTypes.SiteName  },
+                    UserClaims = { CustomClaimType.SiteName  },
                     Scopes = { "report_api" }
                 },
                 new ApiResource("betlist_api", "Bet List API")
                 {
                     ApiSecrets = { new Secret("betlist_api.secret".Sha256()) },
-                    UserClaims = { JwtClaimTypes.Name, CustomClaimTypes.SiteName  },
+                    UserClaims = { JwtClaimTypes.Name, CustomClaimType.SiteName  },
                     Scopes = { "betlist_api" }
                 },
                 new ApiResource("lg_api", "LG API")
                 {
                     ApiSecrets = { new Secret("lg_api.secret".Sha256()) },
-                    UserClaims = { JwtClaimTypes.Name, CustomClaimTypes.SiteName  },
+                    UserClaims = { JwtClaimTypes.Name, CustomClaimType.SiteName  },
                     Scopes = { "lg_api" }
                 },
                 new ApiResource("analytics_api", "Analytics API")
@@ -118,20 +121,22 @@ namespace Fanex.Athena.IdentityServerAPI
                      {
                         JwtClaimTypes.Name,
                         JwtClaimTypes.Role,
-                        CustomClaimTypes.SiteName,
-                        CustomClaimTypes.UserSEQ,
-                        CustomClaimTypes.UserID,
-                        CustomClaimTypes.Username,
-                        CustomClaimTypes.Language,
-                        CustomClaimTypes.Administrator,
-                        CustomClaimTypes.CurrencyAgent,
-                        CustomClaimTypes.WhiteLabelID,
-                        CustomClaimTypes.IsMasterLicensee,
-                        CustomClaimTypes.UserLevel,
-                        CustomClaimTypes.LicenseeId,
-                        CustomClaimTypes.IsAllowedCustomerComm,
-                        CustomClaimTypes.IsEnableBA,
-                        CustomClaimTypes.ActionLink
+                        CustomClaimType.SiteName,
+                        CustomClaimType.UserSEQ,
+                        CustomClaimType.UserID,
+                        CustomClaimType.Username,
+                        CustomClaimType.Language,
+                        CustomClaimType.Administrator,
+                        CustomClaimType.CurrencyAgent,
+                        CustomClaimType.WhiteLabelID,
+                        CustomClaimType.IsMasterLicensee,
+                        CustomClaimType.UserLevel,
+                        CustomClaimType.LicenseeId,
+                        CustomClaimType.IsAllowedCustomerComm,
+                        CustomClaimType.IsEnableBA,
+                        CustomClaimType.IsEnableSingleWallet,
+                        CustomClaimType.IsShowIP,
+                        CustomClaimType.ActionLink
                      }
                 },
                 new ApiScope("betticket_api.result", "Bet Ticket API Result"),
@@ -146,7 +151,7 @@ namespace Fanex.Athena.IdentityServerAPI
                     ClientName = "LRF",
                     ClientId = "lrf.client",
                     ClientSecrets = { new Secret("lrf.secret".Sha256()) },
-                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+                    AllowedGrantTypes = { CustomGrantType.LrfPassword },
                     AccessTokenType = AccessTokenType.Reference,
                     AccessTokenLifetime = 3600,
                     AllowOfflineAccess = true,
@@ -164,23 +169,23 @@ namespace Fanex.Athena.IdentityServerAPI
                     ClientName = "Player Admin",
                     ClientId = "playeradmin.client",
                     ClientSecrets = { new Secret("playeradmin.secret".Sha256()) },
-                    AllowedGrantTypes = { "lap_token" },
+                    AllowedGrantTypes = { CustomGrantType.LapToken },
                     AccessTokenType = AccessTokenType.Reference,
                     AccessTokenLifetime = 3600,
                     RequireClientSecret = true,
+                    IncludeJwtId = false,
                     AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId, UserInfoResource.IdentityName,
                         "playeradmin_api.internal", "playeradmin_api.external", "betticket_api.result", "betticket_api.detail"
                     },
-                    IncludeJwtId = false
                 },
                 new Client
                 {
                     ClientName = "Statement",
                     ClientId = "statement.client",
                     ClientSecrets = { new Secret("statement.secret".Sha256()) },
-                    AllowedGrantTypes = { "statement_password" },
+                    AllowedGrantTypes = { CustomGrantType.StatementPassword },
                     AccessTokenType = AccessTokenType.Reference,
                     AllowedScopes = { IdentityServerConstants.StandardScopes.OpenId }
                 },

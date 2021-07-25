@@ -7,7 +7,10 @@
       <Mapping DataField="IsAllowedMemberComm" ObjectProperty="IsAllowedCustomerComm" />
       <Mapping DataField="EnableBA" ObjectProperty="IsEnableBA" />
     </Setting>
+  </Function>
+  <Function Name="SiteConfig">
     <Setting Key="Lrf_GetUserLevelInfo" SpName="Lrf_GetUserLevelInfo" DbName="DBCUST.SiteConfig.bodbLicenseeNet" />
+    <Setting Key="Lrf_GetConfigDetailByKeyName" SpName="Lrf_GetConfigDetailByKeyName" DbName="DBCUST.SiteConfig.bodbLicenseeNet" />
   </Function>
   <Function Name="Authorization">
   </Function>

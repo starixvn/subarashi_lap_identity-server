@@ -41,7 +41,7 @@ namespace Fanex.Athena.IdentityServer.Core.Extensions
 
         private static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddTransient<IExtraInformationService, ExtraInformationService>();
+            services.AddSingleton<IExtraInformationService, ExtraInformationService>();
 
             var securityConnection = GetOneBookSecurityConnection(configuration);
             services.AddSingleton<IAuth<DefaultAuthInfo<LapPermission, LapCurrencyAgent>>>(new Auth<DefaultAuthInfo<LapPermission, LapCurrencyAgent>>(new SqlServerProvider(securityConnection)));
