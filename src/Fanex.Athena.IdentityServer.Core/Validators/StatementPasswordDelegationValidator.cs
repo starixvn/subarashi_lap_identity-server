@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Fanex.Athena.IdentityServer.Core.Validators
 {
-    public class StatementPasswordValidator : IExtensionGrantValidator
+    public class StatementPasswordDelegationValidator : IExtensionGrantValidator
     {
         public string GrantType => CustomGrantType.StatementPassword;
 

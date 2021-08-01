@@ -1,6 +1,6 @@
 ﻿namespace Fanex.Athena.IdentityServer.Core.Models
 {
-    public class LapCurrencyAgent
+    public class CurrencyAgent
     {
         public int[] AgentId { get; set; }
 

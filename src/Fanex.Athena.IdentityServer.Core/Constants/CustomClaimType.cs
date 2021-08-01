@@ -14,10 +14,16 @@
         public const string WhiteLabelID = "WhiteLabelID";
         public const string IsMasterLicensee = "IsMasterLicensee";
         public const string UserLevel = "UserLevel";
+        public const string IsEnabledSubsidiary = "IsEnabledSubsidiary";
+        public const string OperatorID = "OperatorID";
+        public const string BaseCurrency = "BaseCurrency";
         public const string LicenseeId = "LicenseeId";
         public const string IsAllowedCustomerComm = "IsAllowedCustomerComm";
         public const string IsEnableBA = "IsEnableBA";
         public const string IsEnableSingleWallet = "IsEnableSingleWallet";
         public const string IsShowIP = "IsShowIP";
+        public const string OnUserId = "OnUserId";
+        public const string IsInternal = "IsInternal";
+        public const string DefaultReportUrl = "DefaultReportUrl";
     }
 }

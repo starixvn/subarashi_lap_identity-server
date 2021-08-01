@@ -42,9 +42,11 @@ namespace Fanex.Athena.IdentityServer.Core.Extensions
         private static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddSingleton<IExtraInformationService, ExtraInformationService>();
+            services.AddSingleton<ILrfAuthService, LrfAuthService>();
+            services.AddSingleton<ILrfFunctionService, LrfFunctionService>();
 
             var securityConnection = GetOneBookSecurityConnection(configuration);
-            services.AddSingleton<IAuth<DefaultAuthInfo<LapPermission, LapCurrencyAgent>>>(new Auth<DefaultAuthInfo<LapPermission, LapCurrencyAgent>>(new SqlServerProvider(securityConnection)));
+            services.AddSingleton<IAuth<DefaultAuthInfo<LapFunction, CurrencyAgent>>>(new Auth<DefaultAuthInfo<LapFunction, CurrencyAgent>>(new SqlServerProvider(securityConnection)));
 
             return services;
         }

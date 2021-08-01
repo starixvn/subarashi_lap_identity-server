@@ -4,6 +4,7 @@ using Fanex.Athena.IdentityServer.Core.Repositories;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -26,22 +27,61 @@ namespace Fanex.Athena.IdentityServer.Core.Services
 
         public Task<LicenseeInformation> GetLicensee(string licenseeName)
         {
-            var cacheKey = "Lrf_LicenseeSelBySiteName_" + licenseeName;
-            return LockHelper.LockAsync(cacheKey, () => TryGetOrAddFromCache(cacheKey, OneDay, () => GetLicenseeInfoFromDB(licenseeName)));
+            var cacheKey = $"GetLicensee_{licenseeName}";
+            return LockHelper.LockAsync(cacheKey, () => TryGetOrAddFromCache(cacheKey, OneDay, () => GetLicenseeFromDB(licenseeName)));
         }
 
-        public async Task<int> GetUserLevel(int userSEQ, string vendorId)
+        public Task<LicenseeInformation> GetLicenseeBelongingLrfUser(int licenseeId, int lrfUserId)
+        {
+            var cacheKey = $"GetLicenseeBelongingLrfUser_{licenseeId}_{lrfUserId}";
+            return LockHelper.LockAsync(cacheKey, () => TryGetOrAddFromCache(cacheKey, OneDay, () => GetLicenseeBeLongingLrfUserFromDB(licenseeId, lrfUserId)));
+        }
+
+        public async Task<IEnumerable<CurrencyAgent>> GetCurrencyAgentListByLrfUser(int licenseeId, int userId)
+        {
+            const string UspName = "Lrf_SelCurrencyByLicenseeUser";
+            using (var db = _dbFactory.GetObjectDb(UspName))
+            {
+                db.SetParameterValue("UserID", userId);
+                db.SetParameterValue("LicenseeID", licenseeId);
+
+                var currencyList = await db.QueryAsync<LrfCurrencyAgent>();
+                return currencyList
+                    .Where(x => x.IsActive)
+                    .GroupBy(x => x.CurrencyId)
+                    .Select(x => new CurrencyAgent
+                    {
+                        CurrencyId = x.Key,
+                        Currency = x.First().CurrencyName,
+                        AgentId = x.Select(y => y.AgentId).ToArray()
+                    });
+            }
+        }
+
+        public async Task<LapUserInfo> GetLapUserInfo(int userSEQ, string vendorId)
         {
             const string UspName = "Lrf_GetUserLevelInfo";
             using (var db = _dbFactory.GetObjectDb(UspName))
             {
                 db.SetParameterValue("VendorID", vendorId);
                 db.SetParameterValue("UserSEQ", userSEQ);
+                db.SetParameterValue("UserLevel", null);
+                db.SetParameterValue("SubsidiaryEnabled", null);
+                db.SetParameterValue("OperatorID", null);
+                db.SetParameterValue("BaseCurrency", null);
 
                 await db.ExecuteNonQueryAsync();
 
-                var result = Convert.ToInt32(db.GetParameterValue("UserLevel"));
-                return result;
+                var userInfo = new LapUserInfo
+                {
+                    UserLevel = Convert.ToByte(db.GetParameterValue("UserLevel")),
+                    IsEnabledSubsidiary = Convert.ToBoolean(db.GetParameterValue("SubsidiaryEnabled")),
+                    OperatorID = Convert.ToString(db.GetParameterValue("OperatorID")),
+                    BaseCurrency = db.GetParameterValue("BaseCurrency") != null ?
+                     Convert.ToString(db.GetParameterValue("BaseCurrency")) : string.Empty
+                };
+
+                return userInfo;
             }
         }
 
@@ -92,7 +132,7 @@ namespace Fanex.Athena.IdentityServer.Core.Services
             return data;
         }
 
-        private Task<LicenseeInformation> GetLicenseeInfoFromDB(string licenseeName)
+        private Task<LicenseeInformation> GetLicenseeFromDB(string licenseeName)
         {
             const string UspName = "Lrf_LicenseeSelBySiteName";
             var uspParams = new { siteName = licenseeName };
@@ -101,6 +141,35 @@ namespace Fanex.Athena.IdentityServer.Core.Services
             {
                 return db.QueryEntityAsync<LicenseeInformation>(uspParams);
             }
+        }
+
+        private async Task<LicenseeInformation> GetLicenseeBeLongingLrfUserFromDB(int licenseeId, int lrfUserId)
+        {
+            const string UspName = "Lrf_LicenseeSel";
+            var uspParams = new { UserId = lrfUserId };
+
+            using (var db = _dbFactory.GetObjectDb(UspName))
+            {
+                using (var reader = await db.ExecuteReaderAsync(uspParams))
+                {
+                    while (reader.Read())
+                    {
+                        var id = reader.GetInt32(reader.GetOrdinal("LicenseeID"));
+                        if (id == licenseeId)
+                        {
+                            return new LicenseeInformation
+                            {
+                                Id = id,
+                                Name = reader.GetString(reader.GetOrdinal("LicenseeName")),
+                                IsAllowedCustomerComm = reader.GetBoolean(reader.GetOrdinal("IsAllowedMemberComm")),
+                                IsEnableBA = reader.GetBoolean(reader.GetOrdinal("EnableBA"))
+                            };
+                        }
+                    }
+                }
+            }
+
+            return null;
         }
     }
 }

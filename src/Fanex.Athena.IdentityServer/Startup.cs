@@ -31,7 +31,7 @@ namespace Fanex.Athena.IdentityServerAPI
         public IHostEnvironment Env { get; }
 
         public void ConfigureServices(IServiceCollection services)
-        {
+        { 
             services.AddControllers();
             services.AddMemoryCache();
             services.AddInfrastructure(Configuration);
@@ -51,6 +51,7 @@ namespace Fanex.Athena.IdentityServerAPI
                .AddInMemoryClients(Config.Clients)
                .AddInMemoryApiScopes(Config.ScopeApis)
                .AddExtensionGrantValidator<LapTokenDelegationValidator>()
+               .AddExtensionGrantValidator<LrfPasswordDelegationValidator>()
                .AddOperationalStoreWithRedis(Configuration)
                .AddSigningCredential(credentials);
 
