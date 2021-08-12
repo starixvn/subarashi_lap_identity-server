@@ -112,7 +112,7 @@ namespace Fanex.Athena.IdentityServerAPI
                 new ApiResource("analytics_api", "Analytics API")
                 {
                     ApiSecrets = { new Secret("analytics_api.secret".Sha256()) },
-                    UserClaims = { "user_info", "licensee_info" },
+                    UserClaims = { JwtClaimTypes.Name, CustomClaimType.SiteName },
                     Scopes = { "analytics_api" }
                 }
             };
@@ -190,6 +190,8 @@ namespace Fanex.Athena.IdentityServerAPI
                     AllowedGrantTypes = { CustomGrantType.LrfPassword, CustomGrantType.LapToken },
                     AccessTokenType = AccessTokenType.Reference,
                     AccessTokenLifetime = 3600,
+                    RequireClientSecret = true,
+                    IncludeJwtId = false,
                     AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId, UserInfoResource.IdentityName,

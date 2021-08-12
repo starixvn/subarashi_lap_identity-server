@@ -1,0 +1,12 @@
+{
+  "ServerUri": "https://sonarqube.nexdev.net/",
+  "Organization": null,
+  "ProjectKey": "LAP_IdentityServer",
+  "ProjectName": "Legion / LAP.IdentityServer",
+  "Profiles": {
+    "CSharp": {
+      "ProfileKey": "cs-sonar-way-80515",
+      "ProfileTimestamp": "2020-11-27T06:04:48Z"
+    }
+  }
+}

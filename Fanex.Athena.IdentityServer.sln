@@ -5,13 +5,13 @@ VisualStudioVersion = 16.0.30717.126
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{61B9A095-D2D7-40FB-BA7E-46A84F5500A9}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "client-libs", "client-libs", "{CA2E3AC3-7F1C-4B53-A539-E14EA35C6AFC}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fanex.Athena.IdentityServer.Client", "src\client-libs\Fanex.Athena.IdentityServer.Client\Fanex.Athena.IdentityServer.Client.csproj", "{59320319-B068-4010-B50D-FE0D30599620}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fanex.Athena.IdentityServer", "src\Fanex.Athena.IdentityServer\Fanex.Athena.IdentityServer.csproj", "{7A7CFEBD-65AE-4AC6-B1DE-DF4765AE7D5D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fanex.Athena.IdentityServer.Core", "src\Fanex.Athena.IdentityServer.Core\Fanex.Athena.IdentityServer.Core.csproj", "{0A9DC907-EF19-4D55-BE9F-9CA7842D52CF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{378B661E-3C3A-4D1C-9359-0C24DA029AEB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fanex.Athena.IdentityServer.Core.UnitTests", "test\Fanex.Athena.IdentityServer.Core.UnitTests\Fanex.Athena.IdentityServer.Core.UnitTests.csproj", "{8670EE48-1B8D-4284-BE76-A96278910CB7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,10 +19,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{59320319-B068-4010-B50D-FE0D30599620}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{59320319-B068-4010-B50D-FE0D30599620}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{59320319-B068-4010-B50D-FE0D30599620}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{59320319-B068-4010-B50D-FE0D30599620}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7A7CFEBD-65AE-4AC6-B1DE-DF4765AE7D5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7A7CFEBD-65AE-4AC6-B1DE-DF4765AE7D5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A7CFEBD-65AE-4AC6-B1DE-DF4765AE7D5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -31,15 +27,18 @@ Global
 		{0A9DC907-EF19-4D55-BE9F-9CA7842D52CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A9DC907-EF19-4D55-BE9F-9CA7842D52CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A9DC907-EF19-4D55-BE9F-9CA7842D52CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8670EE48-1B8D-4284-BE76-A96278910CB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8670EE48-1B8D-4284-BE76-A96278910CB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8670EE48-1B8D-4284-BE76-A96278910CB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8670EE48-1B8D-4284-BE76-A96278910CB7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{CA2E3AC3-7F1C-4B53-A539-E14EA35C6AFC} = {61B9A095-D2D7-40FB-BA7E-46A84F5500A9}
-		{59320319-B068-4010-B50D-FE0D30599620} = {CA2E3AC3-7F1C-4B53-A539-E14EA35C6AFC}
 		{7A7CFEBD-65AE-4AC6-B1DE-DF4765AE7D5D} = {61B9A095-D2D7-40FB-BA7E-46A84F5500A9}
 		{0A9DC907-EF19-4D55-BE9F-9CA7842D52CF} = {61B9A095-D2D7-40FB-BA7E-46A84F5500A9}
+		{8670EE48-1B8D-4284-BE76-A96278910CB7} = {378B661E-3C3A-4D1C-9359-0C24DA029AEB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {77ED59A6-82FA-45C5-9436-D799C4A57E7A}
