@@ -13,7 +13,7 @@
     <Setting Key="Lrf_LicenseeSel" SpName="Lrf_LicenseeSel" DbName="DBLIC.bodb_Licensee.bodbLicenseeNet" />
   </Function>
   <Function Name="SiteConfig">
-    <Setting Key="Lrf_GetUserLevelInfo" SpName="Lrf_GetUserLevelInfo" DbName="DBCUST.SiteConfig.bodbLicenseeNet" />
+    <Setting Key="Lrf_GetUserLevelInfo" SpName="Lrf_GetUserLevelInfo" DbName="DBCUST.SiteConfig_TW.bodbLicenseeNet" />
     <Setting Key="Lrf_GetConfigDetailByKeyName" SpName="Lrf_GetConfigDetailByKeyName" DbName="DBCUST.SiteConfig.bodbLicenseeNet" />
   </Function>
   <Function Name="Lrf">

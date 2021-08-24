@@ -222,14 +222,6 @@ namespace Fanex.Athena.IdentityServerAPI
                     AllowedGrantTypes = { CustomGrantType.StatementPassword },
                     AccessTokenType = AccessTokenType.Reference,
                     AllowedScopes = { IdentityServerConstants.StandardScopes.OpenId }
-                },
-                new Client
-                {
-                    ClientName = "Machine to machine",
-                    ClientId = "machine.client",
-                    ClientSecrets = { new Secret("machine.secret".Sha256()) },
-                    AllowedGrantTypes = GrantTypes.ClientCredentials,
-                    AllowedScopes = { "playeradmin_api", "report_api", "betlist_api", "lg_api" }
                 }
             };
     }

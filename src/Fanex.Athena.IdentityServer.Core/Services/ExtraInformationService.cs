@@ -99,7 +99,7 @@ namespace Fanex.Athena.IdentityServer.Core.Services
         }
 
         public bool IsOfferShowIP(string licenseeName)
-            => _appSetting.LicenseeOfferShowIP.Contains(licenseeName, StringComparer.OrdinalIgnoreCase);
+            => true;
 
         private async Task<string> GetConfigDetailByKeyName(string licenseeName, string environment, string keyName)
         {
