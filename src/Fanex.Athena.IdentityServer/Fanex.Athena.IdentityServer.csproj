@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Sentry.AspNetCore" Version="3.8.2" />
+    <PackageReference Include="Sentry.Extensions.Logging" Version="2.1.6" />
   </ItemGroup>
 
   <ItemGroup>

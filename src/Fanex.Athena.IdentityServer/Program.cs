@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Fanex.Athena.IdentityServerAPI
+namespace Fanex.Athena.IdentityServer
 {
     public static class Program
     {
@@ -27,8 +27,9 @@ namespace Fanex.Athena.IdentityServerAPI
             {
                 webBuilder.UseStartup<Startup>();
             })
-            .ConfigureLogging(logging =>
+            .ConfigureLogging((config, logging) =>
             {
+                logging.AddConfiguration(config.Configuration);
                 logging.ClearProviders();
                 logging.AddConsole();
                 logging.AddSentry();

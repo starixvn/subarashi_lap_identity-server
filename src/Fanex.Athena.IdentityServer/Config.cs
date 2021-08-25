@@ -4,7 +4,7 @@ using IdentityServer4;
 using IdentityServer4.Models;
 using System.Collections.Generic;
 
-namespace Fanex.Athena.IdentityServerAPI
+namespace Fanex.Athena.IdentityServer
 {
     public static class Config
     {

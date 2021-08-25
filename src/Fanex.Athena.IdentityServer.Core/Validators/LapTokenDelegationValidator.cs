@@ -53,9 +53,11 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
                     _extraInformationService.GetLapUserInfo(authInfo.UserSEQ, authInfo.VendorID),
                     _extraInformationService.IsEnableSingleWallet(authInfo.SiteName));
 
+                var identityName = $"portal_{authInfo.VendorID}_{authInfo.SiteName}_{authInfo.UserID}_{authInfo.UserSEQ}";
+
                 var claims = new List<Claim>(
                     new[] {
-                        new Claim(JwtClaimTypes.Name, authInfo.UserID.ToString()),
+                        new Claim(JwtClaimTypes.Name, identityName),
                         new Claim(CustomClaimType.VendorID, authInfo.VendorID),
                         new Claim(CustomClaimType.SiteName, authInfo.SiteName),
                         new Claim(CustomClaimType.UserSEQ, authInfo.UserSEQ.ToString(), ClaimValueTypes.Integer32),
@@ -91,7 +93,7 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
                 }
 
                 context.Result = new GrantValidationResult(
-                        $"{authInfo.SiteName}_{authInfo.UserSEQ}_{authInfo.UserID}_{authInfo.UserName}",
+                        identityName,
                         CustomGrantType.LapToken,
                         DateTime.UtcNow, claims,
                         ClaimsIdentity.DefaultIssuer);

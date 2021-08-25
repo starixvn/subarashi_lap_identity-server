@@ -74,8 +74,10 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
                licenseeInfo == null ? Task.FromResult(Enumerable.Empty<CurrencyAgent>()) : _extraInformationService.GetCurrencyAgentListByLrfUser(licenseeInfo.Id, userID),
                licenseeInfo == null ? Task.FromResult(Enumerable.Empty<LrfFunction>()) : _lrfFunctionService.GetUserFunctions(licenseeInfo.Id, userID));
 
+                var identityName = $"lrf_{licenseeInfo?.Name}_{GetClaimValue<string>(originalClaims, CustomClaimType.Username)}_{userID}";
+
                 var claims = new List<Claim>();
-                claims.Add(originalClaims.First(_ => _.Type.Equals(JwtClaimTypes.Name)));
+                claims.Add(new Claim(JwtClaimTypes.Name, identityName));
                 claims.Add(new Claim(CustomClaimType.SiteName, licenseeInfo?.Name ?? string.Empty));
                 claims.Add(originalClaims.First(_ => _.Type.Equals(CustomClaimType.UserSEQ)));
                 claims.Add(originalClaims.First(_ => _.Type.Equals(CustomClaimType.UserID)));
@@ -97,7 +99,7 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
                       CommonHelper.ModifyCurrenciesForKeenOcean(currencyAgentList, licenseeInfo?.Id ?? 0)), IdentityServerConstants.ClaimValueTypes.Json));
                 claims.AddRange(functionList.Select(_ => new Claim(JwtClaimTypes.Role, _.FunctionKey)));
 
-                context.Result = CreateSuccessfulResult(licenseeInfo, new LrfUserInfo { UserID = userID, Username = GetClaimValue<string>(originalClaims, CustomClaimType.Username) }, claims);
+                context.Result = CreateSuccessfulResult(identityName, claims);
             }
             else
             {
@@ -128,9 +130,11 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
                     licenseeInfo == null ? Task.FromResult(Enumerable.Empty<CurrencyAgent>()) : _extraInformationService.GetCurrencyAgentListByLrfUser(licenseeInfo.Id, userInfo.UserID),
                     licenseeInfo == null ? Task.FromResult(Enumerable.Empty<LrfFunction>()) : _lrfFunctionService.GetUserFunctions(licenseeInfo.Id, userInfo.UserID));
 
-                var claims = new List<Claim>(
-                    new[] {
-                        new Claim(JwtClaimTypes.Name, userInfo.Username),
+                var identityName = $"lrf_{licenseeInfo?.Name}_{userInfo.Username}_{userInfo.UserID}";
+
+                ; var claims = new List<Claim>(
+                     new[] {
+                        new Claim(JwtClaimTypes.Name, identityName),
                         new Claim(CustomClaimType.SiteName, licenseeInfo?.Name ?? string.Empty),
                         new Claim(CustomClaimType.UserSEQ, userInfo.UserID.ToString()),
                         new Claim(CustomClaimType.UserID, userInfo.Username),
@@ -150,17 +154,17 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
                         new Claim(CustomClaimType.CurrencyAgent, JsonConvert.SerializeObject(
                             CommonHelper.ModifyCurrenciesForKeenOcean(currencyAgentList, licenseeInfo?.Id ?? 0)),
                             IdentityServerConstants.ClaimValueTypes.Json)
-                    });
+                     });
 
                 claims.AddRange(functionList.Select(_ => new Claim(JwtClaimTypes.Role, _.FunctionKey)));
 
-                context.Result = CreateSuccessfulResult(licenseeInfo, userInfo, claims);
+                context.Result = CreateSuccessfulResult(identityName, claims);
             }
         }
 
-        private GrantValidationResult CreateSuccessfulResult(LicenseeInformation licenseeInfo, LrfUserInfo userInfo, IEnumerable<Claim> claims)
+        private GrantValidationResult CreateSuccessfulResult(string identityName, IEnumerable<Claim> claims)
             => new GrantValidationResult(
-                       $"{licenseeInfo?.Name}_{userInfo.UserID}_{userInfo.Username}",
+                       identityName,
                        CustomGrantType.LrfPassword,
                        DateTime.UtcNow, claims,
                        ClaimsIdentity.DefaultIssuer);

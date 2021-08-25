@@ -16,7 +16,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 
-namespace Fanex.Athena.IdentityServerAPI
+namespace Fanex.Athena.IdentityServer
 {
     public class Startup
     {
