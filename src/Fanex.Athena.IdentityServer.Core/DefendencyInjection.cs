@@ -10,9 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 
-namespace Fanex.Athena.IdentityServer.Core.Extensions
+namespace Fanex.Athena.IdentityServer.Core
 {
-    public static class DefendencyInjectionExtension
+    public static class DefendencyInjection
     {                                                                         
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {

@@ -6,6 +6,5 @@ namespace Fanex.Athena.IdentityServer.Core.Models
     {
         public bool IsUATTW { get; set; }
         public bool IsProduction { get; set; }
-        public IEnumerable<string> LicenseeOfferShowIP { get; set; }
     }
 }

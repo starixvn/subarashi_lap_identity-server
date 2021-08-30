@@ -1,7 +1,7 @@
 ﻿using Fanex.Athena.IdentityServer.Core.Constants;
 using IdentityModel;
-using IdentityServer4;
 using IdentityServer4.Models;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace Fanex.Athena.IdentityServer
@@ -53,13 +53,11 @@ namespace Fanex.Athena.IdentityServer
                 new UserInfoResource()
             };
 
-        public static IEnumerable<ApiResource> Apis =>
-            new List<ApiResource>
+        public static IEnumerable<ApiScope> ScopeApis =>
+            new List<ApiScope>
             {
-                new ApiResource("playeradmin_api", "Player Admin API")
+                new ApiScope("playeradmin_api.external")
                 {
-                    ApiSecrets = { new Secret("playeradmin_api.secret".Sha256()) },
-                    Scopes = { "playeradmin_api.external" },
                     UserClaims =
                     {
                         JwtClaimTypes.Name,
@@ -77,51 +75,9 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.LicenseeId,
                         CustomClaimType.IsAllowedCustomerComm,
                         CustomClaimType.IsEnableBA
-                    },
-                },
-                new ApiResource("betticket_api", "Bet Ticket API")
-                {
-                    ApiSecrets = { new Secret("betticket_api.secret".Sha256()) },
-                    Scopes = { "betticket_api.result", "betticket_api.detail" },
-                    UserClaims =
-                    {
-                        CustomClaimType.SiteName,
-                        CustomClaimType.CurrencyAgent,
-                        CustomClaimType.IsShowIP,
-                        CustomClaimType.Language
                     }
                 },
-                new ApiResource("report_api", "Report API")
-                {
-                    ApiSecrets = { new Secret("report_api.secret".Sha256()) },
-                    UserClaims = { CustomClaimType.SiteName  },
-                    Scopes = { "report_api" }
-                },
-                new ApiResource("betlist_api", "Bet List API")
-                {
-                    ApiSecrets = { new Secret("betlist_api.secret".Sha256()) },
-                    UserClaims = { JwtClaimTypes.Name, CustomClaimType.SiteName  },
-                    Scopes = { "betlist_api" }
-                },
-                new ApiResource("lg_api", "LG API")
-                {
-                    ApiSecrets = { new Secret("lg_api.secret".Sha256()) },
-                    UserClaims = { JwtClaimTypes.Name, CustomClaimType.SiteName  },
-                    Scopes = { "lg_api" }
-                },
-                new ApiResource("analytics_api", "Analytics API")
-                {
-                    ApiSecrets = { new Secret("analytics_api.secret".Sha256()) },
-                    UserClaims = { JwtClaimTypes.Name, CustomClaimType.SiteName },
-                    Scopes = { "analytics_api" }
-                }
-            };
-
-        public static IEnumerable<ApiScope> ScopeApis =>
-            new List<ApiScope>
-            {
-                new ApiScope("playeradmin_api.external", "Player Admin External API"),
-                new ApiScope("playeradmin_api.internal", "Player Admin Internal API")
+                new ApiScope("playeradmin_api.internal")
                 {
                      UserClaims =
                      {
@@ -145,11 +101,21 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.ActionLink
                      }
                 },
-                new ApiScope("betticket_api.result", "Bet Ticket API Result"),
-                new ApiScope("betticket_api.detail", "Bet Ticket API Detail"),
-                new ApiScope("lrf", "LRF")
+                new ApiScope("betticket_api")
                 {
-                    UserClaims = {
+                    UserClaims =
+                    {
+                        CustomClaimType.SiteName,
+                        CustomClaimType.CurrencyAgent,
+                        CustomClaimType.IsEnableSingleWallet,
+                        CustomClaimType.IsShowIP,
+                        CustomClaimType.Language
+                    }
+                },
+                new ApiScope("lrf")
+                {
+                    UserClaims =
+                    {
                         JwtClaimTypes.Name,
                         JwtClaimTypes.Role,
                         CustomClaimType.VendorID,
@@ -176,53 +142,26 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.IsInternal,
                         CustomClaimType.DefaultReportUrl
                     }
-                }
-            };
-
-        public static IEnumerable<Client> Clients =>
-            new List<Client>
-            {
-                new Client
+                },
+                new ApiScope("statement_api")
                 {
-                    ClientName = "LRF",
-                    ClientId = "lrf.client",
-                    ClientSecrets = { new Secret("lrf.secret".Sha256()) },
-                    AllowedGrantTypes = { CustomGrantType.LrfPassword, CustomGrantType.LapToken },
-                    AccessTokenType = AccessTokenType.Reference,
-                    AccessTokenLifetime = 3600,
-                    RequireClientSecret = true,
-                    IncludeJwtId = false,
-                    AllowedScopes =
+                    UserClaims =
                     {
-                        IdentityServerConstants.StandardScopes.OpenId, UserInfoResource.IdentityName,
-                        "lrf", "betticket_api.result", "betticket_api.detail"
+                        CustomClaimType.SiteName,
+                        CustomClaimType.CurrencyAgent,
+                        CustomClaimType.IsEnableSingleWallet
                     }
                 },
-                new Client
-                {
-                    ClientName = "Player Admin",
-                    ClientId = "playeradmin.client",
-                    ClientSecrets = { new Secret("playeradmin.secret".Sha256()) },
-                    AllowedGrantTypes = { CustomGrantType.LapToken },
-                    AccessTokenType = AccessTokenType.Reference,
-                    AccessTokenLifetime = 3600,
-                    RequireClientSecret = true,
-                    IncludeJwtId = false,
-                    AllowedScopes =
-                    {
-                        IdentityServerConstants.StandardScopes.OpenId, UserInfoResource.IdentityName,
-                        "playeradmin_api.internal", "playeradmin_api.external", "betticket_api.result", "betticket_api.detail"
-                    },
-                },
-                new Client
-                {
-                    ClientName = "Statement",
-                    ClientId = "statement.client",
-                    ClientSecrets = { new Secret("statement.secret".Sha256()) },
-                    AllowedGrantTypes = { CustomGrantType.StatementPassword },
-                    AccessTokenType = AccessTokenType.Reference,
-                    AllowedScopes = { IdentityServerConstants.StandardScopes.OpenId }
-                }
             };
+
+        public static IEnumerable<ApiResource> GetApis(IConfiguration configuration)
+            => configuration
+            .GetSection("IdentityServer:ApiResources")
+            .Get<IEnumerable<ApiResource>>();
+
+        public static IEnumerable<Client> GetClients(IConfiguration configuration)
+            => configuration
+            .GetSection("IdentityServer:Clients")
+            .Get<IEnumerable<Client>>();
     }
 }

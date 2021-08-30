@@ -1,5 +1,4 @@
 ﻿using Fanex.Athena.IdentityServer.Core.Helpers;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
@@ -34,7 +33,7 @@ namespace Fanex.Athena.IdentityServer.Core.Middlewares
         private void HandleError(HttpContext context, Exception exception)
         {
             var errorMsg = ErrorMessageHelper.GenerateMessage(exception, context);
-            _logger.LogError(exception, errorMsg);
+            _logger.LogCritical(exception, errorMsg);
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
         }
     }

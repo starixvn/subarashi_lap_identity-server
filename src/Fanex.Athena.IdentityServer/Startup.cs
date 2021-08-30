@@ -1,3 +1,4 @@
+using Fanex.Athena.IdentityServer.Core;
 using Fanex.Athena.IdentityServer.Core.Extensions;
 using Fanex.Athena.IdentityServer.Core.Middlewares;
 using Fanex.Athena.IdentityServer.Core.Models;
@@ -31,7 +32,7 @@ namespace Fanex.Athena.IdentityServer
         public IHostEnvironment Env { get; }
 
         public void ConfigureServices(IServiceCollection services)
-        { 
+        {
             services.AddControllers();
             services.AddMemoryCache();
             services.AddInfrastructure(Configuration);
@@ -47,8 +48,8 @@ namespace Fanex.Athena.IdentityServer
 
             services.AddIdentityServer()
                .AddInMemoryIdentityResources(Config.Ids)
-               .AddInMemoryApiResources(Config.Apis)
-               .AddInMemoryClients(Config.Clients)
+               .AddInMemoryApiResources(Config.GetApis(Configuration))
+               .AddInMemoryClients(Config.GetClients(Configuration))
                .AddInMemoryApiScopes(Config.ScopeApis)
                .AddExtensionGrantValidator<LapTokenDelegationValidator>()
                .AddExtensionGrantValidator<LrfPasswordDelegationValidator>()
