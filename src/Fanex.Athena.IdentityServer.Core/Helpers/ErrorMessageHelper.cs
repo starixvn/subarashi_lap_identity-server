@@ -120,7 +120,6 @@ namespace Fanex.Athena.IdentityServer.Core.Helpers
                     {
                         [nameof(request.Host)] = request?.Host,
                         [nameof(request.Path)] = request?.Path,
-                        [nameof(request.Body)] = request?.Body,
                         ["Remote IP"] = context.Connection?.RemoteIpAddress
                     };
         }

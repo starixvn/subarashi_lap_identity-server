@@ -72,9 +72,12 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.WhiteLabelID,
                         CustomClaimType.IsMasterLicensee,
                         CustomClaimType.UserLevel,
+                        CustomClaimType.OperatorID,
+                        CustomClaimType.IsEnabledSubsidiary,
                         CustomClaimType.LicenseeId,
                         CustomClaimType.IsAllowedCustomerComm,
-                        CustomClaimType.IsEnableBA
+                        CustomClaimType.IsEnableBA,
+                        CustomClaimType.IsEnableSingleWallet
                     }
                 },
                 new ApiScope("playeradmin_api.internal")
@@ -90,8 +93,6 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.Language,
                         CustomClaimType.Administrator,
                         CustomClaimType.CurrencyAgent,
-                        CustomClaimType.WhiteLabelID,
-                        CustomClaimType.IsMasterLicensee,
                         CustomClaimType.UserLevel,
                         CustomClaimType.LicenseeId,
                         CustomClaimType.IsAllowedCustomerComm,

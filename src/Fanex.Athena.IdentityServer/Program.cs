@@ -10,7 +10,6 @@ namespace Fanex.Athena.IdentityServer
         public static void Main(string[] args)
         {
             CreateHost(args).Run();
-            new WebHostBuilder().Build().Run();
         }
 
         public static IHost CreateHost(string[] args) =>
@@ -23,16 +22,15 @@ namespace Fanex.Athena.IdentityServer
                 config.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
                 config.AddEnvironmentVariables();
             })
+            .ConfigureLogging(logging =>
+            {
+                logging.ClearProviders();
+                logging.AddConsole();
+            })
             .ConfigureWebHostDefaults(webBuilder =>
             {
                 webBuilder.UseStartup<Startup>();
-            })
-            .ConfigureLogging((config, logging) =>
-            {
-                logging.AddConfiguration(config.Configuration);
-                logging.ClearProviders();
-                logging.AddConsole();
-                logging.AddSentry();
+                webBuilder.UseSentry();
             })
             .Build();
     }

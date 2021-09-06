@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Net;
@@ -53,6 +54,7 @@ namespace Fanex.Athena.IdentityServer.Core.HealthCheck
             result.Add("Local Ip", context.Connection.LocalIpAddress.ToString());
             result.Add("Local Port", context.Connection.LocalPort);
             result.Add("Client Ip", context.Connection.RemoteIpAddress.ToString());
+            result.Add("Server Time", DateTime.Now.ToString());
             result.Add("Host", context.Request.Host);
             result.Add("Schema", context.Request.Scheme);
         }
