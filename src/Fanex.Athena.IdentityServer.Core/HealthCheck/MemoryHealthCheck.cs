@@ -11,8 +11,6 @@ namespace Fanex.Athena.IdentityServer.Core.HealthCheck
     {
         private readonly IOptionsMonitor<MemoryCheckOptions> _options;
 
-        public string Name => "memory_check";
-
         public MemoryHealthCheck(IOptionsMonitor<MemoryCheckOptions> options)
         {
             _options = options;
@@ -25,7 +23,7 @@ namespace Fanex.Athena.IdentityServer.Core.HealthCheck
             var options = _options.Get(context.Registration.Name);
 
             var allocated = GC.GetTotalMemory(forceFullCollection: false) / (1024L * 1024L);
-            var data = new Dictionary<string, object>()
+            var data = new Dictionary<string, object>
             {
                 { "AllocatedMBs", allocated },
                 { "Gen0Collections", GC.CollectionCount(0) },

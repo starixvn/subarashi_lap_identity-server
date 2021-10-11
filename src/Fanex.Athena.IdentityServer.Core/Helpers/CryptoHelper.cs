@@ -21,11 +21,15 @@ namespace Fanex.Athena.IdentityServer.Core.Helpers
 
             char[] hex = new char[checked(data.Length * 2)];
 
+            const int even = 2;
+            const int rightShift = 4;
+            const int hexValue = 0xf;
+
             for (int i = 0; i < data.Length; i++)
             {
                 byte thisByte = data[i];
-                hex[2 * i] = NibbleToHex((byte)(thisByte >> 4)); // high nibble
-                hex[2 * i + 1] = NibbleToHex((byte)(thisByte & 0xf)); // low nibble
+                hex[even * i] = NibbleToHex((byte)(thisByte >> rightShift));
+                hex[even * i + 1] = NibbleToHex((byte)(thisByte & hexValue));
             }
 
             return new string(hex);
@@ -33,7 +37,8 @@ namespace Fanex.Athena.IdentityServer.Core.Helpers
 
         private static char NibbleToHex(byte nibble)
         {
-            return (char)((nibble < 10) ? (nibble + '0') : (nibble - 10 + 'A'));
+            const int @decimal = 10;
+            return (char)((nibble < @decimal) ? (nibble + '0') : (nibble - @decimal + 'A'));
         }
     }
 }
