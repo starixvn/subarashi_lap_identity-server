@@ -22,18 +22,21 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
         public string GrantType => CustomGrantType.LrfPassword;
 
         private readonly IReferenceTokenStore _referenceTokenStore;
+        private readonly IRefreshTokenStore _refreshTokenStore;
         private readonly ILrfAuthService _lrfAuthService;
         private readonly ILrfFunctionService _lrfFunctionService;
         private readonly IExtraInformationService _extraInformationService;
 
         public LrfPasswordDelegationValidator(
             IReferenceTokenStore referenceTokenStore,
+            IRefreshTokenStore refreshTokenStore,
             ILrfAuthService lrfAuthService,
             ILrfFunctionService lrfFunctionService,
             IExtraInformationService extraInformationService
             )
         {
             _referenceTokenStore = referenceTokenStore;
+            _refreshTokenStore = refreshTokenStore;
             _lrfAuthService = lrfAuthService;
             _lrfFunctionService = lrfFunctionService;
             _extraInformationService = extraInformationService;
@@ -59,10 +62,13 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
             }
 
             var accessToken = context.Request.Raw["access_token"];
+            var refreshToken = context.Request.Raw["refresh_token"];
+
             var fullAccessToken = await _referenceTokenStore.GetReferenceTokenAsync(accessToken);
             if (fullAccessToken != null && fullAccessToken.ClientId == context.Request.ClientId)
             {
                 await _referenceTokenStore.RemoveReferenceTokenAsync(accessToken);
+                await _refreshTokenStore.RemoveRefreshTokenAsync(refreshToken);
 
                 var originalClaims = fullAccessToken.Claims;
                 var userID = GetClaimValue<int>(originalClaims, CustomClaimType.UserSEQ);
