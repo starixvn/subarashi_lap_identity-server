@@ -17,7 +17,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-
+                                                                           
 namespace Fanex.Athena.IdentityServer
 {
     public class Startup

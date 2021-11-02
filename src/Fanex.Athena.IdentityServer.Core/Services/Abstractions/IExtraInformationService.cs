@@ -10,6 +10,8 @@ namespace Fanex.Athena.IdentityServer.Core.Services
 
         Task<LicenseeInformation> GetLicensee(string licenseeName);
 
+        bool IsFakeLicensee(string licenseeName);
+
         Task<LicenseeInformation> GetLicenseeBelongingLrfUser(int licenseeId, int lrfUserId);
 
         Task<IEnumerable<CurrencyAgent>> GetCurrencyAgentListByLrfUser(int licenseeId, int userId);

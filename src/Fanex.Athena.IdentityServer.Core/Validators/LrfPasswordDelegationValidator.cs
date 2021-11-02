@@ -1,6 +1,5 @@
 ﻿using Fanex.Athena.IdentityServer.Core.Constants;
 using Fanex.Athena.IdentityServer.Core.Extensions;
-using Fanex.Athena.IdentityServer.Core.Helpers;
 using Fanex.Athena.IdentityServer.Core.Models;
 using Fanex.Athena.IdentityServer.Core.Services;
 using IdentityModel;
@@ -42,17 +41,8 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
             _extraInformationService = extraInformationService;
         }
 
-        public async Task ValidateAsync(ExtensionGrantValidationContext context)
-        {
-            if (string.Equals(context.Request.Raw["is_renew_token"], "1"))
-            {
-                await ValidateLicenseeId(context);
-            }
-            else
-            {
-                await ValidatePassword(context);
-            }
-        }
+        public Task ValidateAsync(ExtensionGrantValidationContext context)
+            => string.Equals(context.Request.Raw["is_renew_token"], "1") ? ValidateLicenseeId(context) : ValidatePassword(context);
 
         private async Task ValidateLicenseeId(ExtensionGrantValidationContext context)
         {
@@ -63,26 +53,23 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
 
             var accessToken = context.Request.Raw["access_token"];
             var refreshToken = context.Request.Raw["refresh_token"];
+            var langCode = context.Request.Raw["lang_code"];
 
-            var fullAccessToken = await _referenceTokenStore.GetReferenceTokenAsync(accessToken);
-            if (fullAccessToken != null && fullAccessToken.ClientId == context.Request.ClientId)
+            var accessTokenInfo = await _referenceTokenStore.GetReferenceTokenAsync(accessToken);
+            if (accessTokenInfo is not null && accessTokenInfo.ClientId == context.Request.ClientId)
             {
                 await _referenceTokenStore.RemoveReferenceTokenAsync(accessToken);
                 await _refreshTokenStore.RemoveRefreshTokenAsync(refreshToken);
 
-                var originalClaims = fullAccessToken.Claims;
+                var originalClaims = accessTokenInfo.Claims;
                 var userID = GetClaimValue<int>(originalClaims, CustomClaimType.UserSEQ);
                 var licenseeInfo = await _extraInformationService.GetLicenseeBelongingLrfUser(licenseeId, userID);
-                var (isEnableSingleWallet, currencyAgentList, functionList) = await GetIdentityInfo(licenseeInfo, userID);
-
-                var identityName = $"lrf_{licenseeInfo?.Name}_{GetClaimValue<string>(originalClaims, CustomClaimType.Username)}_{userID}";
+                var identityName = $"lrf_{licenseeInfo.Name}_{GetClaimValue<string>(originalClaims, CustomClaimType.UserID)}_{userID}";
 
                 var claims = new List<Claim>();
                 claims.Add(new Claim(JwtClaimTypes.Name, identityName));
-                claims.Add(new Claim(CustomClaimType.SiteName, licenseeInfo?.Name ?? string.Empty));
-                AddReusedClaims(claims, originalClaims);
-                AddNewClaims(claims, licenseeInfo, functionList, isEnableSingleWallet, currencyAgentList);
-
+                GenerateUserClaimsFromAccessToken(claims, originalClaims, langCode);
+                await GenerateLicenseeClaims(claims, userID, licenseeInfo);
                 context.Result = CreateSuccessfulResult(identityName, claims);
             }
             else
@@ -109,81 +96,62 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
                 var licenseeInfo = await (userInfo.LicenseeId > 0 ?
                     _extraInformationService.GetLicenseeBelongingLrfUser(userInfo.LicenseeId, userInfo.UserID) : Task.FromResult<LicenseeInformation>(null));
 
-                var (onUserId, isEnableSingleWallet, currencyAgentList, functionList) = await TaskExtension.WhenAll(
-                    _lrfAuthService.LoginOnUser(userInfo, sessionId, clientIP),
-                    licenseeInfo == null ? Task.FromResult(false) : _extraInformationService.IsEnableSingleWallet(licenseeInfo.Name),
-                    licenseeInfo == null ? Task.FromResult(Enumerable.Empty<CurrencyAgent>()) : _extraInformationService.GetCurrencyAgentListByLrfUser(licenseeInfo.Id, userInfo.UserID),
-                    licenseeInfo == null ? Task.FromResult(Enumerable.Empty<LrfFunction>()) : _lrfFunctionService.GetUserFunctions(licenseeInfo.Id, userInfo.UserID));
-
                 var identityName = $"lrf_{licenseeInfo?.Name}_{userInfo.Username}_{userInfo.UserID}";
                 var claims = new List<Claim>();
                 claims.Add(new Claim(JwtClaimTypes.Name, identityName));
-                AddNewClaims(claims, licenseeInfo, userInfo, onUserId, functionList, isEnableSingleWallet);
-                claims.Add(new Claim(CustomClaimType.CurrencyAgent, JsonConvert.SerializeObject(
-                      CommonHelper.ModifyCurrenciesForKeenOcean(currencyAgentList, licenseeInfo?.Id ?? 0)),
-                      IdentityServerConstants.ClaimValueTypes.Json));
-                claims.AddRange(functionList.Select(_ => new Claim(JwtClaimTypes.Role, _.FunctionKey)));
-
+                claims.Add(new Claim(CustomClaimType.OnUserId, (await _lrfAuthService.LoginOnUser(userInfo, sessionId, clientIP)).ToString()));
+                GenerateUserClaims(claims, userInfo);
+                if (licenseeInfo is not null)
+                {
+                    await GenerateLicenseeClaims(claims, userInfo.UserID, licenseeInfo);
+                }
                 context.Result = CreateSuccessfulResult(identityName, claims);
             }
         }
 
-        private Task<(bool isEnableSingleWallet, IEnumerable<CurrencyAgent> currencyAgentList, IEnumerable<LrfFunction> functionList)> GetIdentityInfo(LicenseeInformation licenseeInfo, int userID)
-             => TaskExtension.WhenAll(
-             licenseeInfo == null ? Task.FromResult(false) : _extraInformationService.IsEnableSingleWallet(licenseeInfo.Name),
-             licenseeInfo == null ? Task.FromResult(Enumerable.Empty<CurrencyAgent>()) : _extraInformationService.GetCurrencyAgentListByLrfUser(licenseeInfo.Id, userID),
-             licenseeInfo == null ? Task.FromResult(Enumerable.Empty<LrfFunction>()) : _lrfFunctionService.GetUserFunctions(licenseeInfo.Id, userID));
-
-        private void AddNewClaims(List<Claim> claims,
-            LicenseeInformation licenseeInfo,
-            IEnumerable<LrfFunction> functionList,
-            bool isEnableSingleWallet,
-            IEnumerable<CurrencyAgent> currencyAgentList)
+        private void GenerateUserClaims(List<Claim> claims, LrfUserInfo userInfo)
         {
-            claims.Add(new Claim(CustomClaimType.DefaultReportUrl, GetDefaultReportUrl(functionList)));
-            claims.Add(new Claim(CustomClaimType.LicenseeId, licenseeInfo?.Id.ToString() ?? "-1", ClaimValueTypes.Integer32));
-            claims.Add(new Claim(CustomClaimType.IsAllowedCustomerComm, (licenseeInfo?.IsAllowedCustomerComm ?? false).ToString(), ClaimValueTypes.Boolean));
-            claims.Add(new Claim(CustomClaimType.IsEnableBA, (licenseeInfo?.IsEnableBA ?? false).ToString(), ClaimValueTypes.Boolean));
-            claims.Add(new Claim(CustomClaimType.UserLevel, "1", ClaimValueTypes.Integer32));
-            claims.Add(new Claim(CustomClaimType.IsEnableSingleWallet, isEnableSingleWallet.ToString(), ClaimValueTypes.Boolean));
-            claims.Add(new Claim(CustomClaimType.IsShowIP, _extraInformationService.IsOfferShowIP(licenseeInfo?.Name).ToString(), ClaimValueTypes.Boolean));
-            claims.Add(new Claim(CustomClaimType.CurrencyAgent, JsonConvert.SerializeObject(
-                  CommonHelper.ModifyCurrenciesForKeenOcean(currencyAgentList, licenseeInfo?.Id ?? 0)), IdentityServerConstants.ClaimValueTypes.Json));
+            const string DefaultLang = "en";
+            const string DefaultBaseCurrency = "EUR";
 
-            claims.AddRange(functionList.Select(_ => new Claim(JwtClaimTypes.Role, _.FunctionKey)));
-        }
-
-        private void AddNewClaims(List<Claim> claims,
-            LicenseeInformation licenseeInfo,
-            LrfUserInfo userInfo,
-            int onUserId,
-            IEnumerable<LrfFunction> functionList,
-            bool isEnableSingleWallet)
-        {
-            claims.Add(new Claim(CustomClaimType.SiteName, licenseeInfo?.Name ?? string.Empty));
             claims.Add(new Claim(CustomClaimType.UserSEQ, userInfo.UserID.ToString()));
             claims.Add(new Claim(CustomClaimType.UserID, userInfo.Username));
             claims.Add(new Claim(CustomClaimType.Username, userInfo.FirstName));
-            claims.Add(new Claim(CustomClaimType.Language, "en-US"));
-            claims.Add(new Claim(CustomClaimType.BaseCurrency, "EUR"));
-            claims.Add(new Claim(CustomClaimType.OnUserId, onUserId.ToString()));
+            claims.Add(new Claim(CustomClaimType.Language, DefaultLang));
+            claims.Add(new Claim(CustomClaimType.BaseCurrency, DefaultBaseCurrency));
             claims.Add(new Claim(CustomClaimType.IsInternal, userInfo.IsInternal.ToString(), ClaimValueTypes.Boolean));
             claims.Add(new Claim(CustomClaimType.UserLevel, "1", ClaimValueTypes.Integer32));
-            claims.Add(new Claim(CustomClaimType.Administrator, userInfo.Role.Equals("admin", StringComparison.OrdinalIgnoreCase).ToString(), ClaimValueTypes.Boolean));
-            claims.Add(new Claim(CustomClaimType.DefaultReportUrl, GetDefaultReportUrl(functionList)));
-            claims.Add(new Claim(CustomClaimType.LicenseeId, licenseeInfo?.Id.ToString() ?? "-1", ClaimValueTypes.Integer32));
-            claims.Add(new Claim(CustomClaimType.IsAllowedCustomerComm, (licenseeInfo?.IsAllowedCustomerComm ?? false).ToString(), ClaimValueTypes.Boolean));
-            claims.Add(new Claim(CustomClaimType.IsEnableBA, (licenseeInfo?.IsEnableBA ?? false).ToString(), ClaimValueTypes.Boolean));
-            claims.Add(new Claim(CustomClaimType.IsEnableSingleWallet, isEnableSingleWallet.ToString(), ClaimValueTypes.Boolean));
-            claims.Add(new Claim(CustomClaimType.IsShowIP, _extraInformationService.IsOfferShowIP(licenseeInfo?.Name).ToString(), ClaimValueTypes.Boolean));
+            claims.Add(new Claim(CustomClaimType.Administrator, userInfo.Role.Equals("admin", StringComparison.OrdinalIgnoreCase).ToString()));
         }
 
-        private static void AddReusedClaims(ICollection<Claim> claims, ICollection<Claim> originalClaims)
+        private async Task GenerateLicenseeClaims(List<Claim> claims, int userID, LicenseeInformation licenseeInfo)
+        {
+            var (offeredSubProducts, isEnableSingleWallet, currencyAgentList, functionList) = await TaskExtension.WhenAll(
+                _extraInformationService.GetOfferedSubProducts(licenseeInfo.Id),
+                _extraInformationService.IsEnableSingleWallet(licenseeInfo.Name),
+                _extraInformationService.GetCurrencyAgentListByLrfUser(licenseeInfo.Id, userID),
+                _lrfFunctionService.GetUserFunctions(licenseeInfo.Id, userID));
+
+            claims.Add(new Claim(CustomClaimType.LicenseeId, licenseeInfo.Id.ToString()));
+            claims.Add(new Claim(CustomClaimType.SiteName, licenseeInfo.Name));
+            claims.Add(new Claim(CustomClaimType.OfferedSubProducts, offeredSubProducts));
+            claims.Add(new Claim(CustomClaimType.IsAllowedCustomerComm, licenseeInfo.IsAllowedCustomerComm.ToString()));
+            claims.Add(new Claim(CustomClaimType.IsEnableBA, licenseeInfo.IsEnableBA.ToString()));
+            claims.Add(new Claim(CustomClaimType.IsEnableSingleWallet, isEnableSingleWallet.ToString()));
+            claims.Add(new Claim(CustomClaimType.IsShowIP, _extraInformationService.IsOfferShowIP(licenseeInfo.Name).ToString()));
+            claims.Add(new Claim(CustomClaimType.IsFakeLicensee, _extraInformationService.IsFakeLicensee(licenseeInfo.Name).ToString()));
+            claims.Add(new Claim(CustomClaimType.DefaultReportUrl, GetDefaultReportUrl(functionList)));
+            claims.Add(new Claim(CustomClaimType.CurrencyAgent, JsonConvert.SerializeObject(currencyAgentList), IdentityServerConstants.ClaimValueTypes.Json));
+            claims.AddRange(functionList.Select(_ => new Claim(JwtClaimTypes.Role, _.FunctionKey)));
+        }
+
+        private static void GenerateUserClaimsFromAccessToken(ICollection<Claim> claims, ICollection<Claim> originalClaims, string langCode)
         {
             claims.Add(originalClaims.First(_ => _.Type.Equals(CustomClaimType.UserSEQ)));
             claims.Add(originalClaims.First(_ => _.Type.Equals(CustomClaimType.UserID)));
             claims.Add(originalClaims.First(_ => _.Type.Equals(CustomClaimType.Username)));
-            claims.Add(originalClaims.First(_ => _.Type.Equals(CustomClaimType.Language)));
+            claims.Add(string.IsNullOrEmpty(langCode) ?
+                originalClaims.First(_ => _.Type.Equals(CustomClaimType.Language)) : new Claim(CustomClaimType.Language, langCode));
             claims.Add(originalClaims.First(_ => _.Type.Equals(CustomClaimType.BaseCurrency)));
             claims.Add(originalClaims.First(_ => _.Type.Equals(CustomClaimType.OnUserId)));
             claims.Add(originalClaims.First(_ => _.Type.Equals(CustomClaimType.IsInternal)));

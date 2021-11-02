@@ -1,6 +1,5 @@
 ﻿using Fanex.Athena.IdentityServer.Core.Constants;
 using Fanex.Athena.IdentityServer.Core.Extensions;
-using Fanex.Athena.IdentityServer.Core.Helpers;
 using Fanex.Athena.IdentityServer.Core.Models;
 using Fanex.Athena.IdentityServer.Core.Services;
 using IdentityModel;
@@ -9,6 +8,7 @@ using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using IdentityServer4.Validation;
 using LAP.ONEBook.Security;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -20,20 +20,29 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
 {
     public class LapTokenDelegationValidator : IExtensionGrantValidator
     {
+        private const string LicenseeNotExistedErrorCode = "200";
+
         public string GrantType => CustomGrantType.LapToken;
 
+        private readonly ILogger<LapTokenDelegationValidator> _logger;
         private readonly IAuth<DefaultAuthInfo<LapFunction, CurrencyAgent>> _authService;
         private readonly IExtraInformationService _extraInformationService;
         private readonly IReferenceTokenStore _referenceTokenStore;
+        private readonly IRefreshTokenStore _refreshTokenStore;
 
         public LapTokenDelegationValidator(
+            ILogger<LapTokenDelegationValidator> logger,
             IAuth<DefaultAuthInfo<LapFunction, CurrencyAgent>> authService,
             IExtraInformationService extraInformationService,
-            IReferenceTokenStore referenceTokenStore)
+            IReferenceTokenStore referenceTokenStore,
+            IRefreshTokenStore refreshTokenStore
+            )
         {
+            _logger = logger;
             _authService = authService;
             _extraInformationService = extraInformationService;
             _referenceTokenStore = referenceTokenStore;
+            _refreshTokenStore = refreshTokenStore;
         }
 
         public async Task ValidateAsync(ExtensionGrantValidationContext context)
@@ -42,72 +51,87 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
             var authInfo = await _authService.AuthenticateAsync(token);
             if (IsInvalidToken(authInfo))
             {
-                context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest, $"token {token} is invalid");
+                var errorMsg = $"Token {token} is invalid ";
+                context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest, errorMsg);
+                _logger.LogError(errorMsg);
+                return;
             }
-            else
+
+            var licenseeInfo = await _extraInformationService.GetLicensee(authInfo.SiteName);
+            if (licenseeInfo is null)
             {
-                await TryRevokeOldAcessToken(context);
+                context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest, LicenseeNotExistedErrorCode);
+                _logger.LogError($"Licensee {authInfo.SiteName} is not existed");
+                return;
+            }
 
-                var (licenseeInfo, userInfo, isEnableSingleWallet) = await TaskExtension.WhenAll(
-                    _extraInformationService.GetLicensee(authInfo.SiteName),
-                    _extraInformationService.GetLapUserInfo(authInfo.UserSEQ, authInfo.VendorID),
-                    _extraInformationService.IsEnableSingleWallet(authInfo.SiteName));
-                var offeredSubProducts = await _extraInformationService.GetOfferedSubProducts(licenseeInfo.Id);
+            await TryRevokeOldToken(context);
 
-                var identityName = $"portal_{authInfo.VendorID}_{authInfo.SiteName}_{authInfo.UserID}_{authInfo.UserSEQ}";
+            var (userInfo, isEnableSingleWallet, offeredSubProducts) = await TaskExtension.WhenAll(
+                _extraInformationService.GetLapUserInfo(authInfo.UserSEQ, authInfo.VendorID),
+                _extraInformationService.IsEnableSingleWallet(authInfo.SiteName),
+                _extraInformationService.GetOfferedSubProducts(licenseeInfo.Id));
 
-                var claims = new List<Claim>(
-                    new[] {
+            var identityName = $"portal_{authInfo.VendorID}_{authInfo.SiteName}_{authInfo.UserID}_{authInfo.UserSEQ}";
+
+            var claims = new List<Claim>(
+                new[] {
                         new Claim(JwtClaimTypes.Name, identityName),
                         new Claim(CustomClaimType.VendorID, authInfo.VendorID),
                         new Claim(CustomClaimType.SiteName, authInfo.SiteName),
-                        new Claim(CustomClaimType.UserSEQ, authInfo.UserSEQ.ToString(), ClaimValueTypes.Integer32),
+                        new Claim(CustomClaimType.UserSEQ, authInfo.UserSEQ.ToString()),
                         new Claim(CustomClaimType.UserID, authInfo.UserID),
                         new Claim(CustomClaimType.Username, authInfo.UserName),
                         new Claim(CustomClaimType.Language, authInfo.Language),
                         new Claim(CustomClaimType.ActionLink, authInfo.ActionLink),
-                        new Claim(CustomClaimType.Administrator, authInfo.IsAdminstrator.ToString(), ClaimValueTypes.Boolean),
-                        new Claim(CustomClaimType.WhiteLabelID, authInfo.WhiteLabelID?.ToString() ?? "-1", ClaimValueTypes.Integer32),
-                        new Claim(CustomClaimType.IsMasterLicensee, authInfo.IsMasterLicensee.ToString(), ClaimValueTypes.Boolean),
-                        new Claim(CustomClaimType.LicenseeId, licenseeInfo.Id.ToString(), ClaimValueTypes.Integer32),
-                        new Claim(CustomClaimType.IsAllowedCustomerComm, licenseeInfo.IsAllowedCustomerComm.ToString(), ClaimValueTypes.Boolean),
-                        new Claim(CustomClaimType.IsEnableBA, licenseeInfo.IsEnableBA.ToString(), ClaimValueTypes.Boolean),
-                        new Claim(CustomClaimType.UserLevel, userInfo.UserLevel.ToString(), ClaimValueTypes.Integer32),
-                        new Claim(CustomClaimType.IsEnabledSubsidiary, userInfo.IsEnabledSubsidiary.ToString(), ClaimValueTypes.Boolean),
-                        new Claim(CustomClaimType.OperatorID, userInfo.OperatorID, ClaimValueTypes.String),
-                        new Claim(CustomClaimType.BaseCurrency, userInfo.BaseCurrency, ClaimValueTypes.String),
-                        new Claim(CustomClaimType.IsEnableSingleWallet, isEnableSingleWallet.ToString(), ClaimValueTypes.Boolean),
-                        new Claim(CustomClaimType.IsShowIP, _extraInformationService.IsOfferShowIP(authInfo.SiteName).ToString(), ClaimValueTypes.Boolean),
-                        new Claim(CustomClaimType.OfferedSubProducts, offeredSubProducts, ClaimValueTypes.String),
-                        new Claim(CustomClaimType.CurrencyAgent, JsonConvert.SerializeObject(
-                            CommonHelper.ModifyCurrenciesForKeenOcean(authInfo.Currency, licenseeInfo.Id)), IdentityServerConstants.ClaimValueTypes.Json)
-                    });
+                        new Claim(CustomClaimType.Administrator, authInfo.IsAdminstrator.ToString()),
+                        new Claim(CustomClaimType.WhiteLabelID, authInfo.WhiteLabelID?.ToString() ?? "-1"),
+                        new Claim(CustomClaimType.IsMasterLicensee, authInfo.IsMasterLicensee.ToString()),
+                        new Claim(CustomClaimType.LicenseeId, licenseeInfo.Id.ToString()),
+                        new Claim(CustomClaimType.IsAllowedCustomerComm, licenseeInfo.IsAllowedCustomerComm.ToString()),
+                        new Claim(CustomClaimType.IsEnableBA, licenseeInfo.IsEnableBA.ToString()),
+                        new Claim(CustomClaimType.UserLevel, userInfo.UserLevel.ToString()),
+                        new Claim(CustomClaimType.IsEnabledSubsidiary, userInfo.IsEnabledSubsidiary.ToString()),
+                        new Claim(CustomClaimType.OperatorID, userInfo.OperatorID),
+                        new Claim(CustomClaimType.BaseCurrency, userInfo.BaseCurrency),
+                        new Claim(CustomClaimType.IsEnableSingleWallet, isEnableSingleWallet.ToString()),
+                        new Claim(CustomClaimType.IsShowIP, _extraInformationService.IsOfferShowIP(authInfo.SiteName).ToString()),
+                        new Claim(CustomClaimType.OfferedSubProducts, offeredSubProducts),
+                        new Claim(CustomClaimType.IsFakeLicensee, _extraInformationService.IsFakeLicensee(licenseeInfo.Name).ToString()),
+                        new Claim(CustomClaimType.ClientIP, context.Request.Raw["clien_ip"]),
+                        new Claim(CustomClaimType.CurrencyAgent, JsonConvert.SerializeObject(authInfo.Currency), IdentityServerConstants.ClaimValueTypes.Json)
+                        });
 
-                if (authInfo.IsAdminstrator)
-                {
-                    claims.Add(new Claim(JwtClaimTypes.Role, "super_admin"));
-                }
-                else
-                {
-                    var roles = authInfo.Permissions.SelectMany(_ => new List<string>(_.SubFunctionKeys ?? Enumerable.Empty<string>())
-                                                                                                .Append(_.FunctionKey));
-                    claims.AddRange(roles.Select(_ => new Claim(JwtClaimTypes.Role, _)));
-                }
-
-                context.Result = new GrantValidationResult(
-                        identityName,
-                        CustomGrantType.LapToken,
-                        DateTime.UtcNow, claims,
-                        ClaimsIdentity.DefaultIssuer);
+            if (authInfo.IsAdminstrator)
+            {
+                claims.Add(new Claim(JwtClaimTypes.Role, "super_admin"));
             }
+            else
+            {
+                var roles = authInfo.Permissions.SelectMany(_ => new List<string>(_.SubFunctionKeys ?? Enumerable.Empty<string>())
+                                                                                            .Append(_.FunctionKey));
+                claims.AddRange(roles.Select(_ => new Claim(JwtClaimTypes.Role, _)));
+            }
+
+            context.Result = new GrantValidationResult(
+                    identityName,
+                    CustomGrantType.LapToken,
+                    DateTime.UtcNow, claims,
+                    ClaimsIdentity.DefaultIssuer);
         }
 
-        private async Task TryRevokeOldAcessToken(ExtensionGrantValidationContext context)
+        private async Task TryRevokeOldToken(ExtensionGrantValidationContext context)
         {
             var accessToken = context.Request.Raw["access_token"];
             if (!string.IsNullOrEmpty(accessToken))
             {
                 await _referenceTokenStore.RemoveReferenceTokenAsync(accessToken);
+            }
+
+            var refreshToken = context.Request.Raw["refresh_token"];
+            if (!string.IsNullOrEmpty(refreshToken))
+            {
+                await _refreshTokenStore.RemoveRefreshTokenAsync(refreshToken);
             }
         }
 

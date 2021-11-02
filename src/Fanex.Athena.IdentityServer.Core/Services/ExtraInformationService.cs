@@ -32,6 +32,9 @@ namespace Fanex.Athena.IdentityServer.Core.Services
             return LockHelper.LockAsync(cacheKey, () => TryGetOrAddFromCache(cacheKey, OneDay, () => GetLicenseeFromDB(licenseeName)));
         }
 
+        public bool IsFakeLicensee(string licenseeName) 
+            => _appSetting.FakeLicensees.Any(_ => string.Equals(_, licenseeName, StringComparison.OrdinalIgnoreCase));
+
         public Task<LicenseeInformation> GetLicenseeBelongingLrfUser(int licenseeId, int lrfUserId)
         {
             var cacheKey = $"GetLicenseeBelongingLrfUser_{licenseeId}_{lrfUserId}";
