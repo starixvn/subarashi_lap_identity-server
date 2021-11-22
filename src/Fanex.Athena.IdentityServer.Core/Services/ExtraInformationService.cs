@@ -13,6 +13,7 @@ namespace Fanex.Athena.IdentityServer.Core.Services
     public class ExtraInformationService : IExtraInformationService
     {
         private static readonly TimeSpan OneDay = TimeSpan.FromDays(1);
+        private static readonly IEnumerable<string> SubProductCodeList = new [] { "SLT" };
 
         private readonly IMemoryCache _cache;
         private readonly IDbFactory _dbFactory;
@@ -35,6 +36,12 @@ namespace Fanex.Athena.IdentityServer.Core.Services
         {
             var cacheKey = $"GetLicenseeBelongingLrfUser_{licenseeId}_{lrfUserId}";
             return LockHelper.LockAsync(cacheKey, () => TryGetOrAddFromCache(cacheKey, OneDay, () => GetLicenseeBeLongingLrfUserFromDB(licenseeId, lrfUserId)));
+        }
+
+        public async Task<string> GetOfferedSubProducts(int licenseeId)
+        {
+            var cacheKey = $"GetOfferedSubProducts_{licenseeId}";
+            return string.Join(",", await LockHelper.LockAsync(cacheKey, () => TryGetOrAddFromCache(cacheKey, OneDay, () => GetOfferedSubProductListFromDB(licenseeId))));
         }
 
         public async Task<IEnumerable<CurrencyAgent>> GetCurrencyAgentListByLrfUser(int licenseeId, int userId)
@@ -170,6 +177,30 @@ namespace Fanex.Athena.IdentityServer.Core.Services
             }
 
             return null;
+        }
+
+        private async Task<IEnumerable<string>> GetOfferedSubProductListFromDB(int licenseeId)
+        {
+            const string uspName = "Lrf_LicenseeProduct3rdSel";
+            var allowedSubProductCodeList = new List<string>();
+            using (var db = _dbFactory.GetObjectDb(uspName))
+            {
+                db.SetParameterValue("licenseeid", licenseeId);
+
+                using (var reader = await db.ExecuteReaderAsync())
+                {
+                    while (reader.Read())
+                    {
+                        var productCode = Convert.ToString(reader["productprefix"]);
+                        if (SubProductCodeList.Contains(productCode, StringComparer.OrdinalIgnoreCase))
+                        {
+                            allowedSubProductCodeList.Add(productCode);
+                        }
+                    }
+                }
+
+                return allowedSubProductCodeList;
+            }
         }
     }
 }

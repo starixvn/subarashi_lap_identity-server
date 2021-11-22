@@ -41,7 +41,8 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.OnUserId,
                         CustomClaimType.IsInternal,
                         CustomClaimType.DefaultReportUrl,
-                        CustomClaimType.ActionLink
+                        CustomClaimType.ActionLink,
+                        CustomClaimType.OfferedSubProducts
                 };
             }
         }
@@ -77,7 +78,8 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.LicenseeId,
                         CustomClaimType.IsAllowedCustomerComm,
                         CustomClaimType.IsEnableBA,
-                        CustomClaimType.IsEnableSingleWallet
+                        CustomClaimType.IsEnableSingleWallet,
+                        CustomClaimType.OfferedSubProducts
                     }
                 },
                 new ApiScope("playeradmin_api.internal")
@@ -101,7 +103,8 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.IsEnableBA,
                         CustomClaimType.IsEnableSingleWallet,
                         CustomClaimType.IsShowIP,
-                        CustomClaimType.ActionLink
+                        CustomClaimType.ActionLink,
+                        CustomClaimType.OfferedSubProducts
                      }
                 },
                 new ApiScope("betticket_api")
@@ -143,7 +146,8 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.IsShowIP,
                         CustomClaimType.OnUserId,
                         CustomClaimType.IsInternal,
-                        CustomClaimType.DefaultReportUrl
+                        CustomClaimType.DefaultReportUrl,
+                        CustomClaimType.OfferedSubProducts
                     }
                 },
                 new ApiScope("statement_api")
@@ -152,7 +156,8 @@ namespace Fanex.Athena.IdentityServer
                     {
                         CustomClaimType.SiteName,
                         CustomClaimType.CurrencyAgent,
-                        CustomClaimType.IsEnableSingleWallet
+                        CustomClaimType.IsEnableSingleWallet,
+                        CustomClaimType.OfferedSubProducts
                     }
                 },
             };

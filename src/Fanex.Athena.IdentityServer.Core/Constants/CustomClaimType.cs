@@ -25,5 +25,6 @@
         public const string OnUserId = "OnUserId";
         public const string IsInternal = "IsInternal";
         public const string DefaultReportUrl = "DefaultReportUrl";
+        public const string OfferedSubProducts = "OfferedSubProducts";
     }
 }
