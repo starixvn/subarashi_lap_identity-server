@@ -7,6 +7,7 @@ using Fanex.Data;
 using Fanex.Data.SqlServer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,7 +34,6 @@ namespace Fanex.Athena.IdentityServer
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
             services.AddMemoryCache();
             services.AddInfrastructure(Configuration);
 
@@ -86,7 +86,7 @@ namespace Fanex.Athena.IdentityServer
             app.UseIdentityServer();
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapGet("/", async context => await context.Response.WriteAsync("LAP Identity Server is running"));
             });
         }
 

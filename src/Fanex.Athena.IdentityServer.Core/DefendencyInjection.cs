@@ -1,5 +1,4 @@
-﻿using Fanex.Athena.IdentityServer.Core.HealthCheck;
-using Fanex.Athena.IdentityServer.Core.Models;
+﻿using Fanex.Athena.IdentityServer.Core.Models;
 using Fanex.Athena.IdentityServer.Core.Repositories;
 using Fanex.Athena.IdentityServer.Core.Services;
 using Fanex.Athena.IdentityServer.Core.Settings;

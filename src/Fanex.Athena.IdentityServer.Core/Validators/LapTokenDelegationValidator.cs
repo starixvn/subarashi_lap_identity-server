@@ -52,6 +52,7 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
                     _extraInformationService.GetLicensee(authInfo.SiteName),
                     _extraInformationService.GetLapUserInfo(authInfo.UserSEQ, authInfo.VendorID),
                     _extraInformationService.IsEnableSingleWallet(authInfo.SiteName));
+                var offeredSubProducts = await _extraInformationService.GetOfferedSubProducts(licenseeInfo.Id);
 
                 var identityName = $"portal_{authInfo.VendorID}_{authInfo.SiteName}_{authInfo.UserID}_{authInfo.UserSEQ}";
 
@@ -77,6 +78,7 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
                         new Claim(CustomClaimType.BaseCurrency, userInfo.BaseCurrency, ClaimValueTypes.String),
                         new Claim(CustomClaimType.IsEnableSingleWallet, isEnableSingleWallet.ToString(), ClaimValueTypes.Boolean),
                         new Claim(CustomClaimType.IsShowIP, _extraInformationService.IsOfferShowIP(authInfo.SiteName).ToString(), ClaimValueTypes.Boolean),
+                        new Claim(CustomClaimType.OfferedSubProducts, offeredSubProducts, ClaimValueTypes.String),
                         new Claim(CustomClaimType.CurrencyAgent, JsonConvert.SerializeObject(
                             CommonHelper.ModifyCurrenciesForKeenOcean(authInfo.Currency, licenseeInfo.Id)), IdentityServerConstants.ClaimValueTypes.Json)
                     });
