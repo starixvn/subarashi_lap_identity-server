@@ -7,8 +7,11 @@
 
   <ItemGroup>
     <Compile Remove="Validators - Copy\**" />
+    <Compile Remove="Validators\Abstractions\**" />
     <EmbeddedResource Remove="Validators - Copy\**" />
+    <EmbeddedResource Remove="Validators\Abstractions\**" />
     <None Remove="Validators - Copy\**" />
+    <None Remove="Validators\Abstractions\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,10 +25,6 @@
     <PackageReference Include="IdentityServer4.Contrib.RedisStore" Version="4.0.0" />
     <PackageReference Include="LAP.ONEBook.Security" Version="1.0.8" />
     <PackageReference Include="LAP.ONEBook.Security.StorageProvider.SqlServer" Version="1.0.7" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Validators\Abstractions\" />
   </ItemGroup>
 
 </Project>
