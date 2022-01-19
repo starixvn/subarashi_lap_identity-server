@@ -160,6 +160,20 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.OfferedSubProducts
                     }
                 },
+                new ApiScope("analytics_api")
+                {
+                    UserClaims =
+                    {
+                        JwtClaimTypes.Name,
+                        JwtClaimTypes.Role,
+                        CustomClaimType.SiteName,
+                        CustomClaimType.UserSEQ,
+                        CustomClaimType.UserID,
+                        CustomClaimType.Language,
+                        CustomClaimType.CurrencyAgent,
+                        CustomClaimType.OfferedSubProducts
+                    }
+                }
             };
 
         public static IEnumerable<ApiResource> GetApis(IConfiguration configuration)
