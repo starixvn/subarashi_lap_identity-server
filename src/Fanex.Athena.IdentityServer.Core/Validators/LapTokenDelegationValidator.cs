@@ -98,9 +98,10 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
                         new Claim(CustomClaimType.IsShowIP, _extraInformationService.IsOfferShowIP(authInfo.SiteName).ToString()),
                         new Claim(CustomClaimType.OfferedSubProducts, offeredSubProducts),
                         new Claim(CustomClaimType.IsFakeLicensee, _extraInformationService.IsFakeLicensee(licenseeInfo.Name).ToString()),
-                        new Claim(CustomClaimType.ClientIP, context.Request.Raw["clien_ip"]),
                         new Claim(CustomClaimType.CurrencyAgent, JsonConvert.SerializeObject(authInfo.Currency), IdentityServerConstants.ClaimValueTypes.Json)
                         });
+
+            AddExternalClaims(claims, context.Request);
 
             if (authInfo.IsAdminstrator)
             {
@@ -118,6 +119,15 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
                     CustomGrantType.LapToken,
                     DateTime.UtcNow, claims,
                     ClaimsIdentity.DefaultIssuer);
+        }
+
+        private void AddExternalClaims(ICollection<Claim> claims, ValidatedTokenRequest request)
+        {
+            var clientIp = request.Raw["client_ip"];
+            if (!string.IsNullOrEmpty(clientIp))
+            {
+                claims.Add(new Claim(CustomClaimType.ClientIP, clientIp));
+            }        
         }
 
         private async Task TryRevokeOldToken(ExtensionGrantValidationContext context)

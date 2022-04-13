@@ -1,8 +1,11 @@
-﻿using Fanex.Athena.IdentityServer.Core.Models;
+﻿using Fanex.Athena.IdentityServer.Core.BackgroundServices;
+using Fanex.Athena.IdentityServer.Core.Models;
 using Fanex.Athena.IdentityServer.Core.Repositories;
 using Fanex.Athena.IdentityServer.Core.Services;
 using Fanex.Athena.IdentityServer.Core.Settings;
+using Fanex.Athena.IdentityServer.Core.Storage;
 using Fanex.Data;
+using IdentityServer4.Stores;
 using LAP.ONEBook.Security;
 using LAP.ONEBook.Security.StorageProvider.SqlServer;
 using Microsoft.Extensions.Configuration;
@@ -20,7 +23,11 @@ namespace Fanex.Athena.IdentityServer.Core
                 .AddRepositories();
         }
 
-        public static IIdentityServerBuilder AddOperationalStoreWithRedis(this IIdentityServerBuilder identityServerBuilder, IConfiguration configuration)
+        public static IIdentityServerBuilder AddOperationalStore(this IIdentityServerBuilder identityServerBuilder, IConfiguration configuration)
+            => string.Equals(configuration["UseOperationalStoreWithSqlServer"], "1") ?
+                identityServerBuilder.AddOperationalStoreWithSqlServer(configuration) : identityServerBuilder.AddOperationalStoreWithRedis(configuration);
+
+        private static IIdentityServerBuilder AddOperationalStoreWithRedis(this IIdentityServerBuilder identityServerBuilder, IConfiguration configuration)
         {
             var redis = new RedisSetting();
             configuration.GetSection("Redis").Bind(redis);
@@ -30,13 +37,28 @@ namespace Fanex.Athena.IdentityServer.Core
                 EndPoints = { { redis.Server, redis.Port } },
                 Password = redis.Pass,
             };
-
+            
             return identityServerBuilder.AddOperationalStore(options =>
                    {
                        options.ConfigurationOptions = operationalStoreOptions;
                        options.KeyPrefix = redis.AppName;
                    });
         }
+
+        private static IIdentityServerBuilder AddOperationalStoreWithSqlServer(this IIdentityServerBuilder identityServerBuilder, IConfiguration configuration)
+        {
+            var options = new OperationalStoreSetting();
+            configuration.GetSection("SqlServerOperationalStore").Bind(options);
+
+            identityServerBuilder.Services
+                .AddSingleton(options)
+                .AddSingleton<IPersistedGrantStore, SqlServerPersistedGrantStore>()
+                .AddSingleton<ITokenCleanupService, TokenCleanupService>()
+                .AddHostedService<TokenCleanupBackgroundService>();
+
+            return identityServerBuilder;
+        }
+
 
         private static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
         {
