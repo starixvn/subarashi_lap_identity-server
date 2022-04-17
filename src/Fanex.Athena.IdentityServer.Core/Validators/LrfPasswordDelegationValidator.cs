@@ -21,21 +21,18 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
         public string GrantType => CustomGrantType.LrfPassword;
 
         private readonly IReferenceTokenStore _referenceTokenStore;
-        private readonly IRefreshTokenStore _refreshTokenStore;
         private readonly ILrfAuthService _lrfAuthService;
         private readonly ILrfFunctionService _lrfFunctionService;
         private readonly IExtraInformationService _extraInformationService;
 
         public LrfPasswordDelegationValidator(
             IReferenceTokenStore referenceTokenStore,
-            IRefreshTokenStore refreshTokenStore,
             ILrfAuthService lrfAuthService,
             ILrfFunctionService lrfFunctionService,
             IExtraInformationService extraInformationService
             )
         {
             _referenceTokenStore = referenceTokenStore;
-            _refreshTokenStore = refreshTokenStore;
             _lrfAuthService = lrfAuthService;
             _lrfFunctionService = lrfFunctionService;
             _extraInformationService = extraInformationService;
@@ -52,14 +49,12 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
             }
 
             var accessToken = context.Request.Raw["access_token"];
-            var refreshToken = context.Request.Raw["refresh_token"];
             var langCode = context.Request.Raw["lang_code"];
 
             var accessTokenInfo = await _referenceTokenStore.GetReferenceTokenAsync(accessToken);
             if (accessTokenInfo is not null && accessTokenInfo.ClientId == context.Request.ClientId)
             {
                 await _referenceTokenStore.RemoveReferenceTokenAsync(accessToken);
-                await _refreshTokenStore.RemoveRefreshTokenAsync(refreshToken);
 
                 var originalClaims = accessTokenInfo.Claims;
                 var userID = GetClaimValue<int>(originalClaims, CustomClaimType.UserSEQ);
@@ -100,7 +95,7 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
                 var claims = new List<Claim>();
                 claims.Add(new Claim(JwtClaimTypes.Name, identityName));
                 claims.Add(new Claim(CustomClaimType.OnUserId, (await _lrfAuthService.LoginOnUser(userInfo, sessionId, clientIP)).ToString()));
-                GenerateUserClaims(claims, userInfo);
+                GenerateUserClaims(claims, userInfo, clientIP);
                 if (licenseeInfo is not null)
                 {
                     await GenerateLicenseeClaims(claims, userInfo.UserID, licenseeInfo);
@@ -109,7 +104,7 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
             }
         }
 
-        private void GenerateUserClaims(List<Claim> claims, LrfUserInfo userInfo)
+        private void GenerateUserClaims(List<Claim> claims, LrfUserInfo userInfo, string clientIP)
         {
             const string DefaultLang = "en";
             const string DefaultBaseCurrency = "EUR";
@@ -121,6 +116,7 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
             claims.Add(new Claim(CustomClaimType.BaseCurrency, DefaultBaseCurrency));
             claims.Add(new Claim(CustomClaimType.IsInternal, userInfo.IsInternal.ToString(), ClaimValueTypes.Boolean));
             claims.Add(new Claim(CustomClaimType.UserLevel, "1", ClaimValueTypes.Integer32));
+            claims.Add(new Claim(CustomClaimType.ClientIP, clientIP));
             claims.Add(new Claim(CustomClaimType.Administrator, userInfo.Role.Equals("admin", StringComparison.OrdinalIgnoreCase).ToString()));
         }
 
@@ -156,6 +152,7 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
             claims.Add(originalClaims.First(_ => _.Type.Equals(CustomClaimType.OnUserId)));
             claims.Add(originalClaims.First(_ => _.Type.Equals(CustomClaimType.IsInternal)));
             claims.Add(originalClaims.First(_ => _.Type.Equals(CustomClaimType.UserLevel)));
+            claims.Add(originalClaims.First(_ => _.Type.Equals(CustomClaimType.ClientIP)));
             claims.Add(originalClaims.First(_ => _.Type.Equals(CustomClaimType.Administrator)));
         }
 

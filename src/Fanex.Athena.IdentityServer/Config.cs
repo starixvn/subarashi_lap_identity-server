@@ -120,7 +120,8 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.CurrencyAgent,
                         CustomClaimType.IsEnableSingleWallet,
                         CustomClaimType.IsShowIP,
-                        CustomClaimType.Language
+                        CustomClaimType.Language,
+                        CustomClaimType.ClientIP
                     }
                 },
                 new ApiScope("lrf")

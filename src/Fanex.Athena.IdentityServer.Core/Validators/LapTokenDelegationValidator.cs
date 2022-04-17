@@ -28,21 +28,18 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
         private readonly IAuth<DefaultAuthInfo<LapFunction, CurrencyAgent>> _authService;
         private readonly IExtraInformationService _extraInformationService;
         private readonly IReferenceTokenStore _referenceTokenStore;
-        private readonly IRefreshTokenStore _refreshTokenStore;
 
         public LapTokenDelegationValidator(
             ILogger<LapTokenDelegationValidator> logger,
             IAuth<DefaultAuthInfo<LapFunction, CurrencyAgent>> authService,
             IExtraInformationService extraInformationService,
-            IReferenceTokenStore referenceTokenStore,
-            IRefreshTokenStore refreshTokenStore
+            IReferenceTokenStore referenceTokenStore
             )
         {
             _logger = logger;
             _authService = authService;
             _extraInformationService = extraInformationService;
             _referenceTokenStore = referenceTokenStore;
-            _refreshTokenStore = refreshTokenStore;
         }
 
         public async Task ValidateAsync(ExtensionGrantValidationContext context)
@@ -136,12 +133,6 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
             if (!string.IsNullOrEmpty(accessToken))
             {
                 await _referenceTokenStore.RemoveReferenceTokenAsync(accessToken);
-            }
-
-            var refreshToken = context.Request.Raw["refresh_token"];
-            if (!string.IsNullOrEmpty(refreshToken))
-            {
-                await _refreshTokenStore.RemoveRefreshTokenAsync(refreshToken);
             }
         }
 
