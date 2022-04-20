@@ -1,7 +1,7 @@
 using Fanex.Athena.IdentityServer.Core;
 using Fanex.Athena.IdentityServer.Core.Extensions;
 using Fanex.Athena.IdentityServer.Core.Middlewares;
-using Fanex.Athena.IdentityServer.Core.Models;
+using Fanex.Athena.IdentityServer.Core.Settings;
 using Fanex.Athena.IdentityServer.Core.Validators;
 using Fanex.Data;
 using Fanex.Data.SqlServer;

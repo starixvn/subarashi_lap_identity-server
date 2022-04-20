@@ -94,6 +94,7 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
                         new Claim(CustomClaimType.IsEnableSingleWallet, isEnableSingleWallet.ToString()),
                         new Claim(CustomClaimType.IsShowIP, _extraInformationService.IsOfferShowIP(authInfo.SiteName).ToString()),
                         new Claim(CustomClaimType.OfferedSubProducts, offeredSubProducts),
+                        new Claim(CustomClaimType.OfferedOddsGroups, _extraInformationService.GetOffereOddGroups(authInfo.SiteName)),
                         new Claim(CustomClaimType.IsFakeLicensee, _extraInformationService.IsFakeLicensee(licenseeInfo.Name).ToString()),
                         new Claim(CustomClaimType.CurrencyAgent, JsonConvert.SerializeObject(authInfo.Currency), IdentityServerConstants.ClaimValueTypes.Json)
                         });

@@ -8,6 +8,8 @@ namespace Fanex.Athena.IdentityServer.Core.Services
     {
         Task<string> GetOfferedSubProducts(int licenseeId);
 
+        string GetOffereOddGroups(string licenseeName);
+
         Task<LicenseeInformation> GetLicensee(string licenseeName);
 
         bool IsFakeLicensee(string licenseeName);

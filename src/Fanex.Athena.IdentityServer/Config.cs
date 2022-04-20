@@ -43,6 +43,7 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.DefaultReportUrl,
                         CustomClaimType.ActionLink,
                         CustomClaimType.OfferedSubProducts,
+                        CustomClaimType.OfferedOddsGroups,
                         CustomClaimType.IsFakeLicensee,
                         CustomClaimType.ClientIP
                 };
@@ -81,7 +82,8 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.IsAllowedCustomerComm,
                         CustomClaimType.IsEnableBA,
                         CustomClaimType.IsEnableSingleWallet,
-                        CustomClaimType.OfferedSubProducts ,
+                        CustomClaimType.OfferedSubProducts,
+                        CustomClaimType.OfferedOddsGroups,
                         CustomClaimType.IsFakeLicensee,
                         CustomClaimType.ClientIP
                     }
@@ -109,6 +111,7 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.IsShowIP,
                         CustomClaimType.ActionLink,
                         CustomClaimType.OfferedSubProducts,
+                        CustomClaimType.OfferedOddsGroups,
                         CustomClaimType.IsFakeLicensee
                      }
                 },
@@ -154,6 +157,7 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.IsInternal,
                         CustomClaimType.DefaultReportUrl,
                         CustomClaimType.OfferedSubProducts,
+                        CustomClaimType.OfferedOddsGroups,
                         CustomClaimType.IsFakeLicensee
                     }
                 },

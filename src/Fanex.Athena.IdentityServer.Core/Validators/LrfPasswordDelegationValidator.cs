@@ -131,6 +131,7 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
             claims.Add(new Claim(CustomClaimType.LicenseeId, licenseeInfo.Id.ToString()));
             claims.Add(new Claim(CustomClaimType.SiteName, licenseeInfo.Name));
             claims.Add(new Claim(CustomClaimType.OfferedSubProducts, offeredSubProducts));
+            claims.Add(new Claim(CustomClaimType.OfferedOddsGroups, _extraInformationService.GetOffereOddGroups(licenseeInfo.Name)));
             claims.Add(new Claim(CustomClaimType.IsAllowedCustomerComm, licenseeInfo.IsAllowedCustomerComm.ToString()));
             claims.Add(new Claim(CustomClaimType.IsEnableBA, licenseeInfo.IsEnableBA.ToString()));
             claims.Add(new Claim(CustomClaimType.IsEnableSingleWallet, isEnableSingleWallet.ToString()));

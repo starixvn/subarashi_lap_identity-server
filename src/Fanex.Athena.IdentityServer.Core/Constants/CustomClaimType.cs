@@ -26,6 +26,7 @@
         public const string IsInternal = "IsInternal";
         public const string DefaultReportUrl = "DefaultReportUrl";
         public const string OfferedSubProducts = "OfferedSubProducts";
+        public const string OfferedOddsGroups = "OfferedOddsGroups";
         public const string IsFakeLicensee = "IsFakeLicensee";
         public const string ClientIP = "ClientIP";
     }

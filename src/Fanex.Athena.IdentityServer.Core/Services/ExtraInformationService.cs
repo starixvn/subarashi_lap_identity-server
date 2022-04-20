@@ -1,9 +1,11 @@
 ﻿using Fanex.Athena.IdentityServer.Core.Helpers;
 using Fanex.Athena.IdentityServer.Core.Models;
 using Fanex.Athena.IdentityServer.Core.Repositories;
+using Fanex.Athena.IdentityServer.Core.Settings;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,6 +17,7 @@ namespace Fanex.Athena.IdentityServer.Core.Services
         private static readonly TimeSpan OneDay = TimeSpan.FromDays(1);
         private static readonly IEnumerable<string> SubProductCodeList = new [] { "SLT" };
 
+        private readonly ConcurrentDictionary<string, object> _longLifeData;
         private readonly IMemoryCache _cache;
         private readonly IDbFactory _dbFactory;
         private readonly AppSetting _appSetting;
@@ -24,6 +27,7 @@ namespace Fanex.Athena.IdentityServer.Core.Services
             _dbFactory = dbFactory;
             _cache = cache;
             _appSetting = appSetting.Value;
+            _longLifeData = new ConcurrentDictionary<string, object>(StringComparer.OrdinalIgnoreCase);
         }
 
         public Task<LicenseeInformation> GetLicensee(string licenseeName)
@@ -46,6 +50,11 @@ namespace Fanex.Athena.IdentityServer.Core.Services
             var cacheKey = $"GetOfferedSubProducts_{licenseeId}";
             return string.Join(",", await LockHelper.LockAsync(cacheKey, () => TryGetOrAddFromCache(cacheKey, OneDay, () => GetOfferedSubProductListFromDB(licenseeId))));
         }
+
+        public string GetOffereOddGroups(string licenseeName)
+            => _longLifeData.GetOrAdd($"GetOffereOddGroups_{licenseeName}", string.Join(',', _appSetting.OddsGroups
+                .Where(_ => _.OfferedBy == null || _.OfferedBy.Any(s => string.Equals(s, licenseeName, StringComparison.OrdinalIgnoreCase)))
+                .Select(_ => _.Value))) as string;
 
         public async Task<IEnumerable<CurrencyAgent>> GetCurrencyAgentListByLrfUser(int licenseeId, int userId)
         {

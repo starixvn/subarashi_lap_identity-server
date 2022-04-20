@@ -2,6 +2,7 @@
 using Fanex.Athena.IdentityServer.Core.Helpers;
 using Fanex.Athena.IdentityServer.Core.Models;
 using Fanex.Athena.IdentityServer.Core.Repositories;
+using Fanex.Athena.IdentityServer.Core.Settings;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
