@@ -3,7 +3,6 @@ using Fanex.Athena.IdentityServer.Core.Extensions;
 using Fanex.Athena.IdentityServer.Core.Models;
 using Fanex.Athena.IdentityServer.Core.Services;
 using IdentityModel;
-using IdentityServer4;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using IdentityServer4.Validation;
@@ -62,7 +61,7 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
                 var identityName = $"lrf_{licenseeInfo.Name}_{GetClaimValue<string>(originalClaims, CustomClaimType.UserID)}_{userID}";
 
                 var claims = new List<Claim>();
-                claims.Add(new Claim(JwtClaimTypes.Name, identityName));
+                claims.Add(new Claim(JwtClaimTypes.Name, identityName, ClaimValueType.String));
                 GenerateUserClaimsFromAccessToken(claims, originalClaims, langCode);
                 await GenerateLicenseeClaims(claims, userID, licenseeInfo);
                 context.Result = CreateSuccessfulResult(identityName, claims);
@@ -93,8 +92,8 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
 
                 var identityName = $"lrf_{licenseeInfo?.Name}_{userInfo.Username}_{userInfo.UserID}";
                 var claims = new List<Claim>();
-                claims.Add(new Claim(JwtClaimTypes.Name, identityName));
-                claims.Add(new Claim(CustomClaimType.OnUserId, (await _lrfAuthService.LoginOnUser(userInfo, sessionId, clientIP)).ToString()));
+                claims.Add(new Claim(JwtClaimTypes.Name, identityName, ClaimValueType.String));
+                claims.Add(new Claim(CustomClaimType.OnUserId, (await _lrfAuthService.LoginOnUser(userInfo, sessionId, clientIP)).ToString(), ClaimValueType.Integer));
                 GenerateUserClaims(claims, userInfo, clientIP);
                 if (licenseeInfo is not null)
                 {
@@ -104,20 +103,20 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
             }
         }
 
-        private void GenerateUserClaims(List<Claim> claims, LrfUserInfo userInfo, string clientIP)
+        private static void GenerateUserClaims(List<Claim> claims, LrfUserInfo userInfo, string clientIP)
         {
             const string DefaultLang = "en";
             const string DefaultBaseCurrency = "EUR";
 
-            claims.Add(new Claim(CustomClaimType.UserSEQ, userInfo.UserID.ToString()));
-            claims.Add(new Claim(CustomClaimType.UserID, userInfo.Username));
-            claims.Add(new Claim(CustomClaimType.Username, userInfo.FirstName));
-            claims.Add(new Claim(CustomClaimType.Language, DefaultLang));
-            claims.Add(new Claim(CustomClaimType.BaseCurrency, DefaultBaseCurrency));
-            claims.Add(new Claim(CustomClaimType.IsInternal, userInfo.IsInternal.ToString(), ClaimValueTypes.Boolean));
-            claims.Add(new Claim(CustomClaimType.UserLevel, "1", ClaimValueTypes.Integer32));
-            claims.Add(new Claim(CustomClaimType.ClientIP, clientIP));
-            claims.Add(new Claim(CustomClaimType.Administrator, userInfo.Role.Equals("admin", StringComparison.OrdinalIgnoreCase).ToString()));
+            claims.Add(new Claim(CustomClaimType.UserSEQ, userInfo.UserID.ToString(), ClaimValueType.Integer));
+            claims.Add(new Claim(CustomClaimType.UserID, userInfo.Username, ClaimValueType.String));
+            claims.Add(new Claim(CustomClaimType.Username, userInfo.FirstName, ClaimValueType.String));
+            claims.Add(new Claim(CustomClaimType.Language, DefaultLang, ClaimValueType.String));
+            claims.Add(new Claim(CustomClaimType.BaseCurrency, DefaultBaseCurrency, ClaimValueType.String));
+            claims.Add(new Claim(CustomClaimType.IsInternal, userInfo.IsInternal.ToString(), ClaimValueType.Boolean));
+            claims.Add(new Claim(CustomClaimType.UserLevel, "1", ClaimValueType.Integer));
+            claims.Add(new Claim(CustomClaimType.ClientIP, clientIP, ClaimValueType.String));
+            claims.Add(new Claim(CustomClaimType.Administrator, userInfo.Role.Equals("admin", StringComparison.OrdinalIgnoreCase).ToString(), ClaimValueType.Boolean));
         }
 
         private async Task GenerateLicenseeClaims(List<Claim> claims, int userID, LicenseeInformation licenseeInfo)
@@ -128,18 +127,18 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
                 _extraInformationService.GetCurrencyAgentListByLrfUser(licenseeInfo.Id, userID),
                 _lrfFunctionService.GetUserFunctions(licenseeInfo.Id, userID));
 
-            claims.Add(new Claim(CustomClaimType.LicenseeId, licenseeInfo.Id.ToString()));
-            claims.Add(new Claim(CustomClaimType.SiteName, licenseeInfo.Name));
-            claims.Add(new Claim(CustomClaimType.OfferedSubProducts, offeredSubProducts));
-            claims.Add(new Claim(CustomClaimType.OfferedOddsGroups, _extraInformationService.GetOffereOddGroups(licenseeInfo.Name)));
-            claims.Add(new Claim(CustomClaimType.IsAllowedCustomerComm, licenseeInfo.IsAllowedCustomerComm.ToString()));
-            claims.Add(new Claim(CustomClaimType.IsEnableBA, licenseeInfo.IsEnableBA.ToString()));
-            claims.Add(new Claim(CustomClaimType.IsEnableSingleWallet, isEnableSingleWallet.ToString()));
-            claims.Add(new Claim(CustomClaimType.IsShowIP, _extraInformationService.IsOfferShowIP(licenseeInfo.Name).ToString()));
-            claims.Add(new Claim(CustomClaimType.IsFakeLicensee, _extraInformationService.IsFakeLicensee(licenseeInfo.Name).ToString()));
-            claims.Add(new Claim(CustomClaimType.DefaultReportUrl, GetDefaultReportUrl(functionList)));
-            claims.Add(new Claim(CustomClaimType.CurrencyAgent, JsonConvert.SerializeObject(currencyAgentList), IdentityServerConstants.ClaimValueTypes.Json));
-            claims.AddRange(functionList.Select(_ => new Claim(JwtClaimTypes.Role, _.FunctionKey)));
+            claims.Add(new Claim(CustomClaimType.LicenseeId, licenseeInfo.Id.ToString(), ClaimValueType.Integer));
+            claims.Add(new Claim(CustomClaimType.SiteName, licenseeInfo.Name, ClaimValueType.String));
+            claims.Add(new Claim(CustomClaimType.OfferedSubProducts, offeredSubProducts, ClaimValueType.String));
+            claims.Add(new Claim(CustomClaimType.OfferedOddsGroups, _extraInformationService.GetOffereOddGroups(licenseeInfo.Name), ClaimValueType.String));
+            claims.Add(new Claim(CustomClaimType.IsAllowedCustomerComm, licenseeInfo.IsAllowedCustomerComm.ToString(), ClaimValueType.Boolean));
+            claims.Add(new Claim(CustomClaimType.IsEnableBA, licenseeInfo.IsEnableBA.ToString(), ClaimValueType.Boolean));
+            claims.Add(new Claim(CustomClaimType.IsEnableSingleWallet, isEnableSingleWallet.ToString(), ClaimValueType.Boolean));
+            claims.Add(new Claim(CustomClaimType.IsShowIP, _extraInformationService.IsOfferShowIP(licenseeInfo.Name).ToString(), ClaimValueType.Boolean));
+            claims.Add(new Claim(CustomClaimType.IsFakeLicensee, _extraInformationService.IsFakeLicensee(licenseeInfo.Name).ToString(), ClaimValueType.Boolean));
+            claims.Add(new Claim(CustomClaimType.DefaultReportUrl, GetDefaultReportUrl(functionList), ClaimValueType.String));
+            claims.Add(new Claim(CustomClaimType.CurrencyAgent, JsonConvert.SerializeObject(currencyAgentList), ClaimValueType.Json));
+            claims.AddRange(functionList.Select(_ => new Claim(JwtClaimTypes.Role, _.FunctionKey, ClaimValueType.String)));
         }
 
         private static void GenerateUserClaimsFromAccessToken(ICollection<Claim> claims, ICollection<Claim> originalClaims, string langCode)

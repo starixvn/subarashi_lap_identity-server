@@ -79,7 +79,7 @@ namespace Fanex.Athena.IdentityServer.Core.BackgroundServices
                 if (stoppingToken.IsCancellationRequested)
                 {
                     _logger.LogDebug("CancellationRequested. Exiting.");
-                    break;
+                    return;
                 }
 
                 try
@@ -89,18 +89,18 @@ namespace Fanex.Athena.IdentityServer.Core.BackgroundServices
                 catch (TaskCanceledException)
                 {
                     _logger.LogDebug("TaskCanceledException. Exiting.");
-                    break;
+                    return;
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError("Task.Delay exception: {0}. Exiting.", ex.Message);
-                    break;
+                    return;
                 }
 
                 if (stoppingToken.IsCancellationRequested)
                 {
                     _logger.LogDebug("CancellationRequested. Exiting.");
-                    break;
+                    return;
                 }
 
                 await RemoveExpiredGrantsAsync();
