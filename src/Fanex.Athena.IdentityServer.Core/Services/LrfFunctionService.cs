@@ -2,6 +2,7 @@
 using Fanex.Athena.IdentityServer.Core.Helpers;
 using Fanex.Athena.IdentityServer.Core.Models;
 using Fanex.Athena.IdentityServer.Core.Repositories;
+using Fanex.Athena.IdentityServer.Core.Settings;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -43,7 +44,7 @@ namespace Fanex.Athena.IdentityServer.Core.Services
                 var userSubFunctionCount = functionList.Count(f => f.ParentId == masterFunction.FunctionId);
 
                 // User has permission on all sub functions, so he/she has permission on parent function
-                if (subFunctionCount == userSubFunctionCount)
+                if (subFunctionCount > 0 && subFunctionCount == userSubFunctionCount)
                 {
                     functionList.Add(masterFunction);
                 }

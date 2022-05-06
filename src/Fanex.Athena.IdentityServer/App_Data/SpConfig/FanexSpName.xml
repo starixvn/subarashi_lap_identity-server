@@ -25,4 +25,10 @@
     <Setting Key="Lrf_CheckIn" SpName="Lrf_CheckIn" DbName="DBCUST.bodb_Licensee.bodbLicenseeNet" />
     <Setting Key="Lrf_UserInfoSelByUserName" SpName="Lrf_UserInfoSelByUserName" DbName="DBLIC.bodb_Licensee.bodbLicenseeNet" />
   </Function>
+  <Function Name="Token">
+    <Setting Key="LAP_IdentityServer_TokenInsOrUpd" SpName="LAP_IdentityServer_TokenInsOrUpd" DbName="DBCUST.bodb_Licensee.bodbLicenseeNet" />
+    <Setting Key="LAP_IdentityServer_TokenSel" SpName="LAP_IdentityServer_TokenSel" DbName="DBCUST.bodb_Licensee.bodbLicenseeNet" />
+    <Setting Key="LAP_IdentityServer_TokenDel" SpName="LAP_IdentityServer_TokenDel" DbName="DBCUST.bodb_Licensee.bodbLicenseeNet" />
+    <Setting Key="LAP_IdentityServer_ExpiredTokenDel" SpName="LAP_IdentityServer_ExpiredTokenDel" DbName="DBCUST.bodb_Licensee.bodbLicenseeNet" />
+  </Function>
 </Functions>

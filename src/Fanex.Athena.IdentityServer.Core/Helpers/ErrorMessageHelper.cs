@@ -66,7 +66,7 @@ namespace Fanex.Athena.IdentityServer.Core.Helpers
 
             if (exception.InnerException != null && limitedInnerException > 0)
             {
-                AddExceptionInfo(builder, exception.InnerException, --limitedInnerException);
+                AddExceptionInfo(builder, exception.InnerException, limitedInnerException - 1);
             }
         }
 

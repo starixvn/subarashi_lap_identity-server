@@ -4,6 +4,8 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -55,6 +57,7 @@ namespace Fanex.Athena.IdentityServer.Core.HealthCheck
             result.Add("Local Port", context.Connection.LocalPort);
             result.Add("Client Ip", context.Connection.RemoteIpAddress.ToString());
             result.Add("Server Time", DateTime.Now.ToString());
+            result.Add("Last Upadted", File.GetCreationTime(typeof(WhoAmIHealthCheck).Assembly.Location).ToString(CultureInfo.InvariantCulture));
             result.Add("Host", context.Request.Host);
             result.Add("Schema", context.Request.Scheme);
         }

@@ -1,0 +1,2 @@
+- https://github.com/IdentityServer/IdentityServer4
+- hashedToken = (<access_token/refresh_token> + ":" + "reference_token/refresh_token").Sha256(); exec LAP_IdentityServer_TokenSel @Key=hashedToken

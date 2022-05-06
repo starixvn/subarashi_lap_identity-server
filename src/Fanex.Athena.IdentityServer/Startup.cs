@@ -1,7 +1,7 @@
 using Fanex.Athena.IdentityServer.Core;
 using Fanex.Athena.IdentityServer.Core.Extensions;
 using Fanex.Athena.IdentityServer.Core.Middlewares;
-using Fanex.Athena.IdentityServer.Core.Models;
+using Fanex.Athena.IdentityServer.Core.Settings;
 using Fanex.Athena.IdentityServer.Core.Validators;
 using Fanex.Data;
 using Fanex.Data.SqlServer;
@@ -17,7 +17,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-
+                                                                           
 namespace Fanex.Athena.IdentityServer
 {
     public class Startup
@@ -38,7 +38,6 @@ namespace Fanex.Athena.IdentityServer
             services.AddInfrastructure(Configuration);
 
             ConfigFanexData();
-
             var fileName = Path.Combine(Env.ContentRootPath, "pair-key.secrect");
             string xml = File.ReadAllText(fileName);
             var csp = new RSACryptoServiceProvider(2048);
@@ -53,7 +52,7 @@ namespace Fanex.Athena.IdentityServer
                .AddInMemoryApiScopes(Config.ScopeApis)
                .AddExtensionGrantValidator<LapTokenDelegationValidator>()
                .AddExtensionGrantValidator<LrfPasswordDelegationValidator>()
-               .AddOperationalStoreWithRedis(Configuration)
+               .AddOperationalStore(Configuration)
                .AddSigningCredential(credentials);
 
             services.AddHealthCheck(Configuration);
