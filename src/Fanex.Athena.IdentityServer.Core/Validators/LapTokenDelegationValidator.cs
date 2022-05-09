@@ -23,7 +23,7 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
 
         public string GrantType => CustomGrantType.LapToken;
 
-        private readonly ILogger<LapTokenDelegationValidator> _logger;
+        private readonly ILogger _logger;
         private readonly IAuth<DefaultAuthInfo<LapFunction, CurrencyAgent>> _authService;
         private readonly IExtraInformationService _extraInformationService;
         private readonly IReferenceTokenStore _referenceTokenStore;
@@ -49,7 +49,7 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
             {
                 var errorMsg = $"Token {token} is invalid ";
                 context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest, errorMsg);
-                _logger.LogError(errorMsg);
+                _logger.LogInformation($"{errorMsg} - token info: {JsonConvert.SerializeObject(new { authInfo?.SiteName, authInfo?.UserName, authInfo?.UserSEQ })}");
                 return;
             }
 
@@ -57,7 +57,7 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
             if (licenseeInfo is null)
             {
                 context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest, LicenseeNotExistedErrorCode);
-                _logger.LogError($"Licensee {authInfo.SiteName} is not existed");
+                _logger.LogInformation($"Licensee {authInfo.SiteName} is not existed");
                 return;
             }
 
