@@ -6,6 +6,7 @@ using IdentityModel;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using IdentityServer4.Validation;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -23,18 +24,21 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
         private readonly ILrfAuthService _lrfAuthService;
         private readonly ILrfFunctionService _lrfFunctionService;
         private readonly IExtraInformationService _extraInformationService;
+        private readonly ILogger _logger;
 
         public LrfPasswordDelegationValidator(
             IReferenceTokenStore referenceTokenStore,
             ILrfAuthService lrfAuthService,
             ILrfFunctionService lrfFunctionService,
-            IExtraInformationService extraInformationService
+            IExtraInformationService extraInformationService,
+            ILogger<LrfPasswordDelegationValidator> logger
             )
         {
             _referenceTokenStore = referenceTokenStore;
             _lrfAuthService = lrfAuthService;
             _lrfFunctionService = lrfFunctionService;
             _extraInformationService = extraInformationService;
+            _logger = logger;
         }
 
         public Task ValidateAsync(ExtensionGrantValidationContext context)
@@ -84,6 +88,7 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
             if (errorCode > 0)
             {
                 context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest, errorMsg);
+                _logger.LogInformation($"Failed to validate user {username} - error code: {errorCode}");
             }
             else
             {

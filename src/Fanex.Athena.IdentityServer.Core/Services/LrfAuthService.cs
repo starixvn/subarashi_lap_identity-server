@@ -12,7 +12,8 @@ namespace Fanex.Athena.IdentityServer.Core.Services
     {
         const string NotFoundUser = "Not Found User";
         const string WrongUserNamePassword = "Wrong username or password";
-        const int SuccessCode = 1;
+        const int NotFoundUserErrorCode = 1;
+        const int WrongUserNamePasswordErrorCode = 2;
 
         private readonly IDbFactory _dbFactory;
 
@@ -26,13 +27,13 @@ namespace Fanex.Athena.IdentityServer.Core.Services
             var user = await GetUser(username);
             if (user == null)
             {
-                return (SuccessCode, NotFoundUser, null);
+                return (NotFoundUserErrorCode, NotFoundUser, null);
             }
 
             var hashedPassword = CryptoHelper.HashSHA1(user.Password + loginToken, user.UserSalt);
             if (!password.Equals(hashedPassword, StringComparison.OrdinalIgnoreCase))
             {
-                return (SuccessCode, WrongUserNamePassword, null);
+                return (WrongUserNamePasswordErrorCode, WrongUserNamePassword, null);
             }
 
             return await GetUserInfo(username, clientIP);
