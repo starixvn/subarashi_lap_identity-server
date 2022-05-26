@@ -23,7 +23,7 @@ namespace Fanex.Athena.IdentityServer.Core.Extensions
                .AddRedis($"{configuration["Redis:Server"]}:{configuration["Redis:Port"]},password={configuration["Redis:Pass"]}", "Redis");
         }
 
-        public static void UseHealthCheck(this IApplicationBuilder app)
+        public static void UsePing(this IApplicationBuilder app)
         {
             app.Use(async (context, next) =>
             {
@@ -33,7 +33,10 @@ namespace Fanex.Athena.IdentityServer.Core.Extensions
                 }
                 await next();
             });
+        }
 
+        public static void UseHealthCheck(this IApplicationBuilder app)
+        {
             Func<HttpContext, HealthReport, Task> customResponseWriter = async (context, report) =>
             {
                 var result = JsonConvert.SerializeObject(

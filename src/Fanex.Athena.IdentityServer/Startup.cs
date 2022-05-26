@@ -5,6 +5,7 @@ using Fanex.Athena.IdentityServer.Core.Settings;
 using Fanex.Athena.IdentityServer.Core.Validators;
 using Fanex.Data;
 using Fanex.Data.SqlServer;
+using IdentityServer4.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -69,6 +70,7 @@ namespace Fanex.Athena.IdentityServer
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UsePing();
             app.UseForwardedHeaders();
 
             if (string.Equals(Configuration["UseErrorHandler"], "1"))
