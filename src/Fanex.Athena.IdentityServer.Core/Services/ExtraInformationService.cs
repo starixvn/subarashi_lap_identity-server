@@ -14,7 +14,7 @@ namespace Fanex.Athena.IdentityServer.Core.Services
 {
     public class ExtraInformationService : IExtraInformationService
     {
-        private static readonly TimeSpan OneDay = TimeSpan.FromDays(1);
+        private static readonly TimeSpan OneHour = TimeSpan.FromHours(1);
         private static readonly IEnumerable<string> SubProductCodeList = new[] { "SLT", "BTC" };
 
         private readonly ConcurrentDictionary<string, object> _longLifeData;
@@ -33,7 +33,7 @@ namespace Fanex.Athena.IdentityServer.Core.Services
         public Task<LicenseeInformation> GetLicensee(string licenseeName)
         {
             var cacheKey = $"GetLicensee_{licenseeName}";
-            return LockHelper.LockAsync(cacheKey, () => TryGetOrAddFromCache(cacheKey, OneDay, () => GetLicenseeFromDB(licenseeName)));
+            return LockHelper.LockAsync(cacheKey, () => TryGetOrAddFromCache(cacheKey, OneHour, () => GetLicenseeFromDB(licenseeName)));
         }
 
         public bool IsFakeLicensee(string licenseeName) 
@@ -42,13 +42,13 @@ namespace Fanex.Athena.IdentityServer.Core.Services
         public Task<LicenseeInformation> GetLicenseeBelongingLrfUser(int licenseeId, int lrfUserId)
         {
             var cacheKey = $"GetLicenseeBelongingLrfUser_{licenseeId}_{lrfUserId}";
-            return LockHelper.LockAsync(cacheKey, () => TryGetOrAddFromCache(cacheKey, OneDay, () => GetLicenseeBeLongingLrfUserFromDB(licenseeId, lrfUserId)));
+            return LockHelper.LockAsync(cacheKey, () => TryGetOrAddFromCache(cacheKey, OneHour, () => GetLicenseeBeLongingLrfUserFromDB(licenseeId, lrfUserId)));
         }
 
         public async Task<string> GetOfferedSubProducts(int licenseeId)
         {
             var cacheKey = $"GetOfferedSubProducts_{licenseeId}";
-            return string.Join(",", await LockHelper.LockAsync(cacheKey, () => TryGetOrAddFromCache(cacheKey, OneDay, () => GetOfferedSubProductListFromDB(licenseeId))));
+            return string.Join(",", await LockHelper.LockAsync(cacheKey, () => TryGetOrAddFromCache(cacheKey, OneHour, () => GetOfferedSubProductListFromDB(licenseeId))));
         }
 
         public string GetOffereOddGroups(string licenseeName)
@@ -112,7 +112,7 @@ namespace Fanex.Athena.IdentityServer.Core.Services
 
             var cacheKey = string.Format("{0}_{1}_{2}", KeyName, licenseeName, environment);
             var value = await LockHelper.LockAsync(cacheKey,
-                () => TryGetOrAddFromCache(cacheKey, OneDay, () => GetConfigDetailByKeyName(licenseeName, environment, KeyName)));
+                () => TryGetOrAddFromCache(cacheKey, OneHour, () => GetConfigDetailByKeyName(licenseeName, environment, KeyName)));
 
             return !string.IsNullOrEmpty(value) && string.Equals(value, ExpectedKeyValue, StringComparison.OrdinalIgnoreCase);
         }
