@@ -10,12 +10,14 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Security.Cryptography;
                                                                            
@@ -66,6 +68,17 @@ namespace Fanex.Athena.IdentityServer
             });
 
             services.Configure<AppSetting>(Configuration.GetSection("App"));
+
+            services.AddResponseCompression(options =>
+            {
+                options.Providers.Add<GzipCompressionProvider>();
+                options.MimeTypes = new[] { "application/json" };
+            });
+
+            services.Configure<GzipCompressionProviderOptions>(options =>
+            {
+                options.Level = CompressionLevel.Fastest;
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -84,6 +97,7 @@ namespace Fanex.Athena.IdentityServer
 
             app.UseHealthCheck();
             app.UseRouting();
+            app.UseResponseCompression();
             app.UseIdentityServer();
             app.UseEndpoints(endpoints =>
             {
