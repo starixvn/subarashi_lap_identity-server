@@ -1,4 +1,5 @@
-﻿using Fanex.Athena.IdentityServer.Core.Helpers;
+﻿using Fanex.Athena.IdentityServer.Core.Extensions;
+using Fanex.Athena.IdentityServer.Core.Helpers;
 using Fanex.Athena.IdentityServer.Core.Models;
 using Fanex.Athena.IdentityServer.Core.Repositories;
 using Fanex.Athena.IdentityServer.Core.Settings;
@@ -33,22 +34,22 @@ namespace Fanex.Athena.IdentityServer.Core.Services
         public Task<LicenseeInformation> GetLicensee(string licenseeName)
         {
             var cacheKey = $"GetLicensee_{licenseeName}";
-            return LockHelper.LockAsync(cacheKey, () => TryGetOrAddFromCache(cacheKey, OneHour, () => GetLicenseeFromDB(licenseeName)));
+            return _cache.TryGetOrAddFromCache(cacheKey, OneHour, () => GetLicenseeFromDB(licenseeName));
         }
 
-        public bool IsFakeLicensee(string licenseeName) 
+        public bool IsFakeLicensee(string licenseeName)
             => _appSetting.FakeLicensees.Any(_ => string.Equals(_, licenseeName, StringComparison.OrdinalIgnoreCase));
 
         public Task<LicenseeInformation> GetLicenseeBelongingLrfUser(int licenseeId, int lrfUserId)
         {
             var cacheKey = $"GetLicenseeBelongingLrfUser_{licenseeId}_{lrfUserId}";
-            return LockHelper.LockAsync(cacheKey, () => TryGetOrAddFromCache(cacheKey, OneHour, () => GetLicenseeBeLongingLrfUserFromDB(licenseeId, lrfUserId)));
+            return _cache.TryGetOrAddFromCache(cacheKey, OneHour, () => GetLicenseeBeLongingLrfUserFromDB(licenseeId, lrfUserId));
         }
 
         public async Task<string> GetOfferedSubProducts(int licenseeId)
         {
             var cacheKey = $"GetOfferedSubProducts_{licenseeId}";
-            return string.Join(",", await LockHelper.LockAsync(cacheKey, () => TryGetOrAddFromCache(cacheKey, OneHour, () => GetOfferedSubProductListFromDB(licenseeId))));
+            return string.Join(",", await _cache.TryGetOrAddFromCache(cacheKey, OneHour, () => GetOfferedSubProductListFromDB(licenseeId)));
         }
 
         public string GetOffereOddGroups(string licenseeName)
@@ -111,8 +112,7 @@ namespace Fanex.Athena.IdentityServer.Core.Services
             var environment = _appSetting.IsUATTW ? "UAT" : "Production";
 
             var cacheKey = string.Format("{0}_{1}_{2}", KeyName, licenseeName, environment);
-            var value = await LockHelper.LockAsync(cacheKey,
-                () => TryGetOrAddFromCache(cacheKey, OneHour, () => GetConfigDetailByKeyName(licenseeName, environment, KeyName)));
+            var value = await _cache.TryGetOrAddFromCache(cacheKey, OneHour, () => GetConfigDetailByKeyName(licenseeName, environment, KeyName));
 
             return !string.IsNullOrEmpty(value) && string.Equals(value, ExpectedKeyValue, StringComparison.OrdinalIgnoreCase);
         }
@@ -136,19 +136,6 @@ namespace Fanex.Athena.IdentityServer.Core.Services
 
                 return keyValue;
             }
-        }
-
-        private async Task<T> TryGetOrAddFromCache<T>(string cacheKey, TimeSpan cacheTime, Func<Task<T>> func)
-        {
-            if (!_cache.TryGetValue(cacheKey, out T data))
-            {
-                data = await func.Invoke();
-                if (data is not null)
-                {
-                    _cache.Set(cacheKey, data, cacheTime);
-                }
-            }
-            return data;
         }
 
         private Task<LicenseeInformation> GetLicenseeFromDB(string licenseeName)
