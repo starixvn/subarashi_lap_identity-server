@@ -1,16 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Functions SiteId="31" SiteName="Identity Server">
   <Function Name="Licensee">
+    <Setting Key="Acc_SiteDBConfigSel" SpName="Acc_SiteDBConfigSel_xtest" DbName="DBEXT.bodb02.bodbLicenseeNet" />
     <Setting Key="Lrf_SelCurrencyByLicenseeUser" SpName="Lrf_SelCurrencyByLicenseeUser" DbName="DBEXT.bodb02.bodbLicenseeNet">
       <Mapping DataField="Currency" ObjectProperty="CurrencyId" />
     </Setting>
-    <Setting Key="Lrf_LicenseeSelBySiteName" SpName="Lrf_LicenseeSelBySiteName" DbName="DBLIC.bodb_Licensee.bodbLicenseeNet">
+    <Setting Key="Lrf_LicenseeSelBySiteName" SpName="Lrf_LicenseeSelBySiteName_xtest" DbName="DBLIC.bodb_Licensee.bodbLicenseeNet">
       <Mapping DataField="LicenseeID" ObjectProperty="Id" />
       <Mapping DataField="LicenseeName" ObjectProperty="Name" />
       <Mapping DataField="IsAllowedMemberComm" ObjectProperty="IsAllowedCustomerComm" />
       <Mapping DataField="EnableBA" ObjectProperty="IsEnableBA" />
     </Setting>
-    <Setting Key="Lrf_LicenseeSel" SpName="Lrf_LicenseeSel" DbName="DBLIC.bodb_Licensee.bodbLicenseeNet" />
+    <Setting Key="Lrf_LicenseeSel" SpName="Lrf_LicenseeSel_xtest" DbName="DBLIC.bodb_Licensee.bodbLicenseeNet" />
     <Setting Key="Lrf_LicenseeProduct3rdSel" SpName="Lrf_LicenseeProduct3rdSel" DbName="DBLIC.bodb_Licensee.bodbLicenseeNet" />
   </Function>
   <Function Name="SiteConfig">

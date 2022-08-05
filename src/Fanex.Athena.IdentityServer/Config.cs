@@ -45,7 +45,8 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.OfferedSubProducts,
                         CustomClaimType.OfferedOddsGroups,
                         CustomClaimType.IsFakeLicensee,
-                        CustomClaimType.ClientIP
+                        CustomClaimType.ClientIP,
+                        CustomClaimType.SiteDBServer
                 };
             }
         }
@@ -85,7 +86,8 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.OfferedSubProducts,
                         CustomClaimType.OfferedOddsGroups,
                         CustomClaimType.IsFakeLicensee,
-                        CustomClaimType.ClientIP
+                        CustomClaimType.ClientIP,
+                        CustomClaimType.SiteDBServer
                     }
                 },
                 new ApiScope("playeradmin_api.internal")
@@ -112,7 +114,8 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.ActionLink,
                         CustomClaimType.OfferedSubProducts,
                         CustomClaimType.OfferedOddsGroups,
-                        CustomClaimType.IsFakeLicensee
+                        CustomClaimType.IsFakeLicensee  ,
+                        CustomClaimType.SiteDBServer
                      }
                 },
                 new ApiScope("betticket_api")
@@ -158,7 +161,8 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.DefaultReportUrl,
                         CustomClaimType.OfferedSubProducts,
                         CustomClaimType.OfferedOddsGroups,
-                        CustomClaimType.IsFakeLicensee
+                        CustomClaimType.IsFakeLicensee,
+                        CustomClaimType.SiteDBServer
                     }
                 },
                 new ApiScope("statement_api")
@@ -198,7 +202,8 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.Language,
                         CustomClaimType.CurrencyAgent,
                         CustomClaimType.OfferedSubProducts,
-                        CustomClaimType.IsFakeLicensee
+                        CustomClaimType.IsFakeLicensee,
+                        CustomClaimType.SiteDBServer
                     }
                 }
             };
