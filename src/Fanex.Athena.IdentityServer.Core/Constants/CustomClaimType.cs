@@ -29,5 +29,7 @@
         public const string OfferedOddsGroups = "OfferedOddsGroups";
         public const string IsFakeLicensee = "IsFakeLicensee";
         public const string ClientIP = "ClientIP";
+        public const string SiteDBServer = "SiteDBServer";
+
     }
 }

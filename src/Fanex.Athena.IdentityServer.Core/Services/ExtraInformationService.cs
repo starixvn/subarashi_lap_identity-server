@@ -17,7 +17,7 @@ namespace Fanex.Athena.IdentityServer.Core.Services
     {
         private static readonly TimeSpan OneHour = TimeSpan.FromHours(1);
         private static readonly IEnumerable<string> SubProductCodeList = new[] { "SLT", "BTC" };
-
+        private readonly Lazy<IReadOnlyDictionary<int, string>> _siteDBConfig;
         private readonly ConcurrentDictionary<string, object> _longLifeData;
         private readonly IMemoryCache _cache;
         private readonly IDbFactory _dbFactory;
@@ -29,7 +29,21 @@ namespace Fanex.Athena.IdentityServer.Core.Services
             _cache = cache;
             _appSetting = appSetting.Value;
             _longLifeData = new ConcurrentDictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+
+            _siteDBConfig = new Lazy<IReadOnlyDictionary<int, string>>(() =>
+            {
+                const string SpName = "Acc_SiteDBConfigSel";
+                var config = new Dictionary<int, string>();
+                using var db = _dbFactory.GetObjectDb(SpName);
+                using var reader = db.ExecuteReader();
+                while (reader.Read())
+                {
+                    config.Add(int.Parse(reader["SiteDBGroupID"].ToString()), reader["AGIP"].ToString());
+                }
+                return config;
+            });
         }
+ 
 
         public Task<LicenseeInformation> GetLicensee(string licenseeName)
         {
@@ -138,44 +152,51 @@ namespace Fanex.Athena.IdentityServer.Core.Services
             }
         }
 
-        private Task<LicenseeInformation> GetLicenseeFromDB(string licenseeName)
+        private async Task<LicenseeInformation> GetLicenseeFromDB(string licenseeName)
         {
             const string UspName = "Lrf_LicenseeSelBySiteName";
             var uspParams = new { siteName = licenseeName };
 
-            using (var db = _dbFactory.GetObjectDb(UspName))
-            {
-                return db.QueryEntityAsync<LicenseeInformation>(uspParams);
-            }
+            using var db = _dbFactory.GetObjectDb(UspName);
+            var licenseeInfo = await db.QueryEntityAsync<LicenseeInformation>(uspParams);
+            AssignSiteDBInfo(licenseeInfo);
+            return licenseeInfo;
         }
 
         private async Task<LicenseeInformation> GetLicenseeBeLongingLrfUserFromDB(int licenseeId, int lrfUserId)
         {
             const string UspName = "Lrf_LicenseeSel";
             var uspParams = new { UserId = lrfUserId };
-
-            using (var db = _dbFactory.GetObjectDb(UspName))
+            LicenseeInformation licenseeInfo = null;
+            using var db = _dbFactory.GetObjectDb(UspName);
+            using var reader = await db.ExecuteReaderAsync(uspParams);
+            while (reader.Read())
             {
-                using (var reader = await db.ExecuteReaderAsync(uspParams))
+                var id = reader.GetInt32(reader.GetOrdinal("LicenseeID"));
+                if (id == licenseeId)
                 {
-                    while (reader.Read())
+                    licenseeInfo = new LicenseeInformation
                     {
-                        var id = reader.GetInt32(reader.GetOrdinal("LicenseeID"));
-                        if (id == licenseeId)
-                        {
-                            return new LicenseeInformation
-                            {
-                                Id = id,
-                                Name = reader.GetString(reader.GetOrdinal("LicenseeName")),
-                                IsAllowedCustomerComm = reader.GetBoolean(reader.GetOrdinal("IsAllowedMemberComm")),
-                                IsEnableBA = reader.GetBoolean(reader.GetOrdinal("EnableBA"))
-                            };
-                        }
-                    }
+                        Id = id,
+                        Name = reader.GetString(reader.GetOrdinal("LicenseeName")),
+                        SiteDBGroupID = reader.GetInt16(reader.GetOrdinal("SiteDBGroupID")),
+                        IsAllowedCustomerComm = reader.GetBoolean(reader.GetOrdinal("IsAllowedMemberComm")),
+                        IsEnableBA = reader.GetBoolean(reader.GetOrdinal("EnableBA"))
+                    };
+                    AssignSiteDBInfo(licenseeInfo);
                 }
             }
 
-            return null;
+            return licenseeInfo;
+        }
+
+        private void AssignSiteDBInfo(LicenseeInformation licenseeInfo)
+        {
+            if(licenseeInfo.SiteDBGroupID != 0)
+            {
+                licenseeInfo.SiteDBServer = _siteDBConfig.Value.TryGetValue(licenseeInfo.SiteDBGroupID, out string dbServer)
+                              ? dbServer : string.Empty;
+            }
         }
 
         private async Task<IEnumerable<string>> GetOfferedSubProductListFromDB(int licenseeId)

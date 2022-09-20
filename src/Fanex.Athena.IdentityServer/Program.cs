@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System;
 
 namespace Fanex.Athena.IdentityServer
 {
@@ -30,15 +28,7 @@ namespace Fanex.Athena.IdentityServer
                 logging.AddConsole();
             })
             .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.ConfigureKestrel(serverOptions =>
-                {
-                    const int bytesPerSecond = 100;
-                    const int gracePeriodInSecond = 10;
-                    serverOptions.Limits.MinRequestBodyDataRate =
-                       new MinDataRate(bytesPerSecond,
-                           gracePeriod: TimeSpan.FromSeconds(gracePeriodInSecond));
-                });              
+            {             
                 webBuilder.UseStartup<Startup>();
                 webBuilder.UseSentry();
             })
