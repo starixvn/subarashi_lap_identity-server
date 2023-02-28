@@ -1,4 +1,4 @@
-FROM registry.nexdev.net:5050/docker/dotnet/core/sdk:5.0.102-ca-patch-buster-slim AS builder
+FROM hub.nexdev.net/base/dotnet/core/sdk:5.0.102-ca-patch-buster-slim AS builder
 WORKDIR /src
 
 COPY NuGet.Config .
@@ -15,7 +15,7 @@ RUN dotnet publish "Fanex.Athena.IdentityServer/Fanex.Athena.IdentityServer.cspr
   --runtime alpine-x64 \
   --self-contained false
 
-FROM registry.nexdev.net:5050/docker/dotnet/core/aspnet:5.0-buster-slim
+FROM hub.nexdev.net/base/dotnet/core/aspnet:5.0-buster-slim
 
 ENV ASPNETCORE_URLS=http://*:5000
 EXPOSE 5000
