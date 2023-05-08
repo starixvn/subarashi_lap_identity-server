@@ -43,7 +43,6 @@ namespace Fanex.Athena.IdentityServer.Core.Services
                 return config;
             });
         }
- 
 
         public Task<LicenseeInformation> GetLicensee(string licenseeName)
         {
@@ -53,6 +52,9 @@ namespace Fanex.Athena.IdentityServer.Core.Services
 
         public bool IsFakeLicensee(string licenseeName)
             => _appSetting.FakeLicensees.Any(_ => string.Equals(_, licenseeName, StringComparison.OrdinalIgnoreCase));
+
+        public bool IsShowVND(string licenseeName)
+            => _appSetting.LicenseesShowVND.Any(_ => string.Equals(_, licenseeName, StringComparison.OrdinalIgnoreCase));
 
         public Task<LicenseeInformation> GetLicenseeBelongingLrfUser(int licenseeId, int lrfUserId)
         {
@@ -192,7 +194,7 @@ namespace Fanex.Athena.IdentityServer.Core.Services
 
         private void AssignSiteDBInfo(LicenseeInformation licenseeInfo)
         {
-            if(licenseeInfo.SiteDBGroupID != 0)
+            if (licenseeInfo.SiteDBGroupID != 0)
             {
                 licenseeInfo.SiteDBServer = _siteDBConfig.Value.TryGetValue(licenseeInfo.SiteDBGroupID, out string dbServer)
                               ? dbServer : string.Empty;
