@@ -15,7 +15,5 @@ namespace Fanex.Athena.IdentityServer.Core.Models
         public bool IsAllowedCustomerComm { get; set; }
 
         public bool IsEnableBA { get; set; }
-
-        public bool IsShowVND { get; set; }
     }
 }

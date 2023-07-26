@@ -47,7 +47,7 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.IsFakeLicensee,
                         CustomClaimType.ClientIP,
                         CustomClaimType.SiteDBServer,
-                        CustomClaimType.IsShowVND
+                        CustomClaimType.AuditCurrencies
                 };
             }
         }
@@ -164,7 +164,7 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.OfferedOddsGroups,
                         CustomClaimType.IsFakeLicensee,
                         CustomClaimType.SiteDBServer,
-                        CustomClaimType.IsShowVND
+                        CustomClaimType.AuditCurrencies
                     }
                 },
                 new ApiScope("statement_api")
@@ -206,7 +206,7 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.OfferedSubProducts,
                         CustomClaimType.IsFakeLicensee,
                         CustomClaimType.SiteDBServer,
-                        CustomClaimType.IsShowVND
+                        CustomClaimType.AuditCurrencies
                     }
                 }
             };
