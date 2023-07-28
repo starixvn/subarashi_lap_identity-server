@@ -142,7 +142,7 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
             claims.Add(new Claim(CustomClaimType.IsEnableSingleWallet, isEnableSingleWallet.ToString(), ClaimValueType.Boolean));
             claims.Add(new Claim(CustomClaimType.IsShowIP, _extraInformationService.IsOfferShowIP(licenseeInfo.Name).ToString(), ClaimValueType.Boolean));
             claims.Add(new Claim(CustomClaimType.IsFakeLicensee, _extraInformationService.IsFakeLicensee(licenseeInfo.Name).ToString(), ClaimValueType.Boolean));
-            claims.Add(new Claim(CustomClaimType.IsShowVND, _extraInformationService.IsShowVND(licenseeInfo.Name).ToString(), ClaimValueType.Boolean));
+            claims.Add(new Claim(CustomClaimType.AuditCurrencies, JsonConvert.SerializeObject(_extraInformationService.GetAuditHardCodeCurrencies(licenseeInfo.Name)), ClaimValueType.Json));
             claims.Add(new Claim(CustomClaimType.DefaultReportUrl, GetDefaultReportUrl(functionList), ClaimValueType.String));
             claims.Add(new Claim(CustomClaimType.CurrencyAgent, JsonConvert.SerializeObject(currencyAgentList), ClaimValueType.Json));
             claims.AddRange(functionList.Select(_ => new Claim(JwtClaimTypes.Role, _.FunctionKey, ClaimValueType.String)));

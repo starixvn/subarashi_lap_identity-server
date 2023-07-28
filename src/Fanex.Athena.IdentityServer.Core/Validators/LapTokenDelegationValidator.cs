@@ -96,7 +96,7 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
                         new Claim(CustomClaimType.OfferedSubProducts, offeredSubProducts, ClaimValueType.String),
                         new Claim(CustomClaimType.OfferedOddsGroups, _extraInformationService.GetOffereOddGroups(authInfo.SiteName), ClaimValueType.String),
                         new Claim(CustomClaimType.IsFakeLicensee, _extraInformationService.IsFakeLicensee(licenseeInfo.Name).ToString(), ClaimValueType.Boolean),
-                        new Claim(CustomClaimType.IsShowVND, _extraInformationService.IsShowVND(licenseeInfo.Name).ToString(), ClaimValueType.Boolean),
+                        new Claim(CustomClaimType.AuditCurrencies, JsonConvert.SerializeObject(_extraInformationService.GetAuditHardCodeCurrencies(licenseeInfo.Name)), ClaimValueType.Json),
                         new Claim(CustomClaimType.CurrencyAgent, JsonConvert.SerializeObject(authInfo.Currency), ClaimValueType.Json)
                         });
 

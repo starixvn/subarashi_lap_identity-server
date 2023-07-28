@@ -1,4 +1,5 @@
 ﻿using Fanex.Athena.IdentityServer.Core.Models;
+using Fanex.Athena.IdentityServer.Core.Settings;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -14,7 +15,7 @@ namespace Fanex.Athena.IdentityServer.Core.Services
 
         bool IsFakeLicensee(string licenseeName);
 
-        bool IsShowVND(string licenseeName);
+        IEnumerable<AuditCurrency> GetAuditHardCodeCurrencies(string licenseeName);
 
         Task<LicenseeInformation> GetLicenseeBelongingLrfUser(int licenseeId, int lrfUserId);
 
