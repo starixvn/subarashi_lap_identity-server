@@ -54,7 +54,8 @@ namespace Fanex.Athena.IdentityServer.Core.Services
             => _appSetting.FakeLicensees.Any(_ => string.Equals(_, licenseeName, StringComparison.OrdinalIgnoreCase));
 
         public IEnumerable<AuditCurrency> GetAuditHardCodeCurrencies(string licenseeName)
-            => _appSetting.AuditHardCodeCurrencies.FirstOrDefault(_ => string.Equals(_.Licensee, licenseeName, StringComparison.OrdinalIgnoreCase))?.AuditCurrencies;
+            => _appSetting.AuditHardCodeCurrencies.FirstOrDefault(_ => string.Equals(_.Licensee, licenseeName, StringComparison.OrdinalIgnoreCase))?.AuditCurrencies
+                ?? new List<AuditCurrency>();
 
         public Task<LicenseeInformation> GetLicenseeBelongingLrfUser(int licenseeId, int lrfUserId)
         {
