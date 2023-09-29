@@ -15,7 +15,7 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
         {
             context.Result = new GrantValidationResult(
                     "818727",
-                    OidcConstants.AuthenticationMethods.Password, DateTime.UtcNow,
+                    OidcConstants.AuthenticationMethods.Password, DateTimeOffset.UtcNow.DateTime,
                     new[] { new Claim("sitename", IdentityServer4.IdentityServerConstants.ClaimValueTypes.Json) });
 
             return Task.CompletedTask;

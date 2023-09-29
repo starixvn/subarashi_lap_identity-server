@@ -118,8 +118,8 @@ namespace Fanex.Athena.IdentityServer.Core.Helpers
                     ? new Dictionary<string, object>()
                     : new Dictionary<string, object>
                     {
-                        [nameof(request.Host)] = request?.Host,
-                        [nameof(request.Path)] = request?.Path,
+                        [nameof(request.Host)] = request.Host,
+                        [nameof(request.Path)] = request.Path,
                         ["Remote IP"] = context.Connection?.RemoteIpAddress
                     };
         }
