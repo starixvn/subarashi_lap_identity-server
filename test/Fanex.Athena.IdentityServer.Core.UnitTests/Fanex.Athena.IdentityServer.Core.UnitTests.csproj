@@ -3,18 +3,23 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
-  
+
   <ItemGroup>
+    <PackageReference Include="coverlet.msbuild" Version="6.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeCoverage" Version="16.10.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
-    <PackageReference Include="Moq" Version="4.16.1" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-  
+
   <ItemGroup>
+    <ProjectReference Include="..\..\Fanex.Athena.IdentityServer.UnitTests.Common\Fanex.Athena.IdentityServer.UnitTests.Common.csproj" />
     <ProjectReference Include="..\..\src\Fanex.Athena.IdentityServer.Core\Fanex.Athena.IdentityServer.Core.csproj" />
   </ItemGroup>
 
