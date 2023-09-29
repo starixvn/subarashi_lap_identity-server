@@ -7,14 +7,14 @@ namespace Fanex.Athena.IdentityServer.Core.Helpers
 {
     public static class LockHelper
     {
-        private static readonly ConcurrentDictionary<string, object> _lockObjects = new ConcurrentDictionary<string, object>();
-        private static readonly ConcurrentDictionary<string, SemaphoreSlim> _lockAsyncObjects = new ConcurrentDictionary<string, SemaphoreSlim>();
+        private static readonly ConcurrentDictionary<string, object> _lockObjects = new();
+
+        private static readonly ConcurrentDictionary<string, SemaphoreSlim> _lockAsyncObjects = new();
 
         public static TResult Lock<TResult>(string key, Func<TResult> doing)
             where TResult : class
         {
-            var lockObject = _lockObjects.GetOrAdd(key, key => new object());
-            lock (lockObject)
+            lock (_lockObjects.GetOrAdd(key, _ => new object()))
             {
                 return doing?.Invoke();
             }
@@ -28,8 +28,12 @@ namespace Fanex.Athena.IdentityServer.Core.Helpers
 
             try
             {
-                var result = await doing?.Invoke();
-                return result;
+                if (doing is not null)
+                {
+                    return await doing.Invoke();
+                }
+
+                return default;
             }
             finally
             {

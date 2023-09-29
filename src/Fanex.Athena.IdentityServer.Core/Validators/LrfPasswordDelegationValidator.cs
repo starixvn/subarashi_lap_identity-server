@@ -170,7 +170,7 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
             => new GrantValidationResult(
                        identityName,
                        CustomGrantType.LrfPassword,
-                       DateTime.UtcNow, claims,
+                       DateTimeOffset.UtcNow.DateTime, claims,
                        ClaimsIdentity.DefaultIssuer);
 
         private static T GetClaimValue<T>(IEnumerable<Claim> claims, string claimType)

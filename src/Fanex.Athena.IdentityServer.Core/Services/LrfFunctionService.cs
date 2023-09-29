@@ -35,7 +35,7 @@ namespace Fanex.Athena.IdentityServer.Core.Services
             var subFunctions = await GetSubFunctions();
             foreach (var masterFunction in await GetMasterFunctions())
             {
-                if (functionList.Any(f => f.FunctionId == masterFunction.FunctionId))
+                if (functionList.Exists(f => f.FunctionId == masterFunction.FunctionId))
                 {
                     continue;
                 }
@@ -71,12 +71,12 @@ namespace Fanex.Athena.IdentityServer.Core.Services
                     return _subFunctions;
                 }
 
-                _subFunctions = new Dictionary<int, IEnumerable<LrfFunction>>();
-                foreach (var function in await GetMasterFunctions())
-                {
-                    var subFunctions = _functionList.Where(f => f.ParentId == function.FunctionId);
-                    _subFunctions.Add(function.FunctionId, subFunctions);
-                }
+                _subFunctions = (await GetMasterFunctions()).
+                ToDictionary(
+                    masterFunction => masterFunction.FunctionId,
+                    masterFunction => _functionList.Where(f => f.ParentId == masterFunction.FunctionId)
+                );
+
                 return _subFunctions;
             });
         }
