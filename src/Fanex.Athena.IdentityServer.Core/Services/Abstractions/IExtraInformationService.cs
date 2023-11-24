@@ -13,6 +13,8 @@ namespace Fanex.Athena.IdentityServer.Core.Services
 
         Task<LicenseeInformation> GetLicensee(string licenseeName);
 
+        Task<int> GetSpecialPlatformByLicenseeName(string licenseeName);
+
         bool IsFakeLicensee(string licenseeName);
 
         IEnumerable<AuditCurrency> GetAuditHardCodeCurrencies(string licenseeName);
