@@ -31,5 +31,6 @@
         public const string ClientIP = "ClientIP";
         public const string SiteDBServer = "SiteDBServer";
         public const string AuditCurrencies = "AuditCurrencies";
+        public const string SpecialPlatform = "SpecialPlatform";
     }
 }

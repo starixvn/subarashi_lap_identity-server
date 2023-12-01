@@ -2,6 +2,7 @@
 <Functions SiteId="31" SiteName="Identity Server">
   <Function Name="Licensee">
     <Setting Key="Acc_SiteDBConfigSel" SpName="Acc_SiteDBConfigSel" DbName="DBEXT.bodb02.bodbLicenseeNet" />
+	<Setting Key="Lrf_GetSpecialPlatform" SpName="Lrf_GetSpecialPlatform" DbName="DBEXT.bodb02.bodbLicenseeNet" />
     <Setting Key="Lrf_SelCurrencyByLicenseeUser" SpName="Lrf_SelCurrencyByLicenseeUser" DbName="DBEXT.bodb02.bodbLicenseeNet">
       <Mapping DataField="Currency" ObjectProperty="CurrencyId" />
     </Setting>

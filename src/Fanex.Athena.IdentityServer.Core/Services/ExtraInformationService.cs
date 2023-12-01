@@ -1,15 +1,14 @@
-﻿using Fanex.Athena.IdentityServer.Core.Extensions;
-using Fanex.Athena.IdentityServer.Core.Helpers;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Fanex.Athena.IdentityServer.Core.Extensions;
 using Fanex.Athena.IdentityServer.Core.Models;
 using Fanex.Athena.IdentityServer.Core.Repositories;
 using Fanex.Athena.IdentityServer.Core.Settings;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Fanex.Athena.IdentityServer.Core.Services
 {
@@ -48,6 +47,12 @@ namespace Fanex.Athena.IdentityServer.Core.Services
         {
             var cacheKey = $"GetLicensee_{licenseeName}";
             return _cache.TryGetOrAddFromCache(cacheKey, OneHour, () => GetLicenseeFromDB(licenseeName));
+        }
+
+        public Task<int> GetSpecialPlatformByLicenseeName(string licenseeName)
+        {
+            var cacheKey = $"GetSpecialPlatform_{licenseeName}";
+            return _cache.TryGetOrAddFromCache(cacheKey, OneHour, () => GetSpecialPlatformBySiteName(licenseeName));
         }
 
         public bool IsFakeLicensee(string licenseeName)
@@ -164,6 +169,16 @@ namespace Fanex.Athena.IdentityServer.Core.Services
             var licenseeInfo = await db.QueryEntityAsync<LicenseeInformation>(uspParams);
             AssignSiteDBInfo(licenseeInfo);
             return licenseeInfo;
+        }
+
+        private async Task<int> GetSpecialPlatformBySiteName(string licenseeName)
+        {
+            const string UspName = "Lrf_GetSpecialPlatform";
+            var uspParams = new { siteName = licenseeName };
+
+            using var db = _dbFactory.GetObjectDb(UspName);
+            var specialPlatform = await db.QueryEntityAsync<int>(uspParams);
+            return specialPlatform;
         }
 
         private async Task<LicenseeInformation> GetLicenseeBeLongingLrfUserFromDB(int licenseeId, int lrfUserId)
