@@ -113,14 +113,14 @@ namespace Fanex.Athena.IdentityServer.Core.Services
                 db.SetParameterValue("BaseCurrency", null);
 
                 await db.ExecuteNonQueryAsync();
+                var basedCurrency = db.GetParameterValue("BaseCurrency") != null ? Convert.ToString(db.GetParameterValue("BaseCurrency")) : string.Empty;
 
                 var userInfo = new LapUserInfo
                 {
                     UserLevel = Convert.ToByte(db.GetParameterValue("UserLevel")),
                     IsEnabledSubsidiary = Convert.ToBoolean(db.GetParameterValue("SubsidiaryEnabled")),
                     OperatorID = Convert.ToString(db.GetParameterValue("OperatorID")),
-                    BaseCurrency = db.GetParameterValue("BaseCurrency") != null ?
-                     Convert.ToString(db.GetParameterValue("BaseCurrency")) : string.Empty
+                    BaseCurrency = string.Equals(basedCurrency, "MP", StringComparison.OrdinalIgnoreCase) ? "PHP" : basedCurrency,
                 };
 
                 return userInfo;
