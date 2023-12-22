@@ -120,7 +120,7 @@ namespace Fanex.Athena.IdentityServer.Core.Services
                     UserLevel = Convert.ToByte(db.GetParameterValue("UserLevel")),
                     IsEnabledSubsidiary = Convert.ToBoolean(db.GetParameterValue("SubsidiaryEnabled")),
                     OperatorID = Convert.ToString(db.GetParameterValue("OperatorID")),
-                    BaseCurrency = string.Equals(basedCurrency, "MP", StringComparison.OrdinalIgnoreCase) ? "PHP" : basedCurrency,
+                    BaseCurrency = basedCurrency,
                 };
 
                 return userInfo;
