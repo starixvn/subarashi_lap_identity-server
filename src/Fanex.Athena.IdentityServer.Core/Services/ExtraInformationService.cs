@@ -49,7 +49,7 @@ namespace Fanex.Athena.IdentityServer.Core.Services
             return _cache.TryGetOrAddFromCache(cacheKey, OneHour, () => GetLicenseeFromDB(licenseeName));
         }
 
-        public Task<int> GetSpecialPlatformByLicenseeName(string licenseeName)
+        public Task<LrfSpecialPlatform> GetSpecialPlatformByLicenseeName(string licenseeName)
         {
             var cacheKey = $"GetSpecialPlatform_{licenseeName}";
             return _cache.TryGetOrAddFromCache(cacheKey, OneHour, () => GetSpecialPlatformBySiteName(licenseeName));
@@ -171,13 +171,13 @@ namespace Fanex.Athena.IdentityServer.Core.Services
             return licenseeInfo;
         }
 
-        private async Task<int> GetSpecialPlatformBySiteName(string licenseeName)
+        private async Task<LrfSpecialPlatform> GetSpecialPlatformBySiteName(string licenseeName)
         {
             const string UspName = "Lrf_GetSpecialPlatform";
             var uspParams = new { siteName = licenseeName };
 
             using var db = _dbFactory.GetObjectDb(UspName);
-            var specialPlatform = await db.QueryEntityAsync<int>(uspParams);
+            var specialPlatform = await db.QueryEntityAsync<LrfSpecialPlatform>(uspParams);
             return specialPlatform;
         }
 

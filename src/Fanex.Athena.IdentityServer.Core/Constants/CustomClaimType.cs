@@ -32,5 +32,6 @@
         public const string SiteDBServer = "SiteDBServer";
         public const string AuditCurrencies = "AuditCurrencies";
         public const string SpecialPlatform = "SpecialPlatform";
+        public const string SpecialPlatformType = "SpecialPlatformType";
     }
 }

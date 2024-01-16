@@ -126,7 +126,7 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
 
         private async Task GenerateLicenseeClaims(List<Claim> claims, int userID, LicenseeInformation licenseeInfo)
         {
-            var (offeredSubProducts, isEnableSingleWallet, currencyAgentList, functionList, specialPlatform) = await TaskExtension.WhenAll(
+            var (offeredSubProducts, isEnableSingleWallet, currencyAgentList, functionList, lrfSpecialPlatform) = await TaskExtension.WhenAll(
                 _extraInformationService.GetOfferedSubProducts(licenseeInfo.Id),
                 _extraInformationService.IsEnableSingleWallet(licenseeInfo.Name),
                 _extraInformationService.GetCurrencyAgentListByLrfUser(licenseeInfo.Id, userID),
@@ -135,7 +135,8 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
 
             claims.Add(new Claim(CustomClaimType.LicenseeId, licenseeInfo.Id.ToString(), ClaimValueType.Integer));
             claims.Add(new Claim(CustomClaimType.SiteName, licenseeInfo.Name, ClaimValueType.String));
-            claims.Add(new Claim(CustomClaimType.SpecialPlatform, specialPlatform.ToString(), ClaimValueType.Integer));
+            claims.Add(new Claim(CustomClaimType.SpecialPlatform, lrfSpecialPlatform.SpecialPlatform.ToString(), ClaimValueType.Integer));
+            claims.Add(new Claim(CustomClaimType.SpecialPlatformType, lrfSpecialPlatform.SpecialPlatformType.ToString(), ClaimValueType.Integer));
             claims.Add(new Claim(CustomClaimType.SiteDBServer, licenseeInfo.SiteDBServer, ClaimValueType.String));
             claims.Add(new Claim(CustomClaimType.OfferedSubProducts, offeredSubProducts, ClaimValueType.String));
             claims.Add(new Claim(CustomClaimType.OfferedOddsGroups, _extraInformationService.GetOffereOddGroups(licenseeInfo.Name), ClaimValueType.String));

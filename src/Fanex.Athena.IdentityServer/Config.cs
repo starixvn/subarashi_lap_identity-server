@@ -195,6 +195,7 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.CurrencyAgent,
                         CustomClaimType.OfferedSubProducts,
                         CustomClaimType.SpecialPlatform,
+                        CustomClaimType.SpecialPlatformType,
                     }
                 },
                 new ApiScope("report_api")
@@ -213,6 +214,7 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.SiteDBServer,
                         CustomClaimType.AuditCurrencies,
                         CustomClaimType.SpecialPlatform,
+                        CustomClaimType.SpecialPlatformType,
                     }
                 }
             };

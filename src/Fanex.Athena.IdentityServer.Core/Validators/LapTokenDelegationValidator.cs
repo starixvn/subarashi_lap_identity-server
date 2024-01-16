@@ -63,7 +63,7 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
 
             await TryRevokeOldToken(context);
 
-            var (userInfo, isEnableSingleWallet, offeredSubProducts, specialPlatform) = await TaskExtension.WhenAll(
+            var (userInfo, isEnableSingleWallet, offeredSubProducts, lrfSpecialPlatform) = await TaskExtension.WhenAll(
                 _extraInformationService.GetLapUserInfo(authInfo.UserSEQ, authInfo.VendorID),
                 _extraInformationService.IsEnableSingleWallet(authInfo.SiteName),
                 _extraInformationService.GetOfferedSubProducts(licenseeInfo.Id),
@@ -99,7 +99,8 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
                         new Claim(CustomClaimType.IsFakeLicensee, _extraInformationService.IsFakeLicensee(licenseeInfo.Name).ToString(), ClaimValueType.Boolean),
                         new Claim(CustomClaimType.AuditCurrencies, JsonConvert.SerializeObject(_extraInformationService.GetAuditHardCodeCurrencies(licenseeInfo.Name)), ClaimValueType.Json),
                         new Claim(CustomClaimType.CurrencyAgent, JsonConvert.SerializeObject(authInfo.Currency), ClaimValueType.Json),
-                        new Claim(CustomClaimType.SpecialPlatform, specialPlatform.ToString(), ClaimValueType.Integer),
+                        new Claim(CustomClaimType.SpecialPlatform, lrfSpecialPlatform.SpecialPlatform.ToString(), ClaimValueType.Integer),
+                        new Claim(CustomClaimType.SpecialPlatformType, lrfSpecialPlatform.SpecialPlatformType.ToString(), ClaimValueType.Integer),
                         });
 
             AddExternalClaims(claims, context.Request);
