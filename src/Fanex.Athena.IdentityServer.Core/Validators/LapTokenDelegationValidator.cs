@@ -119,7 +119,7 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
             context.Result = new GrantValidationResult(
                     identityName,
                     CustomGrantType.LapToken,
-                    DateTime.UtcNow, claims,
+                    DateTimeOffset.UtcNow.DateTime, claims,
                     ClaimsIdentity.DefaultIssuer);
         }
 
