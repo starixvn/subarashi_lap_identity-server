@@ -1,36 +1,36 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Functions SiteId="31" SiteName="Identity Server">
   <Function Name="Licensee">
-    <Setting Key="Acc_SiteDBConfigSel" SpName="Acc_SiteDBConfigSel" DbName="DBEXT.bodb02.bodbLicenseeNet" />
-	  <Setting Key="Lrf_GetSpecialPlatform" SpName="Lrf_GetSpecialPlatform" DbName="DBEXT.bodb02.bodbLicenseeNet" />
-	  <Setting Key="Lrf_SelCurrencyByLicenseeUser" SpName="Lrf_SelCurrencyByLicenseeUser" DbName="DBEXT.bodb02.bodbLicenseeNet">
+    <Setting Key="Acc_SiteDBConfigSel" SpName="Acc_SiteDBConfigSel" DbName="DBEXT.bodb02.wsv_lap" />
+	  <Setting Key="Lrf_GetSpecialPlatform" SpName="Lrf_GetSpecialPlatform" DbName="DBEXT.bodb02.wsv_lap" />
+	  <Setting Key="Lrf_SelCurrencyByLicenseeUser" SpName="Lrf_SelCurrencyByLicenseeUser" DbName="DBEXT.bodb02.wsv_lap">
       <Mapping DataField="Currency" ObjectProperty="CurrencyId" />
     </Setting>
-    <Setting Key="Lrf_LicenseeSelBySiteName" SpName="Lrf_LicenseeSelBySiteName" DbName="DBLIC.bodb_Licensee.bodbLicenseeNet">
+    <Setting Key="Lrf_LicenseeSelBySiteName" SpName="Lrf_LicenseeSelBySiteName" DbName="DBLIC.bodb_Licensee.wsv_lap">
       <Mapping DataField="LicenseeID" ObjectProperty="Id" />
       <Mapping DataField="LicenseeName" ObjectProperty="Name" />
       <Mapping DataField="IsAllowedMemberComm" ObjectProperty="IsAllowedCustomerComm" />
       <Mapping DataField="EnableBA" ObjectProperty="IsEnableBA" />
     </Setting>
-    <Setting Key="Lrf_LicenseeSel" SpName="Lrf_LicenseeSel" DbName="DBLIC.bodb_Licensee.bodbLicenseeNet" />
-    <Setting Key="Lrf_LicenseeProduct3rdSel" SpName="Lrf_LicenseeProduct3rdSel" DbName="DBLIC.bodb_Licensee.bodbLicenseeNet" />
+    <Setting Key="Lrf_LicenseeSel" SpName="Lrf_LicenseeSel" DbName="DBLIC.bodb_Licensee.wsv_lap" />
+    <Setting Key="Lrf_LicenseeProduct3rdSel" SpName="Lrf_LicenseeProduct3rdSel" DbName="DBLIC.bodb_Licensee.wsv_lap" />
   </Function>
   <Function Name="SiteConfig">
-    <Setting Key="Lrf_GetUserLevelInfo" SpName="Lrf_GetUserLevelInfo" DbName="DBCUST.SiteConfig_TW.bodbLicenseeNet" />
-    <Setting Key="Lrf_GetConfigDetailByKeyName" SpName="Lrf_GetConfigDetailByKeyName" DbName="DBCUST.SiteConfig.bodbLicenseeNet" />
+    <Setting Key="Lrf_GetUserLevelInfo" SpName="Lrf_GetUserLevelInfo" DbName="DBCUST.SiteConfig_TW.wsv_lap" />
+    <Setting Key="Lrf_GetConfigDetailByKeyName" SpName="Lrf_GetConfigDetailByKeyName" DbName="DBCUST.SiteConfig.wsv_lap" />
   </Function>
   <Function Name="Lrf">
-    <Setting Key="Lrf_FunctionsSel" SpName="Lrf_FunctionsSel" DbName="DBLIC.bodb_Licensee.bodbLicenseeNet" />
-    <Setting Key="Lrf_LicenseeFunctionsSel" SpName="LRF_LicenseeFunctionsSel" DbName="DBLIC.bodb_Licensee.bodbLicenseeNet" />
-    <Setting Key="Lrf_LicenseeUserFunctionsSel" SpName="LRF_LicenseeUserFunctionsSel" DbName="DBLIC.bodb_Licensee.bodbLicenseeNet" />
-    <Setting Key="Lrf_UserLogin" SpName="Lrf_UserLogin" DbName="DBCUST.bodb_Licensee.bodbLicenseeNet" />
-    <Setting Key="Lrf_CheckIn" SpName="Lrf_CheckIn" DbName="DBCUST.bodb_Licensee.bodbLicenseeNet" />
-    <Setting Key="Lrf_UserInfoSelByUserName" SpName="Lrf_UserInfoSelByUserName" DbName="DBLIC.bodb_Licensee.bodbLicenseeNet" />
+    <Setting Key="Lrf_FunctionsSel" SpName="Lrf_FunctionsSel" DbName="DBLIC.bodb_Licensee.wsv_lap" />
+    <Setting Key="Lrf_LicenseeFunctionsSel" SpName="LRF_LicenseeFunctionsSel" DbName="DBLIC.bodb_Licensee.wsv_lap" />
+    <Setting Key="Lrf_LicenseeUserFunctionsSel" SpName="LRF_LicenseeUserFunctionsSel" DbName="DBLIC.bodb_Licensee.wsv_lap" />
+    <Setting Key="Lrf_UserLogin" SpName="Lrf_UserLogin" DbName="DBCUST.bodb_Licensee.wsv_lap" />
+    <Setting Key="Lrf_CheckIn" SpName="Lrf_CheckIn" DbName="DBCUST.bodb_Licensee.wsv_lap" />
+    <Setting Key="Lrf_UserInfoSelByUserName" SpName="Lrf_UserInfoSelByUserName" DbName="DBLIC.bodb_Licensee.wsv_lap" />
   </Function>
   <Function Name="Token">
-    <Setting Key="LAP_IdentityServer_TokenInsOrUpd" SpName="LAP_IdentityServer_TokenInsOrUpd" DbName="DBCUST.bodb_Licensee.bodbLicenseeNet" />
-    <Setting Key="LAP_IdentityServer_TokenSel" SpName="LAP_IdentityServer_TokenSel" DbName="DBCUST.bodb_Licensee.bodbLicenseeNet" />
-    <Setting Key="LAP_IdentityServer_TokenDel" SpName="LAP_IdentityServer_TokenDel" DbName="DBCUST.bodb_Licensee.bodbLicenseeNet" />
-    <Setting Key="LAP_IdentityServer_ExpiredTokenDel" SpName="LAP_IdentityServer_ExpiredTokenDel" DbName="DBCUST.bodb_Licensee.bodbLicenseeNet" />
+    <Setting Key="LAP_IdentityServer_TokenInsOrUpd" SpName="LAP_IdentityServer_TokenInsOrUpd" DbName="DBCUST.bodb_Licensee.wsv_lap" />
+    <Setting Key="LAP_IdentityServer_TokenSel" SpName="LAP_IdentityServer_TokenSel" DbName="DBCUST.bodb_Licensee.wsv_lap" />
+    <Setting Key="LAP_IdentityServer_TokenDel" SpName="LAP_IdentityServer_TokenDel" DbName="DBCUST.bodb_Licensee.wsv_lap" />
+    <Setting Key="LAP_IdentityServer_ExpiredTokenDel" SpName="LAP_IdentityServer_ExpiredTokenDel" DbName="DBCUST.bodb_Licensee.wsv_lap" />
   </Function>
 </Functions>
