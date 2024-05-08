@@ -182,8 +182,8 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
 
         private static string GetDefaultReportUrl(IEnumerable<LrfFunction> functionList)
         {
-            const string DefaultReportFunction = "LicenseeWinLoss27";
-            const string DefaultReportUrl = "LicenseeWinLossReport";
+            const string DefaultReportFunction = "WinlossAnalysis";
+            const string DefaultReportUrl = "WinlossAnalysisReport";
             if (!functionList.Any(x => x.FunctionKey.Equals(DefaultReportFunction)))
             {
                 var firstFunction = functionList.FirstOrDefault(x => x.ParentId > 0);
