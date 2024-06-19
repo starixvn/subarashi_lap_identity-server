@@ -15,7 +15,7 @@ namespace Fanex.Athena.IdentityServer.Core.Services
     public class ExtraInformationService : IExtraInformationService
     {
         private static readonly TimeSpan OneHour = TimeSpan.FromHours(1);
-        private static readonly IEnumerable<string> SubProductCodeList = new[] { "SLT", "BTC" };
+        private static readonly IEnumerable<string> SubProductCodeList = Enumerable.Empty<string>();
         private readonly Lazy<IReadOnlyDictionary<int, string>> _siteDBConfig;
         private readonly ConcurrentDictionary<string, object> _longLifeData;
         private readonly IMemoryCache _cache;
