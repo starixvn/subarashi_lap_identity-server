@@ -1,31 +1,29 @@
-﻿using Fanex.Athena.IdentityServer.Core.Constants;
-using Fanex.Athena.IdentityServer.Core.Extensions;
-using Fanex.Athena.IdentityServer.Core.Models;
-using Fanex.Athena.IdentityServer.Core.Services;
-using IdentityModel;
-using IdentityServer4.Models;
-using IdentityServer4.Stores;
-using IdentityServer4.Validation;
-using LAP.ONEBook.Security;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-
-namespace Fanex.Athena.IdentityServer.Core.Validators
+﻿namespace Fanex.Athena.IdentityServer.Core.Validators
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using Constants;
+    using Extensions;
+    using IdentityModel;
+    using IdentityServer4.Models;
+    using IdentityServer4.Stores;
+    using IdentityServer4.Validation;
+    using LAP.ONEBook.Security;
+    using Microsoft.Extensions.Logging;
+    using Models;
+    using Newtonsoft.Json;
+    using Services;
+
     public class LapTokenDelegationValidator : IExtensionGrantValidator
     {
         private const string LicenseeNotExistedErrorCode = "200";
-
-        public string GrantType => CustomGrantType.LapToken;
-
-        private readonly ILogger _logger;
         private readonly IAuth<DefaultAuthInfo<LapFunction, CurrencyAgent>> _authService;
         private readonly IExtraInformationService _extraInformationService;
+
+        private readonly ILogger _logger;
         private readonly IReferenceTokenStore _referenceTokenStore;
 
         public LapTokenDelegationValidator(
@@ -33,13 +31,15 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
             IAuth<DefaultAuthInfo<LapFunction, CurrencyAgent>> authService,
             IExtraInformationService extraInformationService,
             IReferenceTokenStore referenceTokenStore
-            )
+        )
         {
             _logger = logger;
             _authService = authService;
             _extraInformationService = extraInformationService;
             _referenceTokenStore = referenceTokenStore;
         }
+
+        public string GrantType => CustomGrantType.LapToken;
 
         public async Task ValidateAsync(ExtensionGrantValidationContext context)
         {
@@ -49,7 +49,8 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
             {
                 var errorMsg = $"Token {token} is invalid ";
                 context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest, errorMsg);
-                _logger.LogInformation($"{errorMsg} - token info: {JsonConvert.SerializeObject(new { authInfo?.SiteName, authInfo?.UserName, authInfo?.UserSEQ })}");
+                _logger.LogInformation(
+                    $"{errorMsg} - token info: {JsonConvert.SerializeObject(new { authInfo?.SiteName, authInfo?.UserName, authInfo?.UserSEQ })}");
                 return;
             }
 
@@ -63,45 +64,47 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
 
             await TryRevokeOldToken(context);
 
-            var (userInfo, isEnableSingleWallet, offeredSubProducts, lrfSpecialPlatform) = await TaskExtension.WhenAll(
-                _extraInformationService.GetLapUserInfo(authInfo.UserSEQ, authInfo.VendorID),
+            var (isEnableSingleWallet, offeredSubProducts, lrfSpecialPlatform) = await TaskExtension.WhenAll(
                 _extraInformationService.IsEnableSingleWallet(authInfo.SiteName),
                 _extraInformationService.GetOfferedSubProducts(licenseeInfo.Id),
                 _extraInformationService.GetSpecialPlatformByLicenseeName(authInfo.SiteName));
 
-            var identityName = $"portal_{authInfo.VendorID}_{authInfo.SiteName}_{authInfo.UserID}_{authInfo.UserSEQ}";
+            var loginSource = authInfo.EnableOpc ? "OPC" : "LAP";
+            var identityName = $"portal_{loginSource}_{authInfo.VendorID}_{authInfo.SiteName}_{authInfo.UserID}_{authInfo.UserSEQ}";
 
             var claims = new List<Claim>(
-                new[] {
-                        new Claim(JwtClaimTypes.Name, identityName, ClaimValueType.String),
-                        new Claim(CustomClaimType.VendorID, authInfo.VendorID, ClaimValueType.String),
-                        new Claim(CustomClaimType.SiteName, authInfo.SiteName, ClaimValueType.String),
-                        new Claim(CustomClaimType.UserSEQ, authInfo.UserSEQ.ToString(), ClaimValueType.Integer),
-                        new Claim(CustomClaimType.UserID, authInfo.UserID, ClaimValueType.String),
-                        new Claim(CustomClaimType.Username, authInfo.UserName, ClaimValueType.String),
-                        new Claim(CustomClaimType.Language, authInfo.Language, ClaimValueType.String),
-                        new Claim(CustomClaimType.ActionLink, authInfo.ActionLink, ClaimValueType.String),
-                        new Claim(CustomClaimType.Administrator, authInfo.IsAdminstrator.ToString(), ClaimValueType.Boolean),
-                        new Claim(CustomClaimType.WhiteLabelID, authInfo.WhiteLabelID?.ToString() ?? "-1", ClaimValueType.Integer),
-                        new Claim(CustomClaimType.IsMasterLicensee, authInfo.IsMasterLicensee.ToString(), ClaimValueType.Boolean),
-                        new Claim(CustomClaimType.LicenseeId, licenseeInfo.Id.ToString(), ClaimValueType.Integer),
-                        new Claim(CustomClaimType.SiteDBServer, licenseeInfo.SiteDBServer, ClaimValueType.String),
-                        new Claim(CustomClaimType.IsAllowedCustomerComm, licenseeInfo.IsAllowedCustomerComm.ToString(), ClaimValueType.Boolean),
-                        new Claim(CustomClaimType.IsEnableBA, licenseeInfo.IsEnableBA.ToString(), ClaimValueType.Boolean),
-                        new Claim(CustomClaimType.UserLevel, userInfo.UserLevel.ToString(), ClaimValueType.Integer),
-                        new Claim(CustomClaimType.IsEnabledSubsidiary, userInfo.IsEnabledSubsidiary.ToString(), ClaimValueType.Boolean),
-                        new Claim(CustomClaimType.OperatorID, userInfo.OperatorID, ClaimValueType.String),
-                        new Claim(CustomClaimType.BaseCurrency, userInfo.BaseCurrency, ClaimValueType.String),
-                        new Claim(CustomClaimType.IsEnableSingleWallet, isEnableSingleWallet.ToString(), ClaimValueType.Boolean),
-                        new Claim(CustomClaimType.IsShowIP, _extraInformationService.IsOfferShowIP(authInfo.SiteName).ToString(), ClaimValueType.Boolean),
-                        new Claim(CustomClaimType.OfferedSubProducts, offeredSubProducts, ClaimValueType.String),
-                        new Claim(CustomClaimType.OfferedOddsGroups, _extraInformationService.GetOffereOddGroups(authInfo.SiteName), ClaimValueType.String),
-                        new Claim(CustomClaimType.IsFakeLicensee, _extraInformationService.IsFakeLicensee(licenseeInfo.Name).ToString(), ClaimValueType.Boolean),
-                        new Claim(CustomClaimType.AuditCurrencies, JsonConvert.SerializeObject(_extraInformationService.GetAuditHardCodeCurrencies(licenseeInfo.Name)), ClaimValueType.Json),
-                        new Claim(CustomClaimType.CurrencyAgent, JsonConvert.SerializeObject(authInfo.Currency), ClaimValueType.Json),
-                        new Claim(CustomClaimType.SpecialPlatform, lrfSpecialPlatform.SpecialPlatform.ToString(), ClaimValueType.Integer),
-                        new Claim(CustomClaimType.SpecialPlatformType, lrfSpecialPlatform.SpecialPlatformType.ToString(), ClaimValueType.Integer),
-                        });
+                new[]
+                {
+                    new Claim(JwtClaimTypes.Name, identityName, ClaimValueType.String),
+                    new Claim(CustomClaimType.VendorID, authInfo.VendorID, ClaimValueType.String),
+                    new Claim(CustomClaimType.SiteName, authInfo.SiteName, ClaimValueType.String),
+                    new Claim(CustomClaimType.UserSEQ, authInfo.UserSEQ.ToString(), ClaimValueType.Integer),
+                    new Claim(CustomClaimType.UserID, authInfo.UserID, ClaimValueType.String),
+                    new Claim(CustomClaimType.Username, authInfo.UserName, ClaimValueType.String),
+                    new Claim(CustomClaimType.Language, authInfo.Language, ClaimValueType.String),
+                    new Claim(CustomClaimType.ActionLink, authInfo.ActionLink, ClaimValueType.String),
+                    new Claim(CustomClaimType.Administrator, authInfo.IsAdminstrator.ToString(), ClaimValueType.Boolean),
+                    new Claim(CustomClaimType.WhiteLabelID, authInfo.WhiteLabelID?.ToString() ?? "-1", ClaimValueType.Integer),
+                    new Claim(CustomClaimType.IsMasterLicensee, authInfo.IsMasterLicensee.ToString(), ClaimValueType.Boolean),
+                    new Claim(CustomClaimType.LicenseeId, licenseeInfo.Id.ToString(), ClaimValueType.Integer),
+                    new Claim(CustomClaimType.SiteDBServer, licenseeInfo.SiteDBServer, ClaimValueType.String),
+                    new Claim(CustomClaimType.IsAllowedCustomerComm, licenseeInfo.IsAllowedCustomerComm.ToString(), ClaimValueType.Boolean),
+                    new Claim(CustomClaimType.IsEnableBA, licenseeInfo.IsEnableBA.ToString(), ClaimValueType.Boolean),
+                    new Claim(CustomClaimType.UserLevel, authInfo.UserLevel.ToString(), ClaimValueType.Integer),
+                    new Claim(CustomClaimType.IsEnabledSubsidiary, authInfo.IsEnabledSubsidiary.ToString(), ClaimValueType.Boolean),
+                    new Claim(CustomClaimType.OperatorID, authInfo.OperatorID, ClaimValueType.String),
+                    new Claim(CustomClaimType.BaseCurrency, authInfo.BaseCurrency, ClaimValueType.String),
+                    new Claim(CustomClaimType.IsEnableSingleWallet, isEnableSingleWallet.ToString(), ClaimValueType.Boolean),
+                    new Claim(CustomClaimType.IsShowIP, _extraInformationService.IsOfferShowIP(authInfo.SiteName).ToString(), ClaimValueType.Boolean),
+                    new Claim(CustomClaimType.OfferedSubProducts, offeredSubProducts, ClaimValueType.String),
+                    new Claim(CustomClaimType.OfferedOddsGroups, _extraInformationService.GetOffereOddGroups(authInfo.SiteName), ClaimValueType.String),
+                    new Claim(CustomClaimType.IsFakeLicensee, _extraInformationService.IsFakeLicensee(licenseeInfo.Name).ToString(), ClaimValueType.Boolean),
+                    new Claim(CustomClaimType.AuditCurrencies,
+                        JsonConvert.SerializeObject(_extraInformationService.GetAuditHardCodeCurrencies(licenseeInfo.Name)), ClaimValueType.Json),
+                    new Claim(CustomClaimType.CurrencyAgent, JsonConvert.SerializeObject(authInfo.Currency), ClaimValueType.Json),
+                    new Claim(CustomClaimType.SpecialPlatform, lrfSpecialPlatform.SpecialPlatform.ToString(), ClaimValueType.Integer),
+                    new Claim(CustomClaimType.SpecialPlatformType, lrfSpecialPlatform.SpecialPlatformType.ToString(), ClaimValueType.Integer)
+                });
 
             AddExternalClaims(claims, context.Request);
 
@@ -112,15 +115,15 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
             else
             {
                 var roles = authInfo.Permissions.SelectMany(_ => new List<string>(_.SubFunctionKeys ?? Enumerable.Empty<string>())
-                                                                                            .Append(_.FunctionKey));
+                    .Append(_.FunctionKey));
                 claims.AddRange(roles.Select(_ => new Claim(JwtClaimTypes.Role, _, ClaimValueType.String)));
             }
 
             context.Result = new GrantValidationResult(
-                    identityName,
-                    CustomGrantType.LapToken,
-                    DateTimeOffset.UtcNow.DateTime, claims,
-                    ClaimsIdentity.DefaultIssuer);
+                identityName,
+                CustomGrantType.LapToken,
+                DateTimeOffset.UtcNow.DateTime, claims,
+                ClaimsIdentity.DefaultIssuer);
         }
 
         private static void AddExternalClaims(ICollection<Claim> claims, ValidatedTokenRequest request)

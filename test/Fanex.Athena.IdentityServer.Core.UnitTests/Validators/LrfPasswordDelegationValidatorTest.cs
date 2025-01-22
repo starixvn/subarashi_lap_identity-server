@@ -1,22 +1,22 @@
-﻿using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Fanex.Athena.IdentityServer.Core.Constants;
-using Fanex.Athena.IdentityServer.Core.Models;
-using Fanex.Athena.IdentityServer.Core.Services;
-using Fanex.Athena.IdentityServer.Core.Settings;
-using Fanex.Athena.IdentityServer.Core.Validators;
-using Fanex.Athena.IdentityServer.UnitTests.Common;
-using IdentityServer4.Models;
-using IdentityServer4.Stores;
-using IdentityServer4.Validation;
-using Microsoft.Extensions.Logging;
-using Moq;
-using Xunit;
-
-namespace Fanex.Athena.IdentityServer.Core.UnitTests.Validators
+﻿namespace Fanex.Athena.IdentityServer.Core.UnitTests.Validators
 {
+    using System.Collections.Generic;
+    using System.Collections.Specialized;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using Constants;
+    using Core.Services;
+    using Core.Validators;
+    using IdentityServer.UnitTests.Common;
+    using IdentityServer4.Models;
+    using IdentityServer4.Stores;
+    using IdentityServer4.Validation;
+    using Microsoft.Extensions.Logging;
+    using Models;
+    using Moq;
+    using Settings;
+    using Xunit;
+
     public class LrfPasswordDelegationValidatorTest
     {
         private readonly ExtensionGrantValidationContext _context;
@@ -66,14 +66,14 @@ namespace Fanex.Athena.IdentityServer.Core.UnitTests.Validators
 
             var userInfo = FakeHelper.Create<LrfUserInfo>();
             _lrfAuthService.Setup(x => x.ValidateUser(
-                                                      It.Is<string>(_ => _.Equals(username)),
-                                                      It.Is<string>(_ => _.Equals(password)),
-                                                      It.Is<string>(_ => _.Equals(loginToken)),
-                                                      It.Is<string>(_ => _.Equals(clientIP))))
-                           .Returns(Task.FromResult((0, "", userInfo)));
+                    It.Is<string>(_ => _.Equals(username)),
+                    It.Is<string>(_ => _.Equals(password)),
+                    It.Is<string>(_ => _.Equals(loginToken)),
+                    It.Is<string>(_ => _.Equals(clientIP))))
+                .Returns(Task.FromResult((0, "", userInfo)));
             var licenseeInfo = FakeHelper.Create<LicenseeInformation>();
             _extraInformationService.Setup(x => x.GetLicenseeBelongingLrfUser(userInfo.LicenseeId, userInfo.UserID))
-                                    .Returns(Task.FromResult(licenseeInfo));
+                .Returns(Task.FromResult(licenseeInfo));
             SetupExtraInformationServices(userInfo.LicenseeId, licenseeInfo);
 
             const string accessToken = "AnyToken";
@@ -86,11 +86,11 @@ namespace Fanex.Athena.IdentityServer.Core.UnitTests.Validators
             _context.Request.ClientId = clientId;
 
             _referenceTokenStore.Setup(x => x.GetReferenceTokenAsync(It.Is<string>(_ => _.Equals(accessToken))))
-                                .Returns(Task.FromResult(tokenInfo));
+                .Returns(Task.FromResult(tokenInfo));
 
             var validator = new LrfPasswordDelegationValidator(_referenceTokenStore.Object, _lrfAuthService.Object,
-                                                               _lrfFunctionService.Object,
-                                                               _extraInformationService.Object, _logger.Object);
+                _lrfFunctionService.Object,
+                _extraInformationService.Object, _logger.Object);
             // Act
             await validator.ValidateAsync(_context);
 
@@ -107,15 +107,15 @@ namespace Fanex.Athena.IdentityServer.Core.UnitTests.Validators
 
             var userInfo = FakeHelper.Create<LrfUserInfo>();
             _lrfAuthService.Setup(x => x.ValidateUser(
-                                                      It.IsAny<string>(),
-                                                      It.IsAny<string>(),
-                                                      It.IsAny<string>(),
-                                                      It.IsAny<string>()))
-                           .Returns(Task.FromResult((1, "", userInfo)));
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
+                .Returns(Task.FromResult((1, "", userInfo)));
 
             var validator = new LrfPasswordDelegationValidator(_referenceTokenStore.Object, _lrfAuthService.Object,
-                                                               _lrfFunctionService.Object,
-                                                               _extraInformationService.Object, _logger.Object);
+                _lrfFunctionService.Object,
+                _extraInformationService.Object, _logger.Object);
             // Act
             await validator.ValidateAsync(_context);
 
@@ -141,7 +141,7 @@ namespace Fanex.Athena.IdentityServer.Core.UnitTests.Validators
             _context.Request.ClientId = clientId;
 
             _referenceTokenStore.Setup(x => x.GetReferenceTokenAsync(It.Is<string>(_ => _.Equals(accessToken))))
-                                .Returns(Task.FromResult(tokenInfo));
+                .Returns(Task.FromResult(tokenInfo));
 
             const int userId = 5;
             tokenInfo.Claims.Add(new Claim(CustomClaimType.UserSEQ, userId.ToString()));
@@ -150,12 +150,12 @@ namespace Fanex.Athena.IdentityServer.Core.UnitTests.Validators
 
             var licenseeInfo = FakeHelper.Create<LicenseeInformation>();
             _extraInformationService.Setup(x => x.GetLicenseeBelongingLrfUser(licenseeId, userId))
-                                    .Returns(Task.FromResult(licenseeInfo));
+                .Returns(Task.FromResult(licenseeInfo));
             SetupExtraInformationServices(userId, licenseeInfo);
 
             var validator = new LrfPasswordDelegationValidator(_referenceTokenStore.Object, _lrfAuthService.Object,
-                                                               _lrfFunctionService.Object,
-                                                               _extraInformationService.Object, _logger.Object);
+                _lrfFunctionService.Object,
+                _extraInformationService.Object, _logger.Object);
             // Act
             await validator.ValidateAsync(_context);
 
@@ -171,8 +171,8 @@ namespace Fanex.Athena.IdentityServer.Core.UnitTests.Validators
             _context.Request.Raw.Add("is_renew_token", "1");
 
             var validator = new LrfPasswordDelegationValidator(_referenceTokenStore.Object, _lrfAuthService.Object,
-                                                               _lrfFunctionService.Object,
-                                                               _extraInformationService.Object, _logger.Object);
+                _lrfFunctionService.Object,
+                _extraInformationService.Object, _logger.Object);
             // Act
             await validator.ValidateAsync(_context);
 
@@ -185,27 +185,30 @@ namespace Fanex.Athena.IdentityServer.Core.UnitTests.Validators
         private void SetupExtraInformationServices(int userId, LicenseeInformation licenseeInfo)
         {
             _extraInformationService.Setup(x => x.GetOfferedSubProducts(licenseeInfo.Id))
-                                    .Returns(Task.FromResult(FakeHelper.Create<string>()));
+                .Returns(Task.FromResult(FakeHelper.Create<string>()));
 
             _extraInformationService.Setup(x => x.IsEnableSingleWallet(It.Is<string>(_ => _.Equals(licenseeInfo.Name))))
-                                    .Returns(Task.FromResult(true));
+                .Returns(Task.FromResult(true));
 
             _extraInformationService.Setup(x => x.GetCurrencyAgentListByLrfUser(licenseeInfo.Id, userId))
-                                    .Returns(Task.FromResult(FakeHelper.CreateMany<CurrencyAgent>()));
+                .Returns(Task.FromResult(FakeHelper.CreateMany<CurrencyAgent>()));
 
             _lrfFunctionService.Setup(x => x.GetUserFunctions(licenseeInfo.Id, userId))
-                               .Returns(Task.FromResult(FakeHelper.CreateMany<LrfFunction>()));
+                .Returns(Task.FromResult(FakeHelper.CreateMany<LrfFunction>()));
 
             _extraInformationService.Setup(x => x.GetOffereOddGroups(It.Is<string>(_ => _.Equals(licenseeInfo.Name))))
-                                    .Returns(FakeHelper.Create<string>());
+                .Returns(FakeHelper.Create<string>());
 
             _extraInformationService.Setup(x => x.IsOfferShowIP(It.Is<string>(_ => _.Equals(licenseeInfo.Name))))
-                                    .Returns(FakeHelper.Create<bool>());
+                .Returns(FakeHelper.Create<bool>());
             _extraInformationService.Setup(x => x.IsFakeLicensee(It.Is<string>(_ => _.Equals(licenseeInfo.Name))))
-                                    .Returns(FakeHelper.Create<bool>());
+                .Returns(FakeHelper.Create<bool>());
 
             _extraInformationService.Setup(x => x.GetAuditHardCodeCurrencies(licenseeInfo.Name))
-                                    .Returns(FakeHelper.CreateMany<AuditCurrency>());
+                .Returns(FakeHelper.CreateMany<AuditCurrency>());
+
+            _extraInformationService.Setup(x => x.GetSpecialPlatformByLicenseeName(licenseeInfo.Name))
+                .Returns(Task.FromResult(FakeHelper.Create<LrfSpecialPlatform>()));
         }
 
         private void SetupUserClaim(ICollection<Claim> claims)

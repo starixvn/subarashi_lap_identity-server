@@ -1,23 +1,23 @@
-﻿using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoFixture.Xunit2;
-using Fanex.Athena.IdentityServer.Core.Models;
-using Fanex.Athena.IdentityServer.Core.Repositories;
-using Fanex.Athena.IdentityServer.Core.Services;
-using Fanex.Athena.IdentityServer.Core.Settings;
-using Fanex.Athena.IdentityServer.UnitTests.Common;
-using Fanex.Athena.IdentityServer.UnitTests.Common.ServiceMoqExtensions;
-using Fanex.Data;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Internal;
-using Microsoft.Extensions.Options;
-using Moq;
-using Xunit;
-
-namespace Fanex.Athena.IdentityServer.Core.UnitTests.Services
+﻿namespace Fanex.Athena.IdentityServer.Core.UnitTests.Services
 {
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using AutoFixture.Xunit2;
+    using Core.Services;
+    using Data;
+    using IdentityServer.UnitTests.Common;
+    using IdentityServer.UnitTests.Common.ServiceMoqExtensions;
+    using Microsoft.Extensions.Caching.Memory;
+    using Microsoft.Extensions.Internal;
+    using Microsoft.Extensions.Options;
+    using Models;
+    using Moq;
+    using Repositories;
+    using Settings;
+    using Xunit;
+
     public class ExtraInformationServiceTest
     {
         private readonly Mock<IOptions<AppSetting>> _appSetting;
@@ -46,7 +46,8 @@ namespace Fanex.Athena.IdentityServer.Core.UnitTests.Services
             _appSetting = new Mock<IOptions<AppSetting>>();
         }
 
-        [Theory] [AutoData]
+        [Theory]
+        [AutoData]
         public async Task GetLicensee_WhenCall_ReturnValue(
             LicenseeInformation licenseeInformation,
             string licenseeName,
@@ -61,7 +62,7 @@ namespace Fanex.Athena.IdentityServer.Core.UnitTests.Services
             SetupSiteDbMock();
 
             _objDb.Setup(x => x.QueryEntityAsync<LicenseeInformation>(It.IsAny<object>(), null, default))
-                  .Returns(Task.FromResult(licenseeInformation));
+                .Returns(Task.FromResult(licenseeInformation));
             _dbFactory.Setup(x => x.GetObjectDb("Lrf_LicenseeSelBySiteName", It.IsAny<int>())).Returns(_objDb.Object);
 
             var service = new ExtraInformationService(_dbFactory.Object, _memoryCache, _appSetting.Object);
@@ -104,7 +105,7 @@ namespace Fanex.Athena.IdentityServer.Core.UnitTests.Services
             licenseeInformation.SiteDBServer = null;
 
             _objDb.Setup(x => x.QueryEntityAsync<LicenseeInformation>(It.IsAny<object>(), null, default))
-                  .Returns(Task.FromResult(licenseeInformation));
+                .Returns(Task.FromResult(licenseeInformation));
             _dbFactory.Setup(x => x.GetObjectDb("Lrf_LicenseeSelBySiteName", It.IsAny<int>())).Returns(_objDb.Object);
 
             var service = new ExtraInformationService(_dbFactory.Object, _memoryCache, _appSetting.Object);
@@ -129,7 +130,7 @@ namespace Fanex.Athena.IdentityServer.Core.UnitTests.Services
             _objDb.Setup(x => x.ExecuteReader(null, null)).Returns(_reader.Object);
             _dbFactory.Setup(x => x.GetObjectDb("Lrf_LicenseeSelBySiteName", It.IsAny<int>())).Returns(_objDb.Object);
             _objDb.Setup(x => x.QueryEntityAsync<LicenseeInformation>(It.IsAny<object>(), null, default))
-                  .Returns(Task.FromResult(licenseeInformation));
+                .Returns(Task.FromResult(licenseeInformation));
 
             var service = new ExtraInformationService(_dbFactory.Object, _memoryCache, _appSetting.Object);
 
@@ -141,7 +142,8 @@ namespace Fanex.Athena.IdentityServer.Core.UnitTests.Services
             Assert.Equal(string.Empty, result.SiteDBServer);
         }
 
-        [Theory] [AutoData]
+        [Theory]
+        [AutoData]
         public void IsFakeLicensee_FoundFakeLicensee_ReturnTrue(AppSetting setting, string licenseeName)
         {
             // Arrange
@@ -157,7 +159,8 @@ namespace Fanex.Athena.IdentityServer.Core.UnitTests.Services
             Assert.True(result);
         }
 
-        [Theory] [AutoData]
+        [Theory]
+        [AutoData]
         public void IsFakeLicensee_NotFoundFakeLicensee_ReturnFalse(AppSetting setting)
         {
             // Arrange
@@ -175,7 +178,8 @@ namespace Fanex.Athena.IdentityServer.Core.UnitTests.Services
             Assert.False(result);
         }
 
-        [Theory] [AutoData]
+        [Theory]
+        [AutoData]
         public void GetAuditHardCodeCurrencies_FoundHardCodeLicensee_ReturnTrue(
             AppSetting setting,
             AuditHardCodeCurrency codeCurrency,
@@ -195,7 +199,8 @@ namespace Fanex.Athena.IdentityServer.Core.UnitTests.Services
             Assert.Equal(codeCurrency.AuditCurrencies, result);
         }
 
-        [Theory] [AutoData]
+        [Theory]
+        [AutoData]
         public void GetAuditHardCodeCurrencies_NotFoundHardCodeLicensee_ReturnEmpty(
             AppSetting setting,
             AuditHardCodeCurrency codeCurrency)
@@ -215,7 +220,8 @@ namespace Fanex.Athena.IdentityServer.Core.UnitTests.Services
             Assert.Empty(result);
         }
 
-        [Theory] [AutoData]
+        [Theory]
+        [AutoData]
         public void GetAuditHardCodeCurrencies_NullAuditCurrencies_ReturnEmpty(
             AppSetting setting,
             AuditHardCodeCurrency codeCurrency,
@@ -267,14 +273,14 @@ namespace Fanex.Athena.IdentityServer.Core.UnitTests.Services
             const int isAllowedMemberCommOrdinal = 3;
             _reader.Setup(x => x.GetOrdinal("IsAllowedMemberComm")).Returns(isAllowedMemberCommOrdinal);
             _reader.Setup(x => x.GetBoolean(isAllowedMemberCommOrdinal))
-                   .Returns(licenseeInformation.IsAllowedCustomerComm);
+                .Returns(licenseeInformation.IsAllowedCustomerComm);
 
             const int enableBaOrdinal = 4;
             _reader.Setup(x => x.GetOrdinal("EnableBA")).Returns(enableBaOrdinal);
             _reader.Setup(x => x.GetBoolean(enableBaOrdinal)).Returns(licenseeInformation.IsEnableBA);
 
             _objDb.Setup(x => x.ExecuteReaderAsync(It.IsAny<object>(), null, default))
-                  .Returns(Task.FromResult(_reader.Object));
+                .Returns(Task.FromResult(_reader.Object));
             _dbFactory.Setup(x => x.GetObjectDb("Lrf_LicenseeSel", It.IsAny<int>())).Returns(_objDb.Object);
 
             var service = new ExtraInformationService(_dbFactory.Object, _memoryCache, _appSetting.Object);
@@ -307,7 +313,7 @@ namespace Fanex.Athena.IdentityServer.Core.UnitTests.Services
             _reader.Setup(x => x.GetInt32(licenseeIdOrdinal)).Returns(licenseeId);
 
             _objDb.Setup(x => x.ExecuteReaderAsync(It.IsAny<object>(), null, default))
-                  .Returns(Task.FromResult(_reader.Object));
+                .Returns(Task.FromResult(_reader.Object));
             _dbFactory.Setup(x => x.GetObjectDb("Lrf_LicenseeSel", It.IsAny<int>())).Returns(_objDb.Object);
 
             var service = new ExtraInformationService(_dbFactory.Object, _memoryCache, _appSetting.Object);
@@ -322,7 +328,8 @@ namespace Fanex.Athena.IdentityServer.Core.UnitTests.Services
         [Theory]
         [AutoData]
         public async Task GetLicenseeBelongingLrfUser_Cached_ReturnCacheValue(
-            LicenseeInformation licenseeInformation, int lrfUserId)
+            LicenseeInformation licenseeInformation,
+            int lrfUserId)
         {
             // Arrange
             _memoryCache.Set($"GetLicenseeBelongingLrfUser_{licenseeInformation.Id}_{lrfUserId}", licenseeInformation);
@@ -479,14 +486,8 @@ namespace Fanex.Athena.IdentityServer.Core.UnitTests.Services
             Assert.Equal(expected, codes);
         }
 
-        private static List<string> FakeOffers(string licenseeName)
-        {
-            var offers = FakeHelper.CreateMany<string>().ToList();
-            offers.Add(licenseeName);
-            return offers;
-        }
-
-        [Theory] [AutoData]
+        [Theory]
+        [AutoData]
         public async Task GetCurrencyAgentListByLrfUser_WhenCall_ReturnValue(int licenseeId, int userId)
         {
             // Arrange
@@ -497,9 +498,9 @@ namespace Fanex.Athena.IdentityServer.Core.UnitTests.Services
             };
 
             _objDb.Setup(x => x.QueryAsync<LrfCurrencyAgent>(It.IsAny<object>(), null, default))
-                  .Returns(Task.FromResult(lrfCurrencyAgents.AsEnumerable()));
+                .Returns(Task.FromResult(lrfCurrencyAgents.AsEnumerable()));
             _dbFactory.Setup(x => x.GetObjectDb("Lrf_SelCurrencyByLicenseeUser", It.IsAny<int>()))
-                      .Returns(_objDb.Object);
+                .Returns(_objDb.Object);
 
             var expected = new CurrencyAgent
             {
@@ -523,36 +524,6 @@ namespace Fanex.Athena.IdentityServer.Core.UnitTests.Services
         }
 
         [Theory]
-        [InlineData("Any", "Any")]
-        [InlineData(null, "")]
-        public async Task GetLapUserInfo_WhenCall_ReturnValue(string baseCurrency, string expectedBaseCurrency)
-        {
-            // Arrange
-            var userSEQ = FakeHelper.Create<int>();
-            var vendorId = FakeHelper.Create<string>();
-            var lapUserInfo = FakeHelper.Create<LapUserInfo>(x => x.BaseCurrency, baseCurrency);
-            _objDb.Setup(x => x.GetParameterValue("UserLevel")).Returns(lapUserInfo.UserLevel);
-            _objDb.Setup(x => x.GetParameterValue("SubsidiaryEnabled")).Returns(lapUserInfo.IsEnabledSubsidiary);
-            _objDb.Setup(x => x.GetParameterValue("OperatorID")).Returns(lapUserInfo.OperatorID);
-            _objDb.Setup(x => x.GetParameterValue("BaseCurrency")).Returns(lapUserInfo.BaseCurrency);
-
-            _dbFactory.Setup(x => x.GetObjectDb("Lrf_GetUserLevelInfo", It.IsAny<int>())).Returns(_objDb.Object);
-
-            var service = new ExtraInformationService(_dbFactory.Object, _memoryCache, _appSetting.Object);
-
-            // Act
-            var result = await service.GetLapUserInfo(userSEQ, vendorId);
-
-            // Assert
-            _objDb.Verify(x => x.SetParameterValue("VendorID", vendorId));
-            _objDb.Verify(x => x.SetParameterValue("UserSEQ", userSEQ));
-            Assert.Equal(lapUserInfo.UserLevel, result.UserLevel);
-            Assert.Equal(lapUserInfo.IsEnabledSubsidiary, result.IsEnabledSubsidiary);
-            Assert.Equal(lapUserInfo.OperatorID, result.OperatorID);
-            Assert.Equal(expectedBaseCurrency, result.BaseCurrency);
-        }
-
-        [Theory]
         [InlineData(false, "Production")]
         [InlineData(true, "UAT")]
         public async Task IsEnableSingleWallet_NotCached_ReturnFalse(bool isUAT, string environment)
@@ -565,7 +536,7 @@ namespace Fanex.Athena.IdentityServer.Core.UnitTests.Services
             _appSetting.Setup(x => x.Value).Returns(appSetting);
 
             _dbFactory.Setup(x => x.GetObjectDb("Lrf_GetConfigDetailByKeyName", It.IsAny<int>()))
-                      .Returns(_objDb.Object);
+                .Returns(_objDb.Object);
 
             var service = new ExtraInformationService(_dbFactory.Object, _memoryCache, _appSetting.Object);
 
@@ -595,7 +566,7 @@ namespace Fanex.Athena.IdentityServer.Core.UnitTests.Services
             _objDb.Setup(x => x.GetParameterValue("KeyValue")).Returns(keyValue);
 
             _dbFactory.Setup(x => x.GetObjectDb("Lrf_GetConfigDetailByKeyName", It.IsAny<int>()))
-                      .Returns(_objDb.Object);
+                .Returns(_objDb.Object);
             _memoryCache.Set($"{keyName}_{licenseeName}_{environment}", "true");
 
             var service = new ExtraInformationService(_dbFactory.Object, _memoryCache, _appSetting.Object);
@@ -607,13 +578,20 @@ namespace Fanex.Athena.IdentityServer.Core.UnitTests.Services
             Assert.True(result);
         }
 
+        private static List<string> FakeOffers(string licenseeName)
+        {
+            var offers = FakeHelper.CreateMany<string>().ToList();
+            offers.Add(licenseeName);
+            return offers;
+        }
+
         #region TestHelpers
 
         private void SetupSiteDbMock()
         {
             _siteDbConfigObject.Setup(x => x.ExecuteReader(null, null)).Returns(_siteDbConfigReader.Object);
             _dbFactory.Setup(x => x.GetObjectDb("Acc_SiteDBConfigSel", It.IsAny<int>()))
-                      .Returns(_siteDbConfigObject.Object);
+                .Returns(_siteDbConfigObject.Object);
         }
 
         #endregion
