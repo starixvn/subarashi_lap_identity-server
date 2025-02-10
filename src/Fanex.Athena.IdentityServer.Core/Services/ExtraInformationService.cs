@@ -1,26 +1,26 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Fanex.Athena.IdentityServer.Core.Extensions;
-using Fanex.Athena.IdentityServer.Core.Models;
-using Fanex.Athena.IdentityServer.Core.Repositories;
-using Fanex.Athena.IdentityServer.Core.Settings;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
-
-namespace Fanex.Athena.IdentityServer.Core.Services
+﻿namespace Fanex.Athena.IdentityServer.Core.Services
 {
+    using System;
+    using System.Collections.Concurrent;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Extensions;
+    using Microsoft.Extensions.Caching.Memory;
+    using Microsoft.Extensions.Options;
+    using Models;
+    using Repositories;
+    using Settings;
+
     public class ExtraInformationService : IExtraInformationService
     {
         private static readonly TimeSpan OneHour = TimeSpan.FromHours(1);
         private static readonly IEnumerable<string> SubProductCodeList = new[] { "SLT", "BTC" };
-        private readonly Lazy<IReadOnlyDictionary<int, string>> _siteDBConfig;
-        private readonly ConcurrentDictionary<string, object> _longLifeData;
+        private readonly AppSetting _appSetting;
         private readonly IMemoryCache _cache;
         private readonly IDbFactory _dbFactory;
-        private readonly AppSetting _appSetting;
+        private readonly ConcurrentDictionary<string, object> _longLifeData;
+        private readonly Lazy<IReadOnlyDictionary<int, string>> _siteDBConfig;
 
         public ExtraInformationService(IDbFactory dbFactory, IMemoryCache cache, IOptions<AppSetting> appSetting)
         {
@@ -39,6 +39,7 @@ namespace Fanex.Athena.IdentityServer.Core.Services
                 {
                     config.Add(int.Parse(reader["SiteDBGroupID"].ToString()), reader["AGIP"].ToString());
                 }
+
                 return config;
             });
         }
@@ -59,8 +60,9 @@ namespace Fanex.Athena.IdentityServer.Core.Services
             => _appSetting.FakeLicensees.Any(_ => string.Equals(_, licenseeName, StringComparison.OrdinalIgnoreCase));
 
         public IEnumerable<AuditCurrency> GetAuditHardCodeCurrencies(string licenseeName)
-            => _appSetting.AuditHardCodeCurrencies.FirstOrDefault(_ => string.Equals(_.Licensee, licenseeName, StringComparison.OrdinalIgnoreCase))?.AuditCurrencies
-                ?? new List<AuditCurrency>();
+            => _appSetting.AuditHardCodeCurrencies.FirstOrDefault(_ => string.Equals(_.Licensee, licenseeName, StringComparison.OrdinalIgnoreCase))
+                   ?.AuditCurrencies
+               ?? new List<AuditCurrency>();
 
         public Task<LicenseeInformation> GetLicenseeBelongingLrfUser(int licenseeId, int lrfUserId)
         {
@@ -97,33 +99,6 @@ namespace Fanex.Athena.IdentityServer.Core.Services
                         Currency = x.First().CurrencyName,
                         AgentId = x.Select(y => y.AgentId).ToArray()
                     });
-            }
-        }
-
-        public async Task<LapUserInfo> GetLapUserInfo(int userSEQ, string vendorId)
-        {
-            const string UspName = "Lrf_GetUserLevelInfo";
-            using (var db = _dbFactory.GetObjectDb(UspName))
-            {
-                db.SetParameterValue("VendorID", vendorId);
-                db.SetParameterValue("UserSEQ", userSEQ);
-                db.SetParameterValue("UserLevel", null);
-                db.SetParameterValue("SubsidiaryEnabled", null);
-                db.SetParameterValue("OperatorID", null);
-                db.SetParameterValue("BaseCurrency", null);
-
-                await db.ExecuteNonQueryAsync();
-                var basedCurrency = db.GetParameterValue("BaseCurrency") != null ? Convert.ToString(db.GetParameterValue("BaseCurrency")) : string.Empty;
-
-                var userInfo = new LapUserInfo
-                {
-                    UserLevel = Convert.ToByte(db.GetParameterValue("UserLevel")),
-                    IsEnabledSubsidiary = Convert.ToBoolean(db.GetParameterValue("SubsidiaryEnabled")),
-                    OperatorID = Convert.ToString(db.GetParameterValue("OperatorID")),
-                    BaseCurrency = basedCurrency,
-                };
-
-                return userInfo;
             }
         }
 
@@ -213,7 +188,8 @@ namespace Fanex.Athena.IdentityServer.Core.Services
             if (licenseeInfo.SiteDBGroupID != 0)
             {
                 licenseeInfo.SiteDBServer = _siteDBConfig.Value.TryGetValue(licenseeInfo.SiteDBGroupID, out string dbServer)
-                              ? dbServer : string.Empty;
+                    ? dbServer
+                    : string.Empty;
             }
         }
 

@@ -1,10 +1,10 @@
-﻿using Fanex.Athena.IdentityServer.Core.Models;
-using Fanex.Athena.IdentityServer.Core.Settings;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace Fanex.Athena.IdentityServer.Core.Services
+﻿namespace Fanex.Athena.IdentityServer.Core.Services
 {
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Models;
+    using Settings;
+
     public interface IExtraInformationService
     {
         Task<string> GetOfferedSubProducts(int licenseeId);
@@ -22,8 +22,6 @@ namespace Fanex.Athena.IdentityServer.Core.Services
         Task<LicenseeInformation> GetLicenseeBelongingLrfUser(int licenseeId, int lrfUserId);
 
         Task<IEnumerable<CurrencyAgent>> GetCurrencyAgentListByLrfUser(int licenseeId, int userId);
-
-        Task<LapUserInfo> GetLapUserInfo(int userSEQ, string vendorId);
 
         Task<bool> IsEnableSingleWallet(string licenseeName);
 

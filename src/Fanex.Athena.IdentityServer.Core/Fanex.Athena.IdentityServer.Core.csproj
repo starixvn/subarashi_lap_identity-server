@@ -29,7 +29,7 @@
     <PackageReference Include="Fanex.Data.SqlServer" Version="4.2.2" />
     <PackageReference Include="IdentityServer4" Version="4.1.2" />
     <PackageReference Include="IdentityServer4.Contrib.RedisStore" Version="4.0.0" />
-    <PackageReference Include="LAP.ONEBook.Security" Version="1.0.8" />
+    <PackageReference Include="LAP.ONEBook.Security" Version="1.0.9" />
     <PackageReference Include="LAP.ONEBook.Security.StorageProvider.SqlServer" Version="1.0.7" />
   </ItemGroup>
 
