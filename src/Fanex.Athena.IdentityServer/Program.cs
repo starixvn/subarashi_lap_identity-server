@@ -19,6 +19,7 @@ namespace Fanex.Athena.IdentityServer
                 var env = builderContext.HostingEnvironment;
                 config.SetBasePath(env.ContentRootPath);
                 config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
+                config.AddJsonFile("appsettings.Vault.json", optional: false, reloadOnChange: false);
                 config.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: false);
                 config.AddEnvironmentVariables();
             })
@@ -28,7 +29,7 @@ namespace Fanex.Athena.IdentityServer
                 logging.AddConsole();
             })
             .ConfigureWebHostDefaults(webBuilder =>
-            {             
+            {
                 webBuilder.UseStartup<Startup>();
                 webBuilder.UseSentry();
             })

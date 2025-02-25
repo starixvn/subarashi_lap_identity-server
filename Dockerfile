@@ -1,4 +1,4 @@
-FROM hub.nexdev.net/base/dotnet/core/sdk:5.0.102-ca-patch-buster-slim AS builder
+FROM hub.nexdev.net/base/dotnet/core/sdk:8.0-alpine AS builder
 WORKDIR /src
 
 COPY NuGet.Config .
@@ -12,10 +12,10 @@ RUN dotnet restore Fanex.Athena.IdentityServer.csproj -v n
 COPY src ./
 
 RUN dotnet publish "Fanex.Athena.IdentityServer/Fanex.Athena.IdentityServer.csproj" -c Release -o /publish \
-  --runtime alpine-x64 \
+  --runtime linux-x64 \
   --self-contained false
 
-FROM hub.nexdev.net/base/dotnet/core/aspnet:5.0-alpine
+FROM hub.nexdev.net/base/dotnet/core/aspnet:8.0-alpine
 
 ENV ASPNETCORE_URLS=http://*:5000
 EXPOSE 5000
