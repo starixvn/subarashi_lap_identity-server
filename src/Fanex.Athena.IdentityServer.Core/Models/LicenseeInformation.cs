@@ -13,7 +13,5 @@ namespace Fanex.Athena.IdentityServer.Core.Models
         public string SiteDBServer { get; set; } = string.Empty;
 
         public bool IsAllowedCustomerComm { get; set; }
-
-        public bool IsEnableBA { get; set; }
     }
 }

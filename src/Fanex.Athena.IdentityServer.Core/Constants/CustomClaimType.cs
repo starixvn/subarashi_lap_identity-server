@@ -19,7 +19,6 @@
         public const string BaseCurrency = "BaseCurrency";
         public const string LicenseeId = "LicenseeId";
         public const string IsAllowedCustomerComm = "IsAllowedCustomerComm";
-        public const string IsEnableBA = "IsEnableBA";
         public const string IsEnableSingleWallet = "IsEnableSingleWallet";
         public const string IsShowIP = "IsShowIP";
         public const string IsShowIPVN = "IsShowIPVN";

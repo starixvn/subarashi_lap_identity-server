@@ -89,7 +89,6 @@
                     new Claim(CustomClaimType.LicenseeId, licenseeInfo.Id.ToString(), ClaimValueType.Integer),
                     new Claim(CustomClaimType.SiteDBServer, licenseeInfo.SiteDBServer, ClaimValueType.String),
                     new Claim(CustomClaimType.IsAllowedCustomerComm, licenseeInfo.IsAllowedCustomerComm.ToString(), ClaimValueType.Boolean),
-                    new Claim(CustomClaimType.IsEnableBA, licenseeInfo.IsEnableBA.ToString(), ClaimValueType.Boolean),
                     new Claim(CustomClaimType.UserLevel, authInfo.UserLevel.ToString(), ClaimValueType.Integer),
                     new Claim(CustomClaimType.IsEnabledSubsidiary, authInfo.IsEnableSubsidiary.ToString(), ClaimValueType.Boolean),
                     new Claim(CustomClaimType.OperatorID, authInfo.OperatorID ?? string.Empty, ClaimValueType.String),
