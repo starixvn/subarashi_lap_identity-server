@@ -102,6 +102,37 @@
             }
         }
 
+        public async Task<IEnumerable<CurrencyAgent>> GetCurrencyAgentForExtService(string siteName, int custId = 0)
+        {
+            const string UspName = "Lrf_LicenseeSelExtInfo";
+            using (var db = _dbFactory.GetObjectDb(UspName))
+            {
+                db.SetParameterValue(nameof(siteName), siteName);
+                db.SetParameterValue(nameof(custId), custId);
+                using (var reader = await db.ExecuteReaderAsync())
+                {
+                    var currencies = new List<LrfCurrencyAgent>();
+                    while (reader.Read())
+                    {
+                        currencies.Add(new LrfCurrencyAgent
+                        {
+                            CurrencyId = Convert.ToInt32(reader["CurrencyId"]),
+                            AgentId = Convert.ToInt32(reader["AgentId"]),
+                            CurrencyName = Convert.ToString(reader["CurrencyName"])
+                        });
+                    }
+                    return currencies
+                        .GroupBy(x => x.CurrencyId)
+                        .Select(x => new CurrencyAgent
+                        {
+                            CurrencyId = x.Key,
+                            Currency = x.First().CurrencyName,
+                            AgentId = x.Select(y => y.AgentId).ToArray()
+                        });
+                }
+            }
+        }
+
         public async Task<bool> IsEnableSingleWallet(string licenseeName)
         {
             const string KeyName = "EnableSingleWallet";

@@ -22,6 +22,7 @@
         public const string IsEnableBA = "IsEnableBA";
         public const string IsEnableSingleWallet = "IsEnableSingleWallet";
         public const string IsShowIP = "IsShowIP";
+        public const string IsShowIPVN = "IsShowIPVN";
         public const string OnUserId = "OnUserId";
         public const string IsInternal = "IsInternal";
         public const string DefaultReportUrl = "DefaultReportUrl";
