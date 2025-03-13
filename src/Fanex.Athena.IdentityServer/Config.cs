@@ -38,6 +38,7 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.IsEnableBA,
                         CustomClaimType.IsEnableSingleWallet,
                         CustomClaimType.IsShowIP,
+                        CustomClaimType.IsShowIPVN,
                         CustomClaimType.OnUserId,
                         CustomClaimType.IsInternal,
                         CustomClaimType.DefaultReportUrl,
@@ -91,6 +92,7 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.ClientIP,
                         CustomClaimType.SiteDBServer,
                         CustomClaimType.SpecialPlatform,
+                        CustomClaimType.IsShowIPVN
                     }
                 },
                 new ApiScope("playeradmin_api.internal")
@@ -175,10 +177,31 @@ namespace Fanex.Athena.IdentityServer
                 {
                     UserClaims =
                     {
+                        JwtClaimTypes.Name,
+                        JwtClaimTypes.Role,
                         CustomClaimType.SiteName,
+                        CustomClaimType.UserSEQ,
+                        CustomClaimType.UserID,
+                        CustomClaimType.Username,
+                        CustomClaimType.Language,
+                        CustomClaimType.Administrator,
                         CustomClaimType.CurrencyAgent,
+                        CustomClaimType.UserLevel,
+                        CustomClaimType.IsMasterLicensee,
+                        CustomClaimType.LicenseeId,
+                        CustomClaimType.WhiteLabelID,
+                        CustomClaimType.IsAllowedCustomerComm,
+                        CustomClaimType.IsEnableBA,
                         CustomClaimType.IsEnableSingleWallet,
-                        CustomClaimType.OfferedSubProducts
+                        CustomClaimType.IsShowIP,
+                        CustomClaimType.ActionLink,
+                        CustomClaimType.OfferedSubProducts,
+                        CustomClaimType.OfferedOddsGroups,
+                        CustomClaimType.IsFakeLicensee,
+                        CustomClaimType.SiteDBServer,
+                        CustomClaimType.SpecialPlatform,
+                        CustomClaimType.IsShowIPVN,
+                        CustomClaimType.AuditCurrencies
                     }
                 },
                 new ApiScope("analytics_api")
@@ -215,6 +238,27 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.AuditCurrencies,
                         CustomClaimType.SpecialPlatform,
                         CustomClaimType.SpecialPlatformType,
+                    }
+                },
+                new ApiScope("betlist_api")
+                {
+                    UserClaims =
+                    {
+                        JwtClaimTypes.Name,
+                        JwtClaimTypes.Role,
+                        CustomClaimType.SiteName,
+                        CustomClaimType.UserSEQ,
+                        CustomClaimType.UserID,
+                        CustomClaimType.Language,
+                        CustomClaimType.CurrencyAgent,
+                        CustomClaimType.OfferedSubProducts,
+                        CustomClaimType.IsFakeLicensee,
+                        CustomClaimType.SiteDBServer,
+                        CustomClaimType.AuditCurrencies,
+                        CustomClaimType.SpecialPlatform,
+                        CustomClaimType.SpecialPlatformType,
+                        CustomClaimType.IsAllowedCustomerComm,
+                        CustomClaimType.IsShowIPVN
                     }
                 }
             };

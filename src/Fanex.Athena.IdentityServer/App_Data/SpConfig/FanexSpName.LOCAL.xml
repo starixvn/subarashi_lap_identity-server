@@ -25,6 +25,7 @@
     <Setting Key="Lrf_UserLogin" SpName="Lrf_UserLogin" DbName="DBCUST.bodb_Licensee.wsv_lap" />
     <Setting Key="Lrf_CheckIn" SpName="Lrf_CheckIn" DbName="DBCUST.bodb_Licensee.wsv_lap" />
     <Setting Key="Lrf_UserInfoSelByUserName" SpName="Lrf_UserInfoSelByUserName" DbName="DBLIC.bodb_Licensee.wsv_lap" />
+    <Setting Key="Lrf_LicenseeSelExtInfo" SpName="Lrf_LicenseeSelExtInfo" DbName="DBEXT.bodb02.wsv_lap" />
   </Function>
   <Function Name="Token">
     <Setting Key="LAP_IdentityServer_TokenInsOrUpd" SpName="LAP_IdentityServer_TokenInsOrUpd" DbName="DBCUST.bodb_Licensee.wsv_lap" />

@@ -23,6 +23,8 @@
 
         Task<IEnumerable<CurrencyAgent>> GetCurrencyAgentListByLrfUser(int licenseeId, int userId);
 
+        Task<IEnumerable<CurrencyAgent>> GetCurrencyAgentForExtService(string siteName, int custId = 0);
+
         Task<bool> IsEnableSingleWallet(string licenseeName);
 
         bool IsOfferShowIP(string licenseeName);

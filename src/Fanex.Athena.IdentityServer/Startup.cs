@@ -54,6 +54,7 @@ namespace Fanex.Athena.IdentityServer
                .AddInMemoryApiScopes(Config.ScopeApis)
                .AddExtensionGrantValidator<LapTokenDelegationValidator>()
                .AddExtensionGrantValidator<LrfPasswordDelegationValidator>()
+               .AddExtensionGrantValidator<StatementPasswordDelegationValidator>()
                .AddOperationalStore(Configuration)
                .AddSigningCredential(credentials);
 

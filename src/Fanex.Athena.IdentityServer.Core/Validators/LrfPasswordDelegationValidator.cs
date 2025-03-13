@@ -96,9 +96,11 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
                     _extraInformationService.GetLicenseeBelongingLrfUser(userInfo.LicenseeId, userInfo.UserID) : Task.FromResult<LicenseeInformation>(null));
 
                 var identityName = $"lrf_{licenseeInfo?.Name}_{userInfo.Username}_{userInfo.UserID}";
-                var claims = new List<Claim>();
-                claims.Add(new Claim(JwtClaimTypes.Name, identityName, ClaimValueType.String));
-                claims.Add(new Claim(CustomClaimType.OnUserId, (await _lrfAuthService.LoginOnUser(userInfo, sessionId, clientIP)).ToString(), ClaimValueType.Integer));
+                var claims = new List<Claim>
+                {
+                    new Claim(JwtClaimTypes.Name, identityName, ClaimValueType.String),
+                    new Claim(CustomClaimType.OnUserId, (await _lrfAuthService.LoginOnUser(userInfo, sessionId, clientIP)).ToString(), ClaimValueType.Integer)
+                };
                 GenerateUserClaims(claims, userInfo, clientIP);
                 if (licenseeInfo is not null)
                 {
