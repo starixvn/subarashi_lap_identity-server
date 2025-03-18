@@ -204,8 +204,7 @@
                         Id = id,
                         Name = reader.GetString(reader.GetOrdinal("LicenseeName")),
                         SiteDBGroupID = reader.GetInt16(reader.GetOrdinal("SiteDBGroupID")),
-                        IsAllowedCustomerComm = reader.GetBoolean(reader.GetOrdinal("IsAllowedMemberComm")),
-                        IsEnableBA = reader.GetBoolean(reader.GetOrdinal("EnableBA"))
+                        IsAllowedCustomerComm = reader.GetBoolean(reader.GetOrdinal("IsAllowedMemberComm"))
                     };
                     AssignSiteDBInfo(licenseeInfo);
                 }

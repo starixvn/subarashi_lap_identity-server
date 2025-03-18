@@ -277,7 +277,6 @@
 
             const int enableBaOrdinal = 4;
             _reader.Setup(x => x.GetOrdinal("EnableBA")).Returns(enableBaOrdinal);
-            _reader.Setup(x => x.GetBoolean(enableBaOrdinal)).Returns(licenseeInformation.IsEnableBA);
 
             _objDb.Setup(x => x.ExecuteReaderAsync(It.IsAny<object>(), null, default))
                 .Returns(Task.FromResult(_reader.Object));
@@ -292,7 +291,6 @@
             Assert.Equal(licenseeInformation.Id, result.Id);
             Assert.Equal(licenseeInformation.SiteDBGroupID, result.SiteDBGroupID);
             Assert.Equal(licenseeInformation.IsAllowedCustomerComm, result.IsAllowedCustomerComm);
-            Assert.Equal(licenseeInformation.IsEnableBA, result.IsEnableBA);
             Assert.Equal(licenseeInformation.Name, result.Name);
             Assert.Equal(licenseeInformation.SiteDBServer, result.SiteDBServer);
         }
@@ -447,7 +445,6 @@
             var appSetting = FakeHelper.Create<AppSetting>(x => x.OddsGroups, oddsGroup);
             _appSetting.Setup(x => x.Value).Returns(appSetting);
 
-
             var service = new ExtraInformationService(_dbFactory.Object, _memoryCache, _appSetting.Object);
 
             // Act
@@ -474,7 +471,6 @@
 
             var appSetting = FakeHelper.Create<AppSetting>(x => x.OddsGroups, oddsGroup);
             _appSetting.Setup(x => x.Value).Returns(appSetting);
-
 
             var service = new ExtraInformationService(_dbFactory.Object, _memoryCache, _appSetting.Object);
 
@@ -594,6 +590,6 @@
                 .Returns(_siteDbConfigObject.Object);
         }
 
-        #endregion
+        #endregion TestHelpers
     }
 }
