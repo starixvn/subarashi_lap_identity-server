@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Fanex.Athena.IdentityServer\Fanex.Athena.IdentityServer.csproj" />
+    <ProjectReference Include="..\..\src\Fanex.Athena.IdentityServer\Fanex.Athena.IdentityServer.csproj" />
   </ItemGroup>
 
 </Project>

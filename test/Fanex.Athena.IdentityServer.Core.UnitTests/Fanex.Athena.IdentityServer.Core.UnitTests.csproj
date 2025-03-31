@@ -19,8 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Fanex.Athena.IdentityServer.UnitTests.Common\Fanex.Athena.IdentityServer.UnitTests.Common.csproj" />
     <ProjectReference Include="..\..\src\Fanex.Athena.IdentityServer.Core\Fanex.Athena.IdentityServer.Core.csproj" />
+    <ProjectReference Include="..\Fanex.Athena.IdentityServer.UnitTests.Common\Fanex.Athena.IdentityServer.UnitTests.Common.csproj" />
   </ItemGroup>
 
 </Project>
