@@ -137,7 +137,7 @@
         {
             const string KeyName = "EnableSingleWallet";
             const string ExpectedKeyValue = "true";
-            var environment = _appSetting.IsUATTW ? "UAT" : "Production";
+            var environment = "Production";
 
             var cacheKey = string.Format("{0}_{1}_{2}", KeyName, licenseeName, environment);
             var value = await _cache.TryGetOrAddFromCache(cacheKey, OneHour, () => GetConfigDetailByKeyName(licenseeName, environment, KeyName));
