@@ -28,6 +28,11 @@
   </ItemGroup>
 
   <ItemGroup>
+		<AdditionalFiles Include="..\..\Dockerfile" Link="Dockerfile" />
+		<AdditionalFiles Include="..\..\.dockerignore" Link=".dockerignore" />
+	</ItemGroup>
+
+  <ItemGroup>
     <None Update="App_Data\SpConfig\FanexSpName.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
