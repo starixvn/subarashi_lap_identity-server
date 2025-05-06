@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
     <CodeAnalysisRuleSet>..\..\.sonarlint\lap_identityservercsharp.ruleset</CodeAnalysisRuleSet>
@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Fanex.Data" Version="4.3.3" />
     <PackageReference Include="Sentry.AspNetCore" Version="2.1.6" />
   </ItemGroup>
 
@@ -25,6 +26,11 @@
   <ItemGroup>
     <ProjectReference Include="..\Fanex.Athena.IdentityServer.Core\Fanex.Athena.IdentityServer.Core.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+		<AdditionalFiles Include="..\..\Dockerfile" Link="Dockerfile" />
+		<AdditionalFiles Include="..\..\.dockerignore" Link=".dockerignore" />
+	</ItemGroup>
 
   <ItemGroup>
     <None Update="App_Data\SpConfig\FanexSpName.xml">

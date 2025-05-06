@@ -15,7 +15,7 @@ using StackExchange.Redis;
 namespace Fanex.Athena.IdentityServer.Core
 {
     public static class DefendencyInjection
-    {                                                                         
+    {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             return services
@@ -37,7 +37,7 @@ namespace Fanex.Athena.IdentityServer.Core
                 EndPoints = { { redis.Server, redis.Port } },
                 Password = redis.Pass,
             };
-            
+
             return identityServerBuilder.AddOperationalStore(options =>
                    {
                        options.ConfigurationOptions = operationalStoreOptions;
@@ -58,7 +58,6 @@ namespace Fanex.Athena.IdentityServer.Core
 
             return identityServerBuilder;
         }
-
 
         private static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
         {
@@ -81,7 +80,7 @@ namespace Fanex.Athena.IdentityServer.Core
 
         private static string GetOneBookSecurityConnection(IConfiguration configuration)
         {
-            var encryptedConnectionString = configuration.GetConnectionString("LAP.OneBookSecurity");
+            var encryptedConnectionString = configuration.GetValue<string>("LAP.OneBookSecurity");
             return Cryptography.DecryptConnectionString(encryptedConnectionString);
         }
     }

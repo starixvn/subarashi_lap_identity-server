@@ -5,6 +5,7 @@ using Fanex.Athena.IdentityServer.Core.Settings;
 using Fanex.Athena.IdentityServer.Core.Validators;
 using Fanex.Data;
 using Fanex.Data.SqlServer;
+using Fanex.Data.Vault;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
@@ -19,7 +21,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Security.Cryptography;
-                                                                           
+
 namespace Fanex.Athena.IdentityServer
 {
     public class Startup
@@ -39,7 +41,8 @@ namespace Fanex.Athena.IdentityServer
             services.AddMemoryCache();
             services.AddInfrastructure(Configuration);
 
-            ConfigFanexData();
+            ConfigFanexData(services);
+
             var fileName = Path.Combine(Env.ContentRootPath, "pair-key.secrect");
             string xml = File.ReadAllText(fileName);
             var csp = new RSACryptoServiceProvider(2048);
@@ -105,19 +108,15 @@ namespace Fanex.Athena.IdentityServer
             });
         }
 
-        private void ConfigFanexData()
+        private void ConfigFanexData(IServiceCollection services)
         {
-            var listConnectionName = Configuration.GetSection("ConnectionStrings").GetChildren().Select(_ => _.Key);
-            var connectionStrings = new Dictionary<string, ConnectionConfiguration>(listConnectionName
-                .Select(connectionName => new KeyValuePair<string, ConnectionConfiguration>(connectionName,
-                    new ConnectionConfiguration(connectionName, Configuration.GetConnectionString(connectionName)))
-                ));
-
             DbSettingProviderManager
                 .StartNewSession()
-                .WithSqlServer(resourcePath: "~/App_Data/SpConfig/FanexSpName.xml")
-                .Use(connectionStrings)
+                .WithSqlServer(Configuration)
+                .UseDefaultDbSettingProvider("~/App_Data/SpConfig/FanexSpName.xml", true)
                 .Run();
+
+            services.TryAddSingleton<VaultDbAliasService, VaultDbAliasServiceImp>();
         }
     }
 }
