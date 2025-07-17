@@ -21,8 +21,8 @@
 		<Setting Key="Lrf_FunctionsSel" SpName="Lrf_FunctionsSel" DbName="DBLIC.bodb_Licensee.wsv_lap" />
 		<Setting Key="Lrf_LicenseeFunctionsSel" SpName="LRF_LicenseeFunctionsSel" DbName="DBLIC.bodb_Licensee.wsv_lap" />
 		<Setting Key="Lrf_LicenseeUserFunctionsSel" SpName="LRF_LicenseeUserFunctionsSel" DbName="DBLIC.bodb_Licensee.wsv_lap" />
-		<Setting Key="Lrf_UserLogin" SpName="Lrf_UserLogin" DbName="DBCUST.bodb_Licensee.wsv_lap" />
-		<Setting Key="Lrf_CheckIn" SpName="Lrf_CheckIn" DbName="DBCUST.bodb_Licensee.wsv_lap" />
+		<Setting Key="Lrf_UserLogin" SpName="Lrf_UserLogin_KL" DbName="DBCUST.bodb_Licensee.wsv_lap" />
+		<Setting Key="Lrf_CheckIn" SpName="Lrf_CheckIn_KL" DbName="DBCUST.bodb_Licensee.wsv_lap" />
 		<Setting Key="Lrf_UserInfoSelByUserName" SpName="Lrf_UserInfoSelByUserName" DbName="DBLIC.bodb_Licensee.wsv_lap" />
 		<Setting Key="Lrf_LicenseeSelExtInfo" SpName="Lrf_LicenseeSelExtInfo" DbName="DBEXT.bodb02.wsv_lap" />
 	</Function>
