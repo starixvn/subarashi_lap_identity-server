@@ -1,7 +1,7 @@
 FROM hub.nexdev.net/base/dotnet/core/sdk:8.0-alpine AS builder
 WORKDIR /src
 
-COPY NuGet.Config .
+RUN dotnet nuget add source https://nuget.nexdev.net/api/v2
 
 COPY src/Fanex.Athena.IdentityServer.Core/Fanex.Athena.IdentityServer.Core.csproj ./
 RUN --mount=type=cache,target=/root/.nuget/packages dotnet restore Fanex.Athena.IdentityServer.Core.csproj -v n
