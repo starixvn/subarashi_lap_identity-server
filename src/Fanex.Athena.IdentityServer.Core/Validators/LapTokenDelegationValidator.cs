@@ -73,38 +73,25 @@
             var identityName = $"portal_{loginSource}_{authInfo.VendorID}_{authInfo.SiteName}_{authInfo.UserID}_{authInfo.UserSEQ}";
 
             var claims = new List<Claim>(
-                new[]
-                {
-                    new Claim(JwtClaimTypes.Name, identityName, ClaimValueType.String),
-                    new Claim(CustomClaimType.VendorID, authInfo.VendorID, ClaimValueType.String),
-                    new Claim(CustomClaimType.SiteName, authInfo.SiteName, ClaimValueType.String),
-                    new Claim(CustomClaimType.UserSEQ, authInfo.UserSEQ.ToString(), ClaimValueType.Integer),
-                    new Claim(CustomClaimType.UserID, authInfo.UserID, ClaimValueType.String),
-                    new Claim(CustomClaimType.Username, authInfo.UserName, ClaimValueType.String),
-                    new Claim(CustomClaimType.Language, authInfo.Language, ClaimValueType.String),
-                    new Claim(CustomClaimType.ActionLink, authInfo.ActionLink, ClaimValueType.String),
-                    new Claim(CustomClaimType.Administrator, authInfo.IsAdminstrator.ToString(), ClaimValueType.Boolean),
-                    new Claim(CustomClaimType.WhiteLabelID, authInfo.WhiteLabelID?.ToString() ?? "-1", ClaimValueType.Integer),
-                    new Claim(CustomClaimType.IsMasterLicensee, authInfo.IsMasterLicensee.ToString(), ClaimValueType.Boolean),
-                    new Claim(CustomClaimType.LicenseeId, licenseeInfo.Id.ToString(), ClaimValueType.Integer),
-                    new Claim(CustomClaimType.SiteDBServer, licenseeInfo.SiteDBServer, ClaimValueType.String),
-                    new Claim(CustomClaimType.IsAllowedCustomerComm, licenseeInfo.IsAllowedCustomerComm.ToString(), ClaimValueType.Boolean),
-                    new Claim(CustomClaimType.UserLevel, authInfo.UserLevel.ToString(), ClaimValueType.Integer),
-                    new Claim(CustomClaimType.IsEnabledSubsidiary, authInfo.IsEnableSubsidiary.ToString(), ClaimValueType.Boolean),
-                    new Claim(CustomClaimType.OperatorID, authInfo.OperatorID ?? string.Empty, ClaimValueType.String),
-                    new Claim(CustomClaimType.BaseCurrency, authInfo.BaseCurrency ?? string.Empty, ClaimValueType.String),
-                    new Claim(CustomClaimType.IsEnableSingleWallet, isEnableSingleWallet.ToString(), ClaimValueType.Boolean),
-                    new Claim(CustomClaimType.IsShowIP, _extraInformationService.IsOfferShowIP(authInfo.SiteName).ToString(), ClaimValueType.Boolean),
-                    new Claim(CustomClaimType.OfferedSubProducts, offeredSubProducts, ClaimValueType.String),
-                    new Claim(CustomClaimType.OfferedOddsGroups, _extraInformationService.GetOffereOddGroups(authInfo.SiteName), ClaimValueType.String),
-                    new Claim(CustomClaimType.IsFakeLicensee, _extraInformationService.IsFakeLicensee(licenseeInfo.Name).ToString(), ClaimValueType.Boolean),
-                    new Claim(CustomClaimType.AuditCurrencies,
-                        JsonConvert.SerializeObject(_extraInformationService.GetAuditHardCodeCurrencies(licenseeInfo.Name)), ClaimValueType.Json),
-                    new Claim(CustomClaimType.CurrencyAgent, JsonConvert.SerializeObject(authInfo.Currency), ClaimValueType.Json),
-                    new Claim(CustomClaimType.SpecialPlatform, lrfSpecialPlatform.SpecialPlatform.ToString(), ClaimValueType.Integer),
-                    new Claim(CustomClaimType.SpecialPlatformType, lrfSpecialPlatform.SpecialPlatformType.ToString(), ClaimValueType.Integer)
-                });
+            [
+                new Claim(JwtClaimTypes.Name, identityName, ClaimValueType.String),
 
+                new Claim(CustomClaimType.LicenseeId, licenseeInfo.Id.ToString(), ClaimValueType.Integer),
+                new Claim(CustomClaimType.SiteDBServer, licenseeInfo.SiteDBServer, ClaimValueType.String),
+                new Claim(CustomClaimType.IsAllowedCustomerComm, licenseeInfo.IsAllowedCustomerComm.ToString(), ClaimValueType.Boolean),
+                new Claim(CustomClaimType.IsEnableSingleWallet, isEnableSingleWallet.ToString(), ClaimValueType.Boolean),
+                new Claim(CustomClaimType.IsShowIP, _extraInformationService.IsOfferShowIP(authInfo.SiteName).ToString(), ClaimValueType.Boolean),
+                new Claim(CustomClaimType.OfferedSubProducts, offeredSubProducts, ClaimValueType.String),
+                new Claim(CustomClaimType.OfferedOddsGroups, _extraInformationService.GetOffereOddGroups(authInfo.SiteName), ClaimValueType.String),
+                new Claim(CustomClaimType.IsFakeLicensee, _extraInformationService.IsFakeLicensee(licenseeInfo.Name).ToString(), ClaimValueType.Boolean),
+                new Claim(CustomClaimType.AuditCurrencies,
+                    JsonConvert.SerializeObject(_extraInformationService.GetAuditHardCodeCurrencies(licenseeInfo.Name)), ClaimValueType.Json),
+                new Claim(CustomClaimType.CurrencyAgent, JsonConvert.SerializeObject(authInfo.Currency), ClaimValueType.Json),
+                new Claim(CustomClaimType.SpecialPlatform, lrfSpecialPlatform.SpecialPlatform.ToString(), ClaimValueType.Integer),
+                new Claim(CustomClaimType.SpecialPlatformType, lrfSpecialPlatform.SpecialPlatformType.ToString(), ClaimValueType.Integer)
+            ]);
+
+            AddAuthInfoClaims(claims, authInfo);
             AddExternalClaims(claims, context.Request);
 
             if (authInfo.IsAdminstrator)
@@ -123,6 +110,24 @@
                 CustomGrantType.LapToken,
                 DateTimeOffset.UtcNow.DateTime, claims,
                 ClaimsIdentity.DefaultIssuer);
+        }
+
+        private static void AddAuthInfoClaims(ICollection<Claim> claims, DefaultAuthInfo<LapFunction, CurrencyAgent> authInfo)
+        {
+            claims.Add(new Claim(CustomClaimType.VendorID, authInfo.VendorID, ClaimValueType.String));
+            claims.Add(new Claim(CustomClaimType.SiteName, authInfo.SiteName, ClaimValueType.String));
+            claims.Add(new Claim(CustomClaimType.UserSEQ, authInfo.UserSEQ.ToString(), ClaimValueType.Integer));
+            claims.Add(new Claim(CustomClaimType.UserID, authInfo.UserID, ClaimValueType.String));
+            claims.Add(new Claim(CustomClaimType.Username, authInfo.UserName, ClaimValueType.String));
+            claims.Add(new Claim(CustomClaimType.Language, authInfo.Language, ClaimValueType.String));
+            claims.Add(new Claim(CustomClaimType.ActionLink, authInfo.ActionLink, ClaimValueType.String));
+            claims.Add(new Claim(CustomClaimType.Administrator, authInfo.IsAdminstrator.ToString(), ClaimValueType.Boolean));
+            claims.Add(new Claim(CustomClaimType.WhiteLabelID, authInfo.WhiteLabelID?.ToString() ?? "-1", ClaimValueType.Integer));
+            claims.Add(new Claim(CustomClaimType.IsMasterLicensee, authInfo.IsMasterLicensee.ToString(), ClaimValueType.Boolean));
+            claims.Add(new Claim(CustomClaimType.UserLevel, authInfo.UserLevel.ToString(), ClaimValueType.Integer));
+            claims.Add(new Claim(CustomClaimType.IsEnabledSubsidiary, authInfo.IsEnableSubsidiary.ToString(), ClaimValueType.Boolean));
+            claims.Add(new Claim(CustomClaimType.OperatorID, authInfo.OperatorID ?? string.Empty, ClaimValueType.String));
+            claims.Add(new Claim(CustomClaimType.BaseCurrency, authInfo.BaseCurrency ?? string.Empty, ClaimValueType.String));
         }
 
         private static void AddExternalClaims(ICollection<Claim> claims, ValidatedTokenRequest request)

@@ -1,18 +1,18 @@
-﻿using Fanex.Athena.IdentityServer.Core.Constants;
-using Fanex.Athena.IdentityServer.Core.Extensions;
-using Fanex.Athena.IdentityServer.Core.Models;
-using Fanex.Athena.IdentityServer.Core.Services;
-using IdentityModel;
-using IdentityServer4.Models;
-using IdentityServer4.Validation;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
-
-namespace Fanex.Athena.IdentityServer.Core.Validators
+﻿namespace Fanex.Athena.IdentityServer.Core.Validators
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using Constants;
+    using Extensions;
+    using IdentityModel;
+    using IdentityServer4.Models;
+    using IdentityServer4.Validation;
+    using Models;
+    using Newtonsoft.Json;
+    using Services;
+
     public class StatementPasswordDelegationValidator : IExtensionGrantValidator
     {
         private readonly IExtraInformationService _extraInformationService;
@@ -40,18 +40,11 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
             var identityName = $"ext_{siteName}_{userName}";
             var claims = new List<Claim>
             {
-                new Claim(JwtClaimTypes.Name, identityName, ClaimValueType.String),
+                new(JwtClaimTypes.Name, identityName, ClaimValueType.String)
             };
-            if (!string.IsNullOrEmpty(isShowIPVN))
-            {
-                claims.Add(new Claim(CustomClaimType.IsShowIPVN, isShowIPVN, ClaimValueType.Boolean));
-            }
-            else
-            {
-                claims.Add(new Claim(CustomClaimType.IsShowIPVN, true.ToString(), ClaimValueType.Boolean));
-            }
             await GenerateLicenseeClaimAsync(licenseeInfo, claims);
             claims.Add(new Claim(JwtClaimTypes.Role, Roles.StatementServiceRoleUser, ClaimValueType.String));
+            claims.Add(new Claim(CustomClaimType.IsShowIPVN, string.IsNullOrEmpty(isShowIPVN) ? true.ToString() : isShowIPVN, ClaimValueType.Boolean));
 
             context.Result = CreateSuccessfulResult(identityName, claims);
         }
@@ -74,16 +67,18 @@ namespace Fanex.Athena.IdentityServer.Core.Validators
             claims.Add(new Claim(CustomClaimType.IsAllowedCustomerComm, licenseeInfo.IsAllowedCustomerComm.ToString(), ClaimValueType.Boolean));
             claims.Add(new Claim(CustomClaimType.IsEnableSingleWallet, isEnableSingleWallet.ToString(), ClaimValueType.Boolean));
             claims.Add(new Claim(CustomClaimType.IsShowIP, _extraInformationService.IsOfferShowIP(licenseeInfo.Name).ToString(), ClaimValueType.Boolean));
-            claims.Add(new Claim(CustomClaimType.IsFakeLicensee, _extraInformationService.IsFakeLicensee(licenseeInfo.Name).ToString(), ClaimValueType.Boolean));
-            claims.Add(new Claim(CustomClaimType.AuditCurrencies, JsonConvert.SerializeObject(_extraInformationService.GetAuditHardCodeCurrencies(licenseeInfo.Name)), ClaimValueType.Json));
+            claims.Add(new Claim(CustomClaimType.IsFakeLicensee, _extraInformationService.IsFakeLicensee(licenseeInfo.Name).ToString(),
+                ClaimValueType.Boolean));
+            claims.Add(new Claim(CustomClaimType.AuditCurrencies,
+                JsonConvert.SerializeObject(_extraInformationService.GetAuditHardCodeCurrencies(licenseeInfo.Name)), ClaimValueType.Json));
             claims.Add(new Claim(CustomClaimType.CurrencyAgent, JsonConvert.SerializeObject(currencyAgentList), ClaimValueType.Json));
         }
 
         private static GrantValidationResult CreateSuccessfulResult(string identityName, IEnumerable<Claim> claims)
-            => new GrantValidationResult(
-                       identityName,
-                       CustomGrantType.StatementPassword,
-                       DateTimeOffset.UtcNow.DateTime, claims,
-                       ClaimsIdentity.DefaultIssuer);
+            => new(
+                identityName,
+                CustomGrantType.StatementPassword,
+                DateTimeOffset.UtcNow.DateTime, claims,
+                ClaimsIdentity.DefaultIssuer);
     }
 }
