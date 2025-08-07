@@ -1,50 +1,35 @@
-﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace Fanex.Athena.IdentityServer.Core.HealthCheck
+﻿namespace Fanex.Athena.IdentityServer.Core.HealthCheck
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Microsoft.Extensions.Diagnostics.HealthChecks;
+
     public class MemoryHealthCheck : IHealthCheck
     {
-        private readonly IOptionsMonitor<MemoryCheckOptions> _options;
-
-        public MemoryHealthCheck(IOptionsMonitor<MemoryCheckOptions> options)
-        {
-            _options = options;
-        }
+        private const long Threshold = 1024L;
 
         public Task<HealthCheckResult> CheckHealthAsync(
             HealthCheckContext context,
             CancellationToken cancellationToken = default)
         {
-            var options = _options.Get(context.Registration.Name);
-
             var allocated = GC.GetTotalMemory(forceFullCollection: false) / (1024L * 1024L);
             var data = new Dictionary<string, object>
             {
                 { "AllocatedMBs", allocated },
                 { "Gen0Collections", GC.CollectionCount(0) },
                 { "Gen1Collections", GC.CollectionCount(1) },
-                { "Gen2Collections", GC.CollectionCount(2) },
+                { "Gen2Collections", GC.CollectionCount(2) }
             };
 
-            var status = (allocated < options.Threshold) ?
-                HealthStatus.Healthy : context.Registration.FailureStatus;
+            var status = allocated < Threshold ? HealthStatus.Healthy : HealthStatus.Degraded;
 
             return Task.FromResult(new HealthCheckResult(
                 status,
                 description: "Reports degraded status if allocated bytes " +
-                    $">= {options.Threshold} mbs.",
-                exception: null,
+                             $">= {Threshold} mbs.",
                 data: data));
         }
-    }
-
-    public class MemoryCheckOptions
-    {
-        public long Threshold { get; set; } = 1024L; //1 GB
     }
 }

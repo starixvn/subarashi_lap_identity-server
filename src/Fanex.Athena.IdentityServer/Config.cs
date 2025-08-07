@@ -1,57 +1,23 @@
-﻿using Fanex.Athena.IdentityServer.Core.Constants;
-using IdentityModel;
-using IdentityServer4.Models;
-using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
-
-namespace Fanex.Athena.IdentityServer
+﻿namespace Fanex.Athena.IdentityServer
 {
+    using System.Collections.Generic;
+    using Core.Constants;
+    using IdentityModel;
+    using IdentityServer4.Models;
+    using Microsoft.Extensions.Configuration;
+
     public static class Config
     {
-        public class UserInfoResource : IdentityResource
-        {
-            public const string IdentityName = "userinfo_resource";
-
-            public UserInfoResource()
-            {
-                base.Name = IdentityName;
-                UserClaims = new[]
-                {
-                        JwtClaimTypes.Name,
-                        JwtClaimTypes.Role,
-                        CustomClaimType.VendorID,
-                        CustomClaimType.SiteName,
-                        CustomClaimType.UserSEQ,
-                        CustomClaimType.UserID,
-                        CustomClaimType.Username,
-                        CustomClaimType.Language,
-                        CustomClaimType.Administrator,
-                        CustomClaimType.CurrencyAgent,
-                        CustomClaimType.WhiteLabelID,
-                        CustomClaimType.IsMasterLicensee,
-                        CustomClaimType.UserLevel,
-                        CustomClaimType.IsEnabledSubsidiary,
-                        CustomClaimType.OperatorID,
-                        CustomClaimType.BaseCurrency,
-                        CustomClaimType.LicenseeId,
-                        CustomClaimType.IsAllowedCustomerComm,
-                        CustomClaimType.IsEnableSingleWallet,
-                        CustomClaimType.IsShowIP,
-                        CustomClaimType.IsShowIPVN,
-                        CustomClaimType.OnUserId,
-                        CustomClaimType.IsInternal,
-                        CustomClaimType.DefaultReportUrl,
-                        CustomClaimType.ActionLink,
-                        CustomClaimType.OfferedSubProducts,
-                        CustomClaimType.OfferedOddsGroups,
-                        CustomClaimType.IsFakeLicensee,
-                        CustomClaimType.ClientIP,
-                        CustomClaimType.SiteDBServer,
-                        CustomClaimType.AuditCurrencies,
-                        CustomClaimType.SpecialPlatform,
-                };
-            }
-        }
+        private static readonly List<string> BaseUserClaims =
+        [
+            JwtClaimTypes.Name,
+            JwtClaimTypes.Role,
+            CustomClaimType.SiteName,
+            CustomClaimType.UserSEQ,
+            CustomClaimType.UserID,
+            CustomClaimType.Language,
+            CustomClaimType.Username
+        ];
 
         public static IEnumerable<IdentityResource> Ids =>
             new List<IdentityResource>
@@ -63,17 +29,11 @@ namespace Fanex.Athena.IdentityServer
         public static IEnumerable<ApiScope> ScopeApis =>
             new List<ApiScope>
             {
-                new ApiScope("playeradmin_api.external")
+                new("playeradmin_api.external")
                 {
                     UserClaims =
-                    {
-                        JwtClaimTypes.Name,
-                        JwtClaimTypes.Role,
-                        CustomClaimType.SiteName,
-                        CustomClaimType.UserSEQ,
-                        CustomClaimType.UserID,
-                        CustomClaimType.Username,
-                        CustomClaimType.Language,
+                    [
+                        ..BaseUserClaims,
                         CustomClaimType.Administrator,
                         CustomClaimType.CurrencyAgent,
                         CustomClaimType.WhiteLabelID,
@@ -91,19 +51,13 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.SiteDBServer,
                         CustomClaimType.SpecialPlatform,
                         CustomClaimType.IsShowIPVN
-                    }
+                    ]
                 },
-                new ApiScope("playeradmin_api.internal")
+                new("playeradmin_api.internal")
                 {
-                     UserClaims =
-                     {
-                        JwtClaimTypes.Name,
-                        JwtClaimTypes.Role,
-                        CustomClaimType.SiteName,
-                        CustomClaimType.UserSEQ,
-                        CustomClaimType.UserID,
-                        CustomClaimType.Username,
-                        CustomClaimType.Language,
+                    UserClaims =
+                    [
+                        ..BaseUserClaims,
                         CustomClaimType.Administrator,
                         CustomClaimType.CurrencyAgent,
                         CustomClaimType.UserLevel,
@@ -118,33 +72,26 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.OfferedOddsGroups,
                         CustomClaimType.IsFakeLicensee,
                         CustomClaimType.SiteDBServer,
-                        CustomClaimType.SpecialPlatform,
-                     }
+                        CustomClaimType.SpecialPlatform
+                    ]
                 },
-                new ApiScope("betticket_api")
+                new("betticket_api")
                 {
                     UserClaims =
-                    {
-                        CustomClaimType.SiteName,
+                    [
+                        ..BaseUserClaims,
                         CustomClaimType.CurrencyAgent,
                         CustomClaimType.IsEnableSingleWallet,
                         CustomClaimType.IsShowIP,
-                        CustomClaimType.Language,
                         CustomClaimType.ClientIP
-                    }
+                    ]
                 },
-                new ApiScope("lrf")
+                new("lrf")
                 {
                     UserClaims =
-                    {
-                        JwtClaimTypes.Name,
-                        JwtClaimTypes.Role,
+                    [
+                        ..BaseUserClaims,
                         CustomClaimType.VendorID,
-                        CustomClaimType.SiteName,
-                        CustomClaimType.UserSEQ,
-                        CustomClaimType.UserID,
-                        CustomClaimType.Username,
-                        CustomClaimType.Language,
                         CustomClaimType.ActionLink,
                         CustomClaimType.Administrator,
                         CustomClaimType.CurrencyAgent,
@@ -166,20 +113,14 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.IsFakeLicensee,
                         CustomClaimType.SiteDBServer,
                         CustomClaimType.AuditCurrencies,
-                        CustomClaimType.SpecialPlatform,
-                    }
+                        CustomClaimType.SpecialPlatform
+                    ]
                 },
-                new ApiScope("statement_api")
+                new("statement_api")
                 {
                     UserClaims =
-                    {
-                        JwtClaimTypes.Name,
-                        JwtClaimTypes.Role,
-                        CustomClaimType.SiteName,
-                        CustomClaimType.UserSEQ,
-                        CustomClaimType.UserID,
-                        CustomClaimType.Username,
-                        CustomClaimType.Language,
+                    [
+                        ..BaseUserClaims,
                         CustomClaimType.Administrator,
                         CustomClaimType.CurrencyAgent,
                         CustomClaimType.UserLevel,
@@ -197,54 +138,39 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.SpecialPlatform,
                         CustomClaimType.IsShowIPVN,
                         CustomClaimType.AuditCurrencies
-                    }
+                    ]
                 },
-                new ApiScope("analytics_api")
+                new("analytics_api")
                 {
                     UserClaims =
-                    {
-                        JwtClaimTypes.Name,
-                        JwtClaimTypes.Role,
-                        CustomClaimType.SiteName,
+                    [
+                        ..BaseUserClaims,
                         CustomClaimType.LicenseeId,
-                        CustomClaimType.UserSEQ,
-                        CustomClaimType.UserID,
-                        CustomClaimType.Language,
                         CustomClaimType.CurrencyAgent,
                         CustomClaimType.OfferedSubProducts,
                         CustomClaimType.SpecialPlatform,
-                        CustomClaimType.SpecialPlatformType,
-                    }
+                        CustomClaimType.SpecialPlatformType
+                    ]
                 },
-                new ApiScope("report_api")
+                new("report_api")
                 {
                     UserClaims =
-                    {
-                        JwtClaimTypes.Name,
-                        JwtClaimTypes.Role,
-                        CustomClaimType.SiteName,
-                        CustomClaimType.UserSEQ,
-                        CustomClaimType.UserID,
-                        CustomClaimType.Language,
+                    [
+                        ..BaseUserClaims,
                         CustomClaimType.CurrencyAgent,
                         CustomClaimType.OfferedSubProducts,
                         CustomClaimType.IsFakeLicensee,
                         CustomClaimType.SiteDBServer,
                         CustomClaimType.AuditCurrencies,
                         CustomClaimType.SpecialPlatform,
-                        CustomClaimType.SpecialPlatformType,
-                    }
+                        CustomClaimType.SpecialPlatformType
+                    ]
                 },
-                new ApiScope("betlist_api")
+                new("betlist_api")
                 {
                     UserClaims =
-                    {
-                        JwtClaimTypes.Name,
-                        JwtClaimTypes.Role,
-                        CustomClaimType.SiteName,
-                        CustomClaimType.UserSEQ,
-                        CustomClaimType.UserID,
-                        CustomClaimType.Language,
+                    [
+                        ..BaseUserClaims,
                         CustomClaimType.CurrencyAgent,
                         CustomClaimType.OfferedSubProducts,
                         CustomClaimType.IsFakeLicensee,
@@ -254,18 +180,57 @@ namespace Fanex.Athena.IdentityServer
                         CustomClaimType.SpecialPlatformType,
                         CustomClaimType.IsAllowedCustomerComm,
                         CustomClaimType.IsShowIPVN
-                    }
+                    ]
                 }
             };
 
         public static IEnumerable<ApiResource> GetApis(IConfiguration configuration)
             => configuration
-            .GetSection("IdentityServer:ApiResources")
-            .Get<IEnumerable<ApiResource>>();
+                .GetSection("IdentityServer:ApiResources")
+                .Get<IEnumerable<ApiResource>>();
 
         public static IEnumerable<Client> GetClients(IConfiguration configuration)
             => configuration
-            .GetSection("IdentityServer:Clients")
-            .Get<IEnumerable<Client>>();
+                .GetSection("IdentityServer:Clients")
+                .Get<IEnumerable<Client>>();
+
+        public class UserInfoResource : IdentityResource
+        {
+            public const string IdentityName = "userinfo_resource";
+
+            public UserInfoResource()
+            {
+                Name = IdentityName;
+                UserClaims =
+                [
+                    ..BaseUserClaims,
+                    CustomClaimType.VendorID,
+                    CustomClaimType.Administrator,
+                    CustomClaimType.CurrencyAgent,
+                    CustomClaimType.WhiteLabelID,
+                    CustomClaimType.IsMasterLicensee,
+                    CustomClaimType.UserLevel,
+                    CustomClaimType.IsEnabledSubsidiary,
+                    CustomClaimType.OperatorID,
+                    CustomClaimType.BaseCurrency,
+                    CustomClaimType.LicenseeId,
+                    CustomClaimType.IsAllowedCustomerComm,
+                    CustomClaimType.IsEnableSingleWallet,
+                    CustomClaimType.IsShowIP,
+                    CustomClaimType.IsShowIPVN,
+                    CustomClaimType.OnUserId,
+                    CustomClaimType.IsInternal,
+                    CustomClaimType.DefaultReportUrl,
+                    CustomClaimType.ActionLink,
+                    CustomClaimType.OfferedSubProducts,
+                    CustomClaimType.OfferedOddsGroups,
+                    CustomClaimType.IsFakeLicensee,
+                    CustomClaimType.ClientIP,
+                    CustomClaimType.SiteDBServer,
+                    CustomClaimType.AuditCurrencies,
+                    CustomClaimType.SpecialPlatform
+                ];
+            }
+        }
     }
 }

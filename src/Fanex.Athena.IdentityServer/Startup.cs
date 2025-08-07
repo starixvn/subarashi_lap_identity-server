@@ -1,29 +1,27 @@
-using Fanex.Athena.IdentityServer.Core;
-using Fanex.Athena.IdentityServer.Core.Extensions;
-using Fanex.Athena.IdentityServer.Core.Middlewares;
-using Fanex.Athena.IdentityServer.Core.Settings;
-using Fanex.Athena.IdentityServer.Core.Validators;
-using Fanex.Data;
-using Fanex.Data.SqlServer;
-using Fanex.Data.Vault;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Security.Cryptography;
-
 namespace Fanex.Athena.IdentityServer
 {
+    using System.IO;
+    using System.IO.Compression;
+    using System.Security.Cryptography;
+    using Core;
+    using Core.Extensions;
+    using Core.Middlewares;
+    using Core.Settings;
+    using Core.Validators;
+    using Data;
+    using Data.SqlServer;
+    using Data.Vault;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.HttpOverrides;
+    using Microsoft.AspNetCore.ResponseCompression;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
+    using Microsoft.Extensions.Hosting;
+    using Microsoft.IdentityModel.Tokens;
+
     public class Startup
     {
         public Startup(IConfiguration configuration, IHostEnvironment env)
@@ -51,15 +49,15 @@ namespace Fanex.Athena.IdentityServer
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.RsaSha256);
 
             services.AddIdentityServer()
-               .AddInMemoryIdentityResources(Config.Ids)
-               .AddInMemoryApiResources(Config.GetApis(Configuration))
-               .AddInMemoryClients(Config.GetClients(Configuration))
-               .AddInMemoryApiScopes(Config.ScopeApis)
-               .AddExtensionGrantValidator<LapTokenDelegationValidator>()
-               .AddExtensionGrantValidator<LrfPasswordDelegationValidator>()
-               .AddExtensionGrantValidator<StatementPasswordDelegationValidator>()
-               .AddOperationalStore(Configuration)
-               .AddSigningCredential(credentials);
+                .AddInMemoryIdentityResources(Config.Ids)
+                .AddInMemoryApiResources(Config.GetApis(Configuration))
+                .AddInMemoryClients(Config.GetClients(Configuration))
+                .AddInMemoryApiScopes(Config.ScopeApis)
+                .AddExtensionGrantValidator<LapTokenDelegationValidator>()
+                .AddExtensionGrantValidator<LrfPasswordDelegationValidator>()
+                .AddExtensionGrantValidator<StatementPasswordDelegationValidator>()
+                .AddOperationalStore(Configuration)
+                .AddSigningCredential(credentials);
 
             services.AddHealthCheck(Configuration);
 
@@ -78,10 +76,7 @@ namespace Fanex.Athena.IdentityServer
                 options.MimeTypes = new[] { "application/json" };
             });
 
-            services.Configure<GzipCompressionProviderOptions>(options =>
-            {
-                options.Level = CompressionLevel.Fastest;
-            });
+            services.Configure<GzipCompressionProviderOptions>(options => { options.Level = CompressionLevel.Fastest; });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -102,10 +97,7 @@ namespace Fanex.Athena.IdentityServer
             app.UseRouting();
             app.UseResponseCompression();
             app.UseIdentityServer();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapGet("/", async context => await context.Response.WriteAsync("LAP Identity Server is running"));
-            });
+            app.UseEndpoints(endpoints => { endpoints.MapGet("/", async context => await context.Response.WriteAsync("LAP Identity Server is running")); });
         }
 
         private void ConfigFanexData(IServiceCollection services)
