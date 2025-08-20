@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using AutoFixture;
-using AutoFixture.AutoMoq;
-using AutoFixture.Xunit2;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
-
-namespace Fanex.Athena.IdentityServer.UnitTests.Common.DataAttributes
+﻿namespace Fanex.Athena.IdentityServer.UnitTests.Common.DataAttributes
 {
+    using System.Collections.Generic;
+    using AutoFixture;
+    using AutoFixture.AutoMoq;
+    using AutoFixture.Xunit2;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Routing;
+
     public class AutoContextDataAttribute : AutoDataAttribute
     {
         public AutoContextDataAttribute() :

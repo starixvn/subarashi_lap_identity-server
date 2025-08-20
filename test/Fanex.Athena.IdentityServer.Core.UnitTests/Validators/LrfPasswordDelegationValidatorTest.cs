@@ -6,6 +6,7 @@
     using System.Threading.Tasks;
     using Constants;
     using Core.Services;
+    using Core.Settings;
     using Core.Validators;
     using IdentityServer.UnitTests.Common;
     using IdentityServer4.Models;
@@ -14,7 +15,6 @@
     using Microsoft.Extensions.Logging;
     using Models;
     using Moq;
-    using Settings;
     using Xunit;
 
     public class LrfPasswordDelegationValidatorTest

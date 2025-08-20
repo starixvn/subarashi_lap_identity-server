@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using AutoFixture;
-using AutoFixture.Dsl;
-
-namespace Fanex.Athena.IdentityServer.UnitTests.Common
+﻿namespace Fanex.Athena.IdentityServer.UnitTests.Common
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq.Expressions;
+    using AutoFixture;
+    using AutoFixture.Dsl;
+
     public static class FakeHelper
     {
         private static readonly Fixture Fixture = new();

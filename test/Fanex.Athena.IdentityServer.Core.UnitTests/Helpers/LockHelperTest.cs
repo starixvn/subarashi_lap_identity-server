@@ -1,11 +1,11 @@
-﻿using System;
-using System.Threading.Tasks;
-using Fanex.Athena.IdentityServer.Core.Helpers;
-using Moq;
-using Xunit;
-
-namespace Fanex.Athena.IdentityServer.Core.UnitTests.Helpers
+﻿namespace Fanex.Athena.IdentityServer.Core.UnitTests.Helpers
 {
+    using System;
+    using System.Threading.Tasks;
+    using Core.Helpers;
+    using Moq;
+    using Xunit;
+
     public class LockHelperTest
     {
         [Fact]

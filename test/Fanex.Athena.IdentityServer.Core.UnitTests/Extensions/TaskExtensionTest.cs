@@ -1,10 +1,10 @@
-﻿using System.Threading.Tasks;
-using AutoFixture.Xunit2;
-using Fanex.Athena.IdentityServer.Core.Extensions;
-using Xunit;
-
-namespace Fanex.Athena.IdentityServer.Core.UnitTests.Extensions
+﻿namespace Fanex.Athena.IdentityServer.Core.UnitTests.Extensions
 {
+    using System.Threading.Tasks;
+    using AutoFixture.Xunit2;
+    using Core.Extensions;
+    using Xunit;
+
     public class TaskExtensionTest
     {
         [Theory] [AutoData]

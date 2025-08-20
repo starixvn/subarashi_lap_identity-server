@@ -1,20 +1,20 @@
-﻿using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using Fanex.Athena.IdentityServer.Core.Helpers;
-using Fanex.Athena.IdentityServer.Core.Models;
-using Fanex.Athena.IdentityServer.Core.Repositories;
-using Fanex.Athena.IdentityServer.Core.Services;
-using Fanex.Athena.IdentityServer.UnitTests.Common;
-using Fanex.Athena.IdentityServer.UnitTests.Common.DataAttributes;
-using Fanex.Athena.IdentityServer.UnitTests.Common.ServiceMoqExtensions;
-using Fanex.Data;
-using Moq;
-using Xunit;
-
-namespace Fanex.Athena.IdentityServer.Core.UnitTests.Services
+﻿namespace Fanex.Athena.IdentityServer.Core.UnitTests.Services
 {
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Core.Helpers;
+    using Core.Repositories;
+    using Core.Services;
+    using Data;
+    using IdentityServer.UnitTests.Common;
+    using IdentityServer.UnitTests.Common.DataAttributes;
+    using IdentityServer.UnitTests.Common.ServiceMoqExtensions;
+    using Models;
+    using Moq;
+    using Xunit;
+
     public class LrfAuthServiceTest
     {
         private const string NotFoundUser = "Not Found User";
