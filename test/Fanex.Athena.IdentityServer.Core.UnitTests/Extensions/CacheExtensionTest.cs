@@ -1,13 +1,13 @@
-﻿using System;
-using System.Threading.Tasks;
-using Fanex.Athena.IdentityServer.Core.Extensions;
-using Fanex.Athena.IdentityServer.UnitTests.Common.DataAttributes;
-using Microsoft.Extensions.Caching.Memory;
-using Moq;
-using Xunit;
-
-namespace Fanex.Athena.IdentityServer.Core.UnitTests.Extensions
+﻿namespace Fanex.Athena.IdentityServer.Core.UnitTests.Extensions
 {
+    using System;
+    using System.Threading.Tasks;
+    using Core.Extensions;
+    using IdentityServer.UnitTests.Common.DataAttributes;
+    using Microsoft.Extensions.Caching.Memory;
+    using Moq;
+    using Xunit;
+
     public class CacheExtensionTest
     {
         [Theory] [AutoCacheData]

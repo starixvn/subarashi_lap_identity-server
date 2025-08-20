@@ -1,16 +1,16 @@
-﻿using System;
-using System.Threading.Tasks;
-using Fanex.Athena.IdentityServer.Core.Repositories;
-using Fanex.Athena.IdentityServer.Core.Services;
-using Fanex.Athena.IdentityServer.Core.Settings;
-using Fanex.Athena.IdentityServer.UnitTests.Common.DataAttributes;
-using Fanex.Data;
-using Microsoft.Extensions.Logging;
-using Moq;
-using Xunit;
-
-namespace Fanex.Athena.IdentityServer.Core.UnitTests.Services
+﻿namespace Fanex.Athena.IdentityServer.Core.UnitTests.Services
 {
+    using System;
+    using System.Threading.Tasks;
+    using Core.Repositories;
+    using Core.Services;
+    using Core.Settings;
+    using Data;
+    using IdentityServer.UnitTests.Common.DataAttributes;
+    using Microsoft.Extensions.Logging;
+    using Moq;
+    using Xunit;
+
     public class TokenCleanupServiceTest
     {
         [Theory] [AutoMoqData]

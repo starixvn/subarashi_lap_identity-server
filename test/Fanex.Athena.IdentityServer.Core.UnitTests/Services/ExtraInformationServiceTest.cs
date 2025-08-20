@@ -5,7 +5,9 @@
     using System.Linq;
     using System.Threading.Tasks;
     using AutoFixture.Xunit2;
+    using Core.Repositories;
     using Core.Services;
+    using Core.Settings;
     using Data;
     using IdentityServer.UnitTests.Common;
     using IdentityServer.UnitTests.Common.ServiceMoqExtensions;
@@ -14,8 +16,6 @@
     using Microsoft.Extensions.Options;
     using Models;
     using Moq;
-    using Repositories;
-    using Settings;
     using Xunit;
 
     public class ExtraInformationServiceTest

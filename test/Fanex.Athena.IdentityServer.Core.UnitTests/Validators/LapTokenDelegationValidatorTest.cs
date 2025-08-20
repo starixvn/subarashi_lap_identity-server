@@ -6,6 +6,7 @@
     using System.Threading.Tasks;
     using Constants;
     using Core.Services;
+    using Core.Settings;
     using Core.Validators;
     using IdentityServer.UnitTests.Common;
     using IdentityServer4.Stores;
@@ -14,7 +15,6 @@
     using Microsoft.Extensions.Logging;
     using Models;
     using Moq;
-    using Settings;
     using Xunit;
 
     public class LapTokenDelegationValidatorTest
@@ -192,6 +192,194 @@
                         .Contains($"Licensee {authInfo.SiteName} is not existed")),
                     It.IsAny<Exception>(),
                     It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)), Times.Once);
+        }
+
+        [Fact]
+        public async Task ValidateAsync_InvalidTokenWithEmptyUserName_BindInvalidRequest()
+        {
+            // Arrange
+            const string token = "AnyToken";
+            _context.Request.Raw.Add("token", token);
+
+            var authInfo = FakeHelper.Create<DefaultAuthInfo<LapFunction, CurrencyAgent>>(x => x.UserName, string.Empty);
+            _authService.Setup(x => x.AuthenticateAsync(It.IsAny<string>())).Returns(Task.FromResult(authInfo));
+
+            var validator = new LapTokenDelegationValidator(_logger.Object, _authService.Object,
+                _extraInformationService.Object,
+                _referenceTokenStore.Object);
+
+            // Act
+            await validator.ValidateAsync(_context);
+
+            // Assert
+            Assert.True(_context.Result.IsError);
+        }
+
+        [Fact]
+        public async Task ValidateAsync_InvalidTokenWithZeroUserSEQ_BindInvalidRequest()
+        {
+            // Arrange
+            const string token = "AnyToken";
+            _context.Request.Raw.Add("token", token);
+
+            var authInfo = FakeHelper.Create<DefaultAuthInfo<LapFunction, CurrencyAgent>>(x => x.UserSEQ, 0);
+            _authService.Setup(x => x.AuthenticateAsync(It.IsAny<string>())).Returns(Task.FromResult(authInfo));
+
+            var validator = new LapTokenDelegationValidator(_logger.Object, _authService.Object,
+                _extraInformationService.Object,
+                _referenceTokenStore.Object);
+
+            // Act
+            await validator.ValidateAsync(_context);
+
+            // Assert
+            Assert.True(_context.Result.IsError);
+        }
+
+        [Fact]
+        public async Task ValidateAsync_WithEmptyClientIp_DoesNotAddClientIpClaim()
+        {
+            // Arrange
+            _context.Request.Raw.Add("client_ip", string.Empty);
+
+            var authInfo = FakeHelper.Create<DefaultAuthInfo<LapFunction, CurrencyAgent>>();
+            _authService.Setup(x => x.AuthenticateAsync(It.IsAny<string>())).Returns(Task.FromResult(authInfo));
+
+            SetupExtraInformationServices(authInfo);
+
+            var validator = new LapTokenDelegationValidator(_logger.Object, _authService.Object,
+                _extraInformationService.Object,
+                _referenceTokenStore.Object);
+
+            // Act
+            await validator.ValidateAsync(_context);
+
+            // Assert
+            var clientIpClaim = _context.Result.Subject.Claims.FirstOrDefault(x => x.Type == CustomClaimType.ClientIP);
+            Assert.Null(clientIpClaim);
+        }
+
+        [Fact]
+        public async Task ValidateAsync_WithNullWhiteLabelID_SetsDefaultValue()
+        {
+            // Arrange
+            var authInfo = FakeHelper.Create<DefaultAuthInfo<LapFunction, CurrencyAgent>>(x => x.WhiteLabelID, null);
+            _authService.Setup(x => x.AuthenticateAsync(It.IsAny<string>())).Returns(Task.FromResult(authInfo));
+
+            SetupExtraInformationServices(authInfo);
+
+            var validator = new LapTokenDelegationValidator(_logger.Object, _authService.Object,
+                _extraInformationService.Object,
+                _referenceTokenStore.Object);
+
+            // Act
+            await validator.ValidateAsync(_context);
+
+            // Assert
+            var whiteLabelClaim = _context.Result.Subject.Claims.First(x => x.Type == CustomClaimType.WhiteLabelID);
+            Assert.Equal("-1", whiteLabelClaim.Value);
+        }
+
+        [Fact]
+        public async Task ValidateAsync_WithNullBaseCurrency_SetsEmptyString()
+        {
+            // Arrange
+            var authInfo = FakeHelper.Create<DefaultAuthInfo<LapFunction, CurrencyAgent>>(x => x.BaseCurrency, null);
+            _authService.Setup(x => x.AuthenticateAsync(It.IsAny<string>())).Returns(Task.FromResult(authInfo));
+
+            SetupExtraInformationServices(authInfo);
+
+            var validator = new LapTokenDelegationValidator(_logger.Object, _authService.Object,
+                _extraInformationService.Object,
+                _referenceTokenStore.Object);
+
+            // Act
+            await validator.ValidateAsync(_context);
+
+            // Assert
+            var baseCurrencyClaim = _context.Result.Subject.Claims.First(x => x.Type == CustomClaimType.BaseCurrency);
+            Assert.Equal(string.Empty, baseCurrencyClaim.Value);
+        }
+
+        [Fact]
+        public async Task ValidateAsync_WithNullOperatorID_SetsEmptyString()
+        {
+            // Arrange
+            var authInfo = FakeHelper.Create<DefaultAuthInfo<LapFunction, CurrencyAgent>>(x => x.OperatorID, null);
+            _authService.Setup(x => x.AuthenticateAsync(It.IsAny<string>())).Returns(Task.FromResult(authInfo));
+
+            SetupExtraInformationServices(authInfo);
+
+            var validator = new LapTokenDelegationValidator(_logger.Object, _authService.Object,
+                _extraInformationService.Object,
+                _referenceTokenStore.Object);
+
+            // Act
+            await validator.ValidateAsync(_context);
+
+            // Assert
+            var operatorIdClaim = _context.Result.Subject.Claims.First(x => x.Type == CustomClaimType.OperatorID);
+            Assert.Equal(string.Empty, operatorIdClaim.Value);
+        }
+
+        [Fact]
+        public async Task ValidateAsync_WithOpcEnabled_CreatesOpcIdentityName()
+        {
+            // Arrange
+            var authInfo = FakeHelper.Create<DefaultAuthInfo<LapFunction, CurrencyAgent>>(x => x.EnableOpc, true);
+            _authService.Setup(x => x.AuthenticateAsync(It.IsAny<string>())).Returns(Task.FromResult(authInfo));
+
+            SetupExtraInformationServices(authInfo);
+
+            var validator = new LapTokenDelegationValidator(_logger.Object, _authService.Object,
+                _extraInformationService.Object,
+                _referenceTokenStore.Object);
+
+            // Act
+            await validator.ValidateAsync(_context);
+
+            // Assert
+            var nameClaim = _context.Result.Subject.Claims.FirstOrDefault(c => c.Type == "name");
+            Assert.NotNull(nameClaim);
+            Assert.Contains("portal_OPC_", nameClaim.Value);
+            Assert.Contains(authInfo.VendorID, nameClaim.Value);
+            Assert.Contains(authInfo.SiteName, nameClaim.Value);
+            Assert.Contains(authInfo.UserID, nameClaim.Value);
+            Assert.Contains(authInfo.UserSEQ.ToString(), nameClaim.Value);
+        }
+
+        [Fact]
+        public async Task ValidateAsync_WithOpcDisabled_CreatesLapIdentityName()
+        {
+            // Arrange
+            var authInfo = FakeHelper.Create<DefaultAuthInfo<LapFunction, CurrencyAgent>>(x => x.EnableOpc, false);
+            _authService.Setup(x => x.AuthenticateAsync(It.IsAny<string>())).Returns(Task.FromResult(authInfo));
+
+            SetupExtraInformationServices(authInfo);
+
+            var validator = new LapTokenDelegationValidator(_logger.Object, _authService.Object,
+                _extraInformationService.Object,
+                _referenceTokenStore.Object);
+
+            // Act
+            await validator.ValidateAsync(_context);
+
+            // Assert
+            var nameClaim = _context.Result.Subject.Claims.FirstOrDefault(c => c.Type == "name");
+            Assert.NotNull(nameClaim);
+            Assert.Contains("portal_LAP_", nameClaim.Value);
+        }
+
+        [Fact]
+        public void GrantType_ReturnsCorrectValue()
+        {
+            // Arrange
+            var validator = new LapTokenDelegationValidator(_logger.Object, _authService.Object,
+                _extraInformationService.Object,
+                _referenceTokenStore.Object);
+
+            // Act & Assert
+            Assert.Equal(CustomGrantType.LapToken, validator.GrantType);
         }
 
         #region TestHelpers

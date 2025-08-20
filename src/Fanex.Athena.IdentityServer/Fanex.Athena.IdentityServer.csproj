@@ -18,10 +18,9 @@
 
   <ItemGroup>
     <SonarQubeSetting Include="sonar.coverage.exclusions">
-      <Value>**/Config.cs, **/Startup.cs</Value>
+      <Value>**/Startup.cs, **/Program.cs</Value>
     </SonarQubeSetting>
   </ItemGroup>
-
 
   <ItemGroup>
     <ProjectReference Include="..\Fanex.Athena.IdentityServer.Core\Fanex.Athena.IdentityServer.Core.csproj" />

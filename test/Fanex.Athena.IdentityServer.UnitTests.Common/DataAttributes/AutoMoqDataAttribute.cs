@@ -1,9 +1,9 @@
-﻿using AutoFixture;
-using AutoFixture.AutoMoq;
-using AutoFixture.Xunit2;
-
-namespace Fanex.Athena.IdentityServer.UnitTests.Common.DataAttributes
+﻿namespace Fanex.Athena.IdentityServer.UnitTests.Common.DataAttributes
 {
+    using AutoFixture;
+    using AutoFixture.AutoMoq;
+    using AutoFixture.Xunit2;
+
     public class AutoMoqDataAttribute : AutoDataAttribute
     {
         public AutoMoqDataAttribute() :

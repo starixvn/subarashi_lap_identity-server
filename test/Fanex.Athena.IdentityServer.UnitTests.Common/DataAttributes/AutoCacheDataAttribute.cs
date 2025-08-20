@@ -1,13 +1,13 @@
-﻿using AutoFixture;
-using AutoFixture.AutoMoq;
-using AutoFixture.Xunit2;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Internal;
-using Microsoft.Extensions.Options;
-using Moq;
-
-namespace Fanex.Athena.IdentityServer.UnitTests.Common.DataAttributes
+﻿namespace Fanex.Athena.IdentityServer.UnitTests.Common.DataAttributes
 {
+    using AutoFixture;
+    using AutoFixture.AutoMoq;
+    using AutoFixture.Xunit2;
+    using Microsoft.Extensions.Caching.Memory;
+    using Microsoft.Extensions.Internal;
+    using Microsoft.Extensions.Options;
+    using Moq;
+
     public class AutoCacheDataAttribute : AutoDataAttribute
     {
         public AutoCacheDataAttribute() :

@@ -1,15 +1,15 @@
-﻿using System;
-using System.Net;
-using System.Threading.Tasks;
-using Fanex.Athena.IdentityServer.Core.Middlewares;
-using Fanex.Athena.IdentityServer.UnitTests.Common.DataAttributes;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Moq;
-using Xunit;
-
-namespace Fanex.Athena.IdentityServer.Core.UnitTests.MiddleWares
+﻿namespace Fanex.Athena.IdentityServer.Core.UnitTests.MiddleWares
 {
+    using System;
+    using System.Net;
+    using System.Threading.Tasks;
+    using IdentityServer.UnitTests.Common.DataAttributes;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Logging;
+    using Middlewares;
+    using Moq;
+    using Xunit;
+
     public class ErrorHandlerTest
     {
         [Theory] [AutoContextData]

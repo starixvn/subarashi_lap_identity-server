@@ -1,15 +1,15 @@
-﻿using Fanex.Athena.IdentityServer.Core.Helpers;
-using Fanex.Athena.IdentityServer.Core.Services;
-using Fanex.Athena.IdentityServer.Core.Settings;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace Fanex.Athena.IdentityServer.Core.BackgroundServices
+﻿namespace Fanex.Athena.IdentityServer.Core.BackgroundServices
 {
+    using System;
+    using System.Net;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Helpers;
+    using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
+    using Services;
+    using Settings;
+
     public class TokenCleanupBackgroundService : BackgroundService
     {
         private readonly ITokenCleanupService _tokenCleanupService;
@@ -24,7 +24,10 @@ namespace Fanex.Athena.IdentityServer.Core.BackgroundServices
 
         private CancellationTokenSource _source;
 
-        public TokenCleanupBackgroundService(ITokenCleanupService tokenCleanupService, OperationalStoreSetting options, ILogger<TokenCleanupBackgroundService> logger)
+        public TokenCleanupBackgroundService(
+            ITokenCleanupService tokenCleanupService, 
+            OperationalStoreSetting options, 
+            ILogger<TokenCleanupBackgroundService> logger)
         {
             _tokenCleanupService = tokenCleanupService;
             _options = options;
@@ -65,7 +68,7 @@ namespace Fanex.Athena.IdentityServer.Core.BackgroundServices
 
                 _logger.LogWarning("Stopping token removal background service");
 
-                _source.Cancel();
+                await _source.CancelAsync();
                 _source = null;
             }
 
@@ -118,6 +121,11 @@ namespace Fanex.Athena.IdentityServer.Core.BackgroundServices
                 _logger.LogCritical(ex, ErrorMessageHelper.GenerateMessage(ex));
             }
         }
-    }
 
+        public override void Dispose()
+        {
+            _source?.Dispose();
+            base.Dispose();
+        }
+    }
 }

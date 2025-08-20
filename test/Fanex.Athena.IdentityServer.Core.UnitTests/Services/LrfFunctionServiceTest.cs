@@ -1,20 +1,20 @@
-﻿using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using Fanex.Athena.IdentityServer.Core.Models;
-using Fanex.Athena.IdentityServer.Core.Repositories;
-using Fanex.Athena.IdentityServer.Core.Services;
-using Fanex.Athena.IdentityServer.Core.Settings;
-using Fanex.Athena.IdentityServer.UnitTests.Common;
-using Fanex.Athena.IdentityServer.UnitTests.Common.ServiceMoqExtensions;
-using Fanex.Data;
-using Microsoft.Extensions.Options;
-using Moq;
-using Xunit;
-
-namespace Fanex.Athena.IdentityServer.Core.UnitTests.Services
+﻿namespace Fanex.Athena.IdentityServer.Core.UnitTests.Services
 {
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Core.Repositories;
+    using Core.Services;
+    using Core.Settings;
+    using Data;
+    using IdentityServer.UnitTests.Common;
+    using IdentityServer.UnitTests.Common.ServiceMoqExtensions;
+    using Microsoft.Extensions.Options;
+    using Models;
+    using Moq;
+    using Xunit;
+
     public class LrfFunctionServiceTest
     {
         private readonly Mock<IOptions<AppSetting>> _appSetting;

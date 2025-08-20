@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using AutoFixture.Xunit2;
-using Fanex.Athena.IdentityServer.Core.Repositories;
-using Fanex.Athena.IdentityServer.Core.Storage;
-using Fanex.Data;
-using IdentityServer4.Models;
-using IdentityServer4.Stores;
-using Microsoft.Extensions.Logging;
-using Moq;
-using Xunit;
-
-namespace Fanex.Athena.IdentityServer.Core.UnitTests.Storage
+﻿namespace Fanex.Athena.IdentityServer.Core.UnitTests.Storage
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using AutoFixture.Xunit2;
+    using Core.Repositories;
+    using Core.Storage;
+    using Data;
+    using IdentityServer4.Models;
+    using IdentityServer4.Stores;
+    using Microsoft.Extensions.Logging;
+    using Moq;
+    using Xunit;
+
     public class SqlServerPersistedGrantStoreTest
     {
         private readonly Mock<IDbFactory> _dbFactory;
